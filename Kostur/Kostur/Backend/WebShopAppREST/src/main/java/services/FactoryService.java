@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.PathParam;
 
 import beans.Factory;
 import dao.FactoryDAO;
@@ -36,5 +37,13 @@ public class FactoryService {
 	public Collection<Factory> findAll(){
 		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
 		return dao.findAll();
+	}
+	
+	@GET
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Factory findById(@PathParam ("id") Long id){
+		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
+		return dao.findById(id);
 	}
 }

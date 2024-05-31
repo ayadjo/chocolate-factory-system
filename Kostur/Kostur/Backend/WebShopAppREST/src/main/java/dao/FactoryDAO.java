@@ -38,6 +38,10 @@ public class FactoryDAO {
 		return sortedFactories;
 	}
 	
+	public Factory findById(Long id) {
+        return factories.get(id);
+    }
+	
 	private void loadFactories(String contextPath) {
 		BufferedReader in = null;
 		try {
