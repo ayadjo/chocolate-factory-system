@@ -3,8 +3,12 @@ package dao;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import beans.Factory;
@@ -22,7 +26,16 @@ public class FactoryDAO {
 	}
 	
 	public Collection<Factory> findAll() {
-		return factories.values();
+		List<Factory> sortedFactories = new ArrayList<>(factories.values());
+		
+		Collections.sort(sortedFactories, new Comparator<Factory>() {
+			@Override
+			public int compare(Factory f1, Factory f2) {
+				return Boolean.compare(f2.isOpen(), f1.isOpen());
+			}
+		});
+		
+		return sortedFactories;
 	}
 	
 	private void loadFactories(String contextPath) {
