@@ -1,6 +1,8 @@
 package beans;
 
 import java.util.ArrayList;
+import beans.Chocolate;
+import beans.Location;
 
 public class Factory {
 	private Long id;
@@ -12,8 +14,6 @@ public class Factory {
 	private Location location;
 	private double grade;
 	private String logo;
-	
-	
 	
 	public Factory() {
 		super();
