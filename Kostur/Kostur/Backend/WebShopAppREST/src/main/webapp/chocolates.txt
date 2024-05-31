@@ -1,0 +1,4 @@
+1;Milk Chocolate;2.99;ForCooking;1;Milk;100;Delicious milk chocolate;outOfStock;0;https://www.lindt.co.uk/media/catalog/product/l/i/lindt-classic-recipe-milk-chocolate-bar-100g.png?quality=80&fit=bounds&height=700&width=700&canvas=700:700
+2;Dark Chocolate;3.49;ForCooking;2;Dark;90;Rich dark chocolate;onStock;800;https://m.media-amazon.com/images/I/61aAZqPPW4L._AC_UF1000,1000_QL80_.jpg
+3;White Chocolate;2.79;ForDrinking;3;White;110;Creamy white chocolate;onStock;1200;https://i5.walmartimages.com/asr/542c81b5-96b9-416e-8b2f-8433f87860aa.61eaf22878331b4a3510c06fbc9e394a.jpeg?odnHeight=2000&odnWidth=2000&odnBg=FFFFFF
+4;Hazelnut Chocolate;4.99;Oridinary;1;Milk;120;Chocolate with hazelnuts;onStock;600;https://www.ferrerorocher.com/ca/sites/ferrerorocher20_ca/files/2022-05/22014_02-ferrero-dark-bar_front_810x750px.png?t=1714118374

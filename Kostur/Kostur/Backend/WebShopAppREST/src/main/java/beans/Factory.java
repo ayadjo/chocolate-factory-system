@@ -17,8 +17,15 @@ public class Factory {
 	
 	public Factory() {
 		super();
-		chocolates =  new ArrayList<Chocolate>();
+		this.chocolates = new ArrayList<>();
 	}
+	
+	public Factory(Long id) {
+		super();
+		this.chocolates = new ArrayList<>();
+		this.id = id;
+	}
+
 
 	public Factory(Long id, String name, ArrayList<Chocolate> chocolates, String startTime, String endTime,
 			boolean isOpen, Location location, double grade, String logo) {
@@ -32,6 +39,7 @@ public class Factory {
 		this.location = location;
 		this.grade = grade;
 		this.logo = logo;
+		this.chocolates = new ArrayList<>();
 	}
 
 	public Long getId() {
