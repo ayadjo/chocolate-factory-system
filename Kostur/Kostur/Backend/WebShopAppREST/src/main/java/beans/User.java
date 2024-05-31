@@ -18,5 +18,5 @@ public class User {
 	//private ShoppingCart cart;
 	private int points;
 	private CustomerType type;
-	//private Factory factory;
+	private Factory factory;
 }
