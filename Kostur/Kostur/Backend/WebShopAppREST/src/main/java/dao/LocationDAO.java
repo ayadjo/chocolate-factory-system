@@ -3,9 +3,11 @@ package dao;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
+import beans.Factory;
 import beans.Location;
 
 public class LocationDAO {
@@ -19,8 +21,15 @@ public class LocationDAO {
 		loadLocations(contextPath);
 	}
 	
-
+	public HashMap<Long, Location> getLocations() {
+        return locations;
+    }
 	
+	public Collection<Location> findAll() {
+		return locations.values();
+	}
+	
+
 	private void loadLocations(String contextPath) {
 		BufferedReader in = null;
 		try {

@@ -17,7 +17,7 @@
 
 nav {
   padding: 30px;
-  border: 1px solid #b94289;
+  border: 1px solid #8f0710;
   border-radius: 5px;
   background-color: #201d0e;
 }
@@ -30,6 +30,6 @@ nav a {
 
 
 nav a.router-link-exact-active {
-  color: #ec60b4;
+  color: #b3141e;
 }
 </style>
