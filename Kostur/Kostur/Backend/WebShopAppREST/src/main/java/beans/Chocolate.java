@@ -16,6 +16,7 @@ public class Chocolate {
 	private ChocolateStatus status;
 	private int onStock;
 	private String image;
+	private boolean isDeleted;
 	
 
 	public Chocolate() {
@@ -23,8 +24,9 @@ public class Chocolate {
 	}
 
 
+
 	public Chocolate(Long id, String name, double price, ChocolateKind kind, Factory factory, ChocolateType type,
-			double weight, String description, ChocolateStatus status, int onStock, String image) {
+			double weight, String description, ChocolateStatus status, int onStock, String image, boolean isDeleted) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -37,7 +39,20 @@ public class Chocolate {
 		this.status = status;
 		this.onStock = onStock;
 		this.image = image;
+		this.isDeleted = isDeleted;
 	}
+
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 
 
 	public Long getId() {

@@ -1,9 +1,7 @@
 package dto;
 
 import beans.Chocolate;
-import beans.Factory;
 import enums.ChocolateKind;
-import enums.ChocolateStatus;
 import enums.ChocolateType;
 
 public class ChocolateDTO {

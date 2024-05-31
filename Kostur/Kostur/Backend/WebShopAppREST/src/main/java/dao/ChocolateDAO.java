@@ -3,12 +3,12 @@ package dao;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import beans.Chocolate;
 import beans.Factory;
-import beans.Product;
 import beans.User;
 import dto.ChocolateDTO;
 import enums.ChocolateKind;
@@ -26,13 +26,23 @@ public class ChocolateDAO {
 		loadChocolates(contextPath);
 	}
 	
+	
+	public Collection<Chocolate> findAll() {
+		return chocolates.values();
+	}
+	
+	
+	public Chocolate findById(Long id) {
+		return chocolates.containsKey(id) ? chocolates.get(id) : null;
+	}
+	
 	private void loadChocolates(String contextPath) {
 		BufferedReader in = null;
 		try {
 			File file = new File(contextPath + "/chocolates.txt");
 			System.out.println(file.getCanonicalPath());
 			in = new BufferedReader(new FileReader(file));
-			String line, id = "", name = "", price = "", kind = "", factoryId = "", type = "", weight = "", description = "", status = "", onStock = "", image = "";
+			String line, id = "", name = "", price = "", kind = "", factoryId = "", type = "", weight = "", description = "", status = "", onStock = "", image = "", isDeleted = "";
 			StringTokenizer st;
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
@@ -51,9 +61,10 @@ public class ChocolateDAO {
 	                status = st.nextToken().trim();
 	                onStock = st.nextToken().trim();
 	                image = st.nextToken().trim();
+	                isDeleted = st.nextToken().trim();
 				}
 				chocolates.put(Long.parseLong(id), new Chocolate(Long.parseLong(id), name, Double
-						.parseDouble(price), ChocolateKind.valueOf(kind), new Factory(Long.parseLong(factoryId)), ChocolateType.valueOf(type), Double.parseDouble(weight), description, ChocolateStatus.valueOf(status), Integer.parseInt(onStock), image));
+						.parseDouble(price), ChocolateKind.valueOf(kind), new Factory(Long.parseLong(factoryId)), ChocolateType.valueOf(type), Double.parseDouble(weight), description, ChocolateStatus.valueOf(status), Integer.parseInt(onStock), image, Boolean.parseBoolean(isDeleted)));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -86,6 +97,39 @@ public class ChocolateDAO {
 	    chocolates.put(maxId, chocolate); 
 	    
 	    return chocolate;
+	}
+	
+	public Chocolate delete(Long id) {
+		Chocolate foundChocolate = findById(id);
+		if (foundChocolate == null) {
+			return null;
+		}
+		foundChocolate.setDeleted(true);
+		foundChocolate.getFactory().getChocolates().remove(foundChocolate);
+		
+
+		return foundChocolate;
+	}
+	
+	public Chocolate updateChocolate(Long id, Chocolate chocolate) {
+		Chocolate c = chocolates.containsKey(id) ? chocolates.get(id) : null;
+		if (c == null) {
+			return null;
+		} else {
+			c.setName(chocolate.getName());
+	        c.setPrice(chocolate.getPrice());
+	        c.setKind(chocolate.getKind());
+	        c.setFactory(chocolate.getFactory());
+	        c.setType(chocolate.getType());
+	        c.setWeight(chocolate.getWeight());
+	        c.setDescription(chocolate.getDescription());
+	        c.setStatus(chocolate.getStatus());
+	        c.setOnStock(chocolate.getOnStock());
+	        c.setImage(chocolate.getImage());
+	        c.setDeleted(false);
+		}
+		
+		return c;
 	}
 
 }

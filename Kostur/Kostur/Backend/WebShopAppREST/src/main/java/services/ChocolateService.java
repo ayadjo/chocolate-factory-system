@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.PathParam;
 
 import beans.Basket;
 import beans.Chocolate;
@@ -31,22 +35,17 @@ public class ChocolateService {
 	@Context
     ServletContext ctx;
 	
-	public ChocolateService() {
+	@PostConstruct
+	public void init() {
+		if (ctx.getAttribute("chocolateDAO") == null) {
+	    	String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("chocolateDAO", new ChocolateDAO(contextPath));
+		}
 	}
 	
-	private String username;
-	private String password;
-	private String confirmationPassword;
-	private String firstName;
-	private String lastName;
-	private Gender gender;
-	private Date birthday;
-	private Role role;
-	private ArrayList<Purchase> purchases;
-	private Basket basket;
-	private int points;
-	private CustomerType type;
-	private Factory factory;
+	public ChocolateService() {
+	}
+
 	
 	@POST
 	@Path("/")
@@ -58,4 +57,20 @@ public class ChocolateService {
         Chocolate createdchocolate = dao.save(chocolateDto, loggedInManager);
         return createdchocolate;
     }
+	
+	@PATCH
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Chocolate deleteChocolate(@PathParam("id") Long id) {
+		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
+		return dao.delete(id);
+	}
+	
+	@PUT
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Chocolate updateProduct(@PathParam("id") Long id, Chocolate chocolate) {
+		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
+		return dao.updateChocolate(id, chocolate);
+	}
 }
