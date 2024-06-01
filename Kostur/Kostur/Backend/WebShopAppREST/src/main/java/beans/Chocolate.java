@@ -11,8 +11,7 @@ public class Chocolate {
 	private String name;
 	private double price;
 	private ChocolateKind kind;
-	
-	@JsonbTransient
+	//@JsonbTransient
 	private Factory factory;
 	private ChocolateType type;
 	private double weight;

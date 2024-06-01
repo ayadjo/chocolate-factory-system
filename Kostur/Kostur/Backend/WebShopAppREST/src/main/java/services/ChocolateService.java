@@ -82,8 +82,14 @@ public class ChocolateService {
 	@PUT
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Chocolate updateProduct(@PathParam("id") Long id, Chocolate chocolate) {
+	public ChocolateDTO updateProduct(@PathParam("id") Long id, ChocolateDTO chocolateDTO) {
 		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
-		return dao.updateChocolate(id, chocolate);
+		Chocolate updatedChocolate = dao.updateChocolate(id, chocolateDTO);
+		
+		if (updatedChocolate == null) {
+			return null;
+		}
+		
+		return ChocolateDTO.convertToDTO(updatedChocolate);
 	}
 }

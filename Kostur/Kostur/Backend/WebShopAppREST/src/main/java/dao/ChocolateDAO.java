@@ -44,12 +44,12 @@ public class ChocolateDAO {
 		BufferedReader in = null;
 		try {
 			File file = new File(contextPath + "/chocolates.txt");
-			System.out.println("FILE: " + file); 
 			System.out.println(file.getCanonicalPath());
 			in = new BufferedReader(new FileReader(file));
 			String line, id = "", name = "", price = "", kind = "", factoryId = "", type = "", weight = "", description = "", status = "", onStock = "", image = "", isDeleted = "";
 			StringTokenizer st;
 			while ((line = in.readLine()) != null) {
+				System.out.println("Reading line: " + line);
 				line = line.trim();
 				if (line.equals("") || line.indexOf('#') == 0)
 					continue;
@@ -118,21 +118,18 @@ public class ChocolateDAO {
 		return foundChocolate;
 	}
 	
-	public Chocolate updateChocolate(Long id, Chocolate chocolate) {
+	public Chocolate updateChocolate(Long id, ChocolateDTO dto) {
 		Chocolate c = chocolates.containsKey(id) ? chocolates.get(id) : null;
 		if (c == null) {
 			return null;
 		} else {
-			c.setName(chocolate.getName());
-	        c.setPrice(chocolate.getPrice());
-	        c.setKind(chocolate.getKind());
-	        c.setFactory(chocolate.getFactory());
-	        c.setType(chocolate.getType());
-	        c.setWeight(chocolate.getWeight());
-	        c.setDescription(chocolate.getDescription());
-	        c.setStatus(chocolate.getStatus());
-	        c.setOnStock(chocolate.getOnStock());
-	        c.setImage(chocolate.getImage());
+			c.setName(dto.getName());
+	        c.setPrice(dto.getPrice());
+	        c.setKind(dto.getKind());
+	        c.setType(dto.getType());
+	        c.setWeight(dto.getWeight());
+	        c.setDescription(dto.getDescription());
+	        c.setImage(dto.getImage());
 	        c.setDeleted(false);
 		}
 		writeToFile();
@@ -144,7 +141,6 @@ public class ChocolateDAO {
 	    BufferedWriter out = null;
 	    try {
 	        String filePath = this.contextPath + "chocolates.txt";
-	        System.out.println("Writing to file: " + filePath); // Debug ispis
 	        File file = new File(filePath);
 	        out = new BufferedWriter(new FileWriter(file));
 	        for (Chocolate chocolate : chocolates.values()) {
