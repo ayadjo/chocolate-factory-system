@@ -4,7 +4,7 @@
     <form @submit.prevent="addChocolate($event)" class="form">
       <div class="form-group">
         <label for="name" class="label">Name</label>
-        <input type="text" id="name" v-model="chocolate.name" class="input" required>
+        <input type="text" id="name" v-model="chocolate.name" v-bind:style="nameColor" class="input" required>
       </div>
       <div class="form-group">
         <label for="price" class="label">Price</label>
@@ -39,6 +39,9 @@
         <input type="url" id="image" v-model="chocolate.image" class="input" required>
       </div>
       <button type="submit" class="add-button">Add</button>
+      <div class="form-row">        
+          <h5 v-bind:style="errorColor">{{errorMessage}}</h5>
+      </div>
     </form>
   </div>
 </template>
@@ -57,10 +60,23 @@ const chocolate = ref({
   description: "",
   image: ""
 });
-const error = ref("");
+const errorMessage = ref("");
 const router = useRouter();
 
 function addChocolate(event){
+
+  if(!this.chocolate.name){
+				this.nameColor='border-color: red';
+	}
+
+  if(!this.chocolate.name){
+				this.errorMessage='Field name is neccessary!';
+				this.errorColor = "color:red";
+				return;
+			}
+			
+	this.errorMessage = '';
+
   axios.post('http://localhost:8080/WebShopAppREST/rest/chocolates/', chocolate.value)
     .then(() => {
       router.push('/')
@@ -138,5 +154,11 @@ function addChocolate(event){
   color: black;
   border: 1px solid #8f0710;
 
+}
+
+.form-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
 }
 </style>
