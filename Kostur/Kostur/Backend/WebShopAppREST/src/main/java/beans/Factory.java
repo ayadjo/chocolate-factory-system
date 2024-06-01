@@ -34,6 +34,10 @@ public class Factory {
 		this.chocolates = new ArrayList<>();
 	}
 
+	public Factory(long id) {
+		this.id = id;
+	}
+
 	public Long getId() {
 		return id;
 	}

@@ -25,6 +25,10 @@ public class FactoryDAO {
 		loadFactories(contextPath);
 	}
 	
+	public HashMap<Long, Factory> getFactories() {
+        return factories;
+    }
+	
 	public Collection<Factory> findAll() {
 		List<Factory> sortedFactories = new ArrayList<>(factories.values());
 		
