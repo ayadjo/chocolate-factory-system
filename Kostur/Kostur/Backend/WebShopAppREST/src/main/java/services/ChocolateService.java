@@ -45,17 +45,30 @@ public class ChocolateService {
 	
 	public ChocolateService() {
 	}
+	
+	@GET
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Chocolate getChocolate(@PathParam("id") Long id) {
+		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
+		return dao.findById(id);
+	}
 
 	
 	@POST
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Chocolate createChocolate(ChocolateDTO chocolateDto) {  //dodati za ulogovanog manager-a
+    public ChocolateDTO addChocolate(ChocolateDTO chocolateDto) {  //dodati za ulogovanog manager-a
         ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
         User loggedInManager = new User("pera","pera","pera","Pera","Peric",Gender.Male,new Date(),Role.Manager,new ArrayList<>(), new Basket(),0,new CustomerType(), new Factory());
-        Chocolate createdchocolate = dao.save(chocolateDto, loggedInManager);
-        return createdchocolate;
+        Chocolate createdChocolate = dao.save(chocolateDto, loggedInManager);
+        
+        if (createdChocolate == null) {
+			return null;
+		}
+        
+        return ChocolateDTO.convertToDTO(createdChocolate);
     }
 	
 	@PATCH

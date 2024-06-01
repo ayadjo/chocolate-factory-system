@@ -1,5 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import AddChocolateView from '../components/AddChocolateView.vue';
+import EditChocolateView from '../components/EditChocolateView.vue';
 
 const routes = [
   {
@@ -16,6 +18,17 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
   },
+  {
+    path: "/add-chocolate", // putanja za stranicu dodavanja čokolade
+    name: "addChocolate", // Naziv rute
+    component: AddChocolateView,
+  },
+  {
+    path: "/edit-chocolate/:id", // putanja za stranicu dodavanja čokolade
+    name: "editChocolate", // Naziv rute
+    component: EditChocolateView,
+  },
+  
 ];
 
 const router = createRouter({

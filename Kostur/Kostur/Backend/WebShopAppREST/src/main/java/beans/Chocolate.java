@@ -1,6 +1,8 @@
 package beans;
 
 import enums.ChocolateKind;
+
+import javax.json.bind.annotation.JsonbTransient;
 import enums.ChocolateStatus;
 import enums.ChocolateType;
 
@@ -9,6 +11,8 @@ public class Chocolate {
 	private String name;
 	private double price;
 	private ChocolateKind kind;
+	
+	@JsonbTransient
 	private Factory factory;
 	private ChocolateType type;
 	private double weight;
@@ -41,6 +45,12 @@ public class Chocolate {
 		this.image = image;
 		this.isDeleted = isDeleted;
 	}
+
+	public String toStringForFile() {
+        return id + ";" + name + ";" + price + ";" + kind + ";" + 
+               (factory != null ? factory.getId() : "null") + ";" + type + ";" + weight + ";" + 
+               description + ";" + status + ";" + onStock + ";" + image + ";" + isDeleted;
+    }
 
 
 	public boolean isDeleted() {

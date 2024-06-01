@@ -1,8 +1,10 @@
 package dao;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -17,12 +19,14 @@ import enums.ChocolateType;
 
 public class ChocolateDAO {
 	private HashMap<Long, Chocolate> chocolates = new HashMap<Long, Chocolate>();
+	private String contextPath;
 	
 	public ChocolateDAO() {
 		
 	}
 	
 	public ChocolateDAO(String contextPath) {
+		this.contextPath = contextPath;
 		loadChocolates(contextPath);
 	}
 	
@@ -40,6 +44,7 @@ public class ChocolateDAO {
 		BufferedReader in = null;
 		try {
 			File file = new File(contextPath + "/chocolates.txt");
+			System.out.println("FILE: " + file); 
 			System.out.println(file.getCanonicalPath());
 			in = new BufferedReader(new FileReader(file));
 			String line, id = "", name = "", price = "", kind = "", factoryId = "", type = "", weight = "", description = "", status = "", onStock = "", image = "", isDeleted = "";
@@ -95,7 +100,8 @@ public class ChocolateDAO {
 	    chocolate.setStatus(ChocolateStatus.outOfStock);
 		
 	    chocolates.put(maxId, chocolate); 
-	    
+	    System.out.println("Saving chocolate: " + chocolate.toStringForFile()); // Debug ispis
+	    writeToFile();
 	    return chocolate;
 	}
 	
@@ -107,6 +113,7 @@ public class ChocolateDAO {
 		foundChocolate.setDeleted(true);
 		foundChocolate.getFactory().getChocolates().remove(foundChocolate);
 		
+		writeToFile();
 
 		return foundChocolate;
 	}
@@ -128,8 +135,52 @@ public class ChocolateDAO {
 	        c.setImage(chocolate.getImage());
 	        c.setDeleted(false);
 		}
+		writeToFile();
 		
 		return c;
 	}
+	
+	private void writeToFile() {
+	    BufferedWriter out = null;
+	    try {
+	        String filePath = this.contextPath + "chocolates.txt";
+	        System.out.println("Writing to file: " + filePath); // Debug ispis
+	        File file = new File(filePath);
+	        out = new BufferedWriter(new FileWriter(file));
+	        for (Chocolate chocolate : chocolates.values()) {
+	            String chocolateData = chocolate.toStringForFile();
+	            System.out.println("Writing chocolate data: " + chocolateData); // Debug ispis
+	            out.write(chocolateData + "\n");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        if (out != null) {
+	            try {
+	                out.close();
+	            } catch (Exception e) {}
+	        }
+	    }
+	}
+
+
+	/*private void writeToFileJSON() {
+		try {
+			File file = new File(contextPath + "/chocolates.txt");
+			FileWriter fileWriter = new FileWriter(file);
+			BufferedWriter output = new BufferedWriter(fileWriter);
+
+			for (Chocolate chocolate : chocolates.values()) {
+				output.write(chocolate.toStringForFile() + "\n");
+			}
+
+			output.close();
+		}
+
+		catch (Exception e) {
+			e.getStackTrace();
+		}
+
+	}*/
 
 }
