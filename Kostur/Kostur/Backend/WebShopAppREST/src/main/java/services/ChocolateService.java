@@ -25,6 +25,7 @@ import beans.Product;
 import beans.Purchase;
 import beans.User;
 import dao.ChocolateDAO;
+import dao.FactoryDAO;
 import dto.ChocolateDTO;
 import enums.Gender;
 import enums.Role;
@@ -91,5 +92,13 @@ public class ChocolateService {
 		}
 		
 		return ChocolateDTO.convertToDTO(updatedChocolate);
+	}
+	
+	@GET
+	@Path("/byFactory/{factoryId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Chocolate> findAllByFactoryId(@PathParam("factoryId") Long factoryId){
+		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
+		return dao.findByFactoryId(factoryId);
 	}
 }

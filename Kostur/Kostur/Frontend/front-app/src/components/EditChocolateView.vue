@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>Edit Chocolate</h1>
+    <h2>Edit Chocolate</h2>
     <form @submit.prevent="updateChocolate" class="form">
       <div class="form-group">
         <label for="name" class="label">Name</label>
@@ -38,6 +38,7 @@
         <label for="image" class="label">Image URL</label>
         <input type="url" id="image" v-model="editedChocolate.image" class="input" required>
       </div>
+      <img :src="editedChocolate.image" alt="Chocolate" class="chocolate-image">
       <button type="submit" class="update-button">Update</button>
     </form>
   </div>
@@ -114,14 +115,18 @@ function updateChocolate() {
 }
 
 .form-group {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
   align-items: center;
   font-size: 1.2em;
   color: #333;
 }
 
+
+
 .label {
-  font-size: 18px;
+  font-size: 16px;
+  text-align: left;
   margin-right: 10px;
 }
 
@@ -151,5 +156,11 @@ function updateChocolate() {
   color: black;
   border: 1px solid #8f0710;
 
+}
+
+.chocolate-image{
+  width: 150px;
+  height: auto;
+  margin: 0 auto;
 }
 </style>

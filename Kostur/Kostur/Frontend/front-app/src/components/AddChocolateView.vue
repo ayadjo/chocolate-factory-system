@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1 class="heading">Add Chocolate</h1>
+    <h2 class="heading">Add Chocolate</h2>
     <form @submit.prevent="addChocolate($event)" class="form">
       <div class="form-group">
         <label for="name" class="label">Name</label>
@@ -38,6 +38,7 @@
         <label for="image" class="label">Image URL</label>
         <input type="url" id="image" v-model="chocolate.image" class="input" required>
       </div>
+      <img :src="chocolate.image" alt="Chocolate" class="chocolate-image">
       <button type="submit" class="add-button">Add</button>
       <div class="form-row">        
           <h5 v-bind:style="errorColor">{{errorMessage}}</h5>
@@ -117,28 +118,34 @@ function addChocolate(event){
 }
 
 .form-group {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
   align-items: center;
   font-size: 1.2em;
   color: #333;
 }
 
+
+
 .label {
-  font-size: 18px;
+  font-size: 16px;
+  text-align: left;
   margin-right: 10px;
 }
 
 .input,
 .select,
 .textarea {
-  flex: 1;
+  width: 100%;
   padding: 8px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  box-sizing: border-box;
 }
 
 .add-button {
+  margin-top: 20px;
   background-color: #8f0710; 
   color: white;
   border: none;
@@ -160,5 +167,11 @@ function addChocolate(event){
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
+}
+
+.chocolate-image{
+  width: 150px;
+  height: auto;
+  margin: 0 auto;
 }
 </style>

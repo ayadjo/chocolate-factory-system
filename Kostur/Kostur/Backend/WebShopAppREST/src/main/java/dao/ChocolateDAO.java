@@ -5,8 +5,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import beans.Chocolate;
@@ -178,5 +180,19 @@ public class ChocolateDAO {
 		}
 
 	}*/
+	
+	public Collection<Chocolate> findByFactoryId(Long factoryId) {
+	    List<Chocolate> foundChocolates = new ArrayList<>();
+	    Collection<Chocolate> allChocolates = chocolates.values();
+
+	    for (Chocolate c : allChocolates) {
+	        if (c.getFactory().getId().equals(factoryId) && !c.isDeleted()) {
+	            foundChocolates.add(c);
+	        }
+	    }
+
+	    return foundChocolates;
+	}
+
 
 }

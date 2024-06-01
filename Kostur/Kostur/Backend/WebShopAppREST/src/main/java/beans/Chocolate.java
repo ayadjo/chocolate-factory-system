@@ -2,7 +2,6 @@ package beans;
 
 import enums.ChocolateKind;
 
-import javax.json.bind.annotation.JsonbTransient;
 import enums.ChocolateStatus;
 import enums.ChocolateType;
 
@@ -171,5 +170,7 @@ public class Chocolate {
 	public void setImage(String image) {
 		this.image = image;
 	}
+	
+	
 	
 }
