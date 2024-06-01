@@ -209,6 +209,17 @@ async function deleteChocolate(id) {
 
 }
 
+.add-button:hover{
+  background-color: white; /* Darker shade of primary color */
+  color: black;
+  border: 1px solid #8f0710;
+}
+
+.add-button:hover .fas{
+  color:black
+}
+
+
 .no-chocolates .fas{
   color: #503216;
 }
