@@ -50,7 +50,7 @@
 <script setup>
 import axios from 'axios';
 import {ref} from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const chocolate = ref({
   name: "",
@@ -62,7 +62,10 @@ const chocolate = ref({
   image: ""
 });
 const errorMessage = ref("");
+const route = useRoute();
 const router = useRouter();
+
+const factoryId = route.params.id;
 
 function addChocolate(event){
 
@@ -78,7 +81,7 @@ function addChocolate(event){
 			
 	this.errorMessage = '';
 
-  axios.post('http://localhost:8080/WebShopAppREST/rest/chocolates/', chocolate.value)
+  axios.post(`http://localhost:8080/WebShopAppREST/rest/chocolates/${factoryId}`, chocolate.value)
     .then(() => {
       router.push('/')
     })

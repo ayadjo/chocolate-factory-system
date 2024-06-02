@@ -40,8 +40,15 @@ public class ChocolateService {
 	public void init() {
 		if (ctx.getAttribute("chocolateDAO") == null) {
 	    	String contextPath = ctx.getRealPath("");
-			ctx.setAttribute("chocolateDAO", new ChocolateDAO(contextPath));
+	    	ChocolateDAO chocolateDao = new ChocolateDAO(contextPath); 
+            ctx.setAttribute("chocolateDAO", chocolateDao);
 		}
+		
+		if (ctx.getAttribute("factoryDAO") == null) {
+	        String contextPath = ctx.getRealPath("");
+	        FactoryDAO factoryDAO = new FactoryDAO(contextPath); 
+	        ctx.setAttribute("factoryDAO", factoryDAO);
+	    }
 	}
 	
 	public ChocolateService() {
@@ -57,13 +64,14 @@ public class ChocolateService {
 
 	
 	@POST
-	@Path("/")
+	@Path("/{factoryId}")
 	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public ChocolateDTO addChocolate(ChocolateDTO chocolateDto) {  //dodati za ulogovanog manager-a
+    public ChocolateDTO addChocolate(ChocolateDTO chocolateDto, @PathParam("factoryId") Long factoryId) {  
         ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
-        User loggedInManager = new User("pera","pera","pera","Pera","Peric",Gender.Male,new Date(),Role.Manager,new ArrayList<>(), new Basket(),0,new CustomerType(), new Factory());
-        Chocolate createdChocolate = dao.save(chocolateDto, loggedInManager);
+        FactoryDAO factoryDAO = (FactoryDAO) ctx.getAttribute("factoryDAO");
+	    Factory factory = factoryDAO.findById(factoryId);
+        Chocolate createdChocolate = dao.save(chocolateDto, factory);
         
         if (createdChocolate == null) {
 			return null;

@@ -27,7 +27,7 @@ const routes = [
     props: true,
   },
   {
-    path: "/add-chocolate", // putanja za stranicu dodavanja čokolade
+    path: "/add-chocolate/:id", // putanja za stranicu dodavanja čokolade
     name: "addChocolate", // Naziv rute
     component: AddChocolateView,
   },

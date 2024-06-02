@@ -45,8 +45,9 @@ public class Chocolate {
 
 	public String toStringForFile() {
         return id + ";" + name + ";" + price + ";" + kind + ";" + 
-               (factory != null ? factory.getId() : "null") + ";" + type + ";" + weight + ";" + 
-               description + ";" + status + ";" + onStock + ";" + image + ";" + isDeleted;
+               (factory != null ? factory.getId() : "null") + ";" + 
+               type + ";" + weight + ";" + description + ";" + status + ";" + 
+               onStock + ";" + image + ";" + isDeleted;
     }
 
 

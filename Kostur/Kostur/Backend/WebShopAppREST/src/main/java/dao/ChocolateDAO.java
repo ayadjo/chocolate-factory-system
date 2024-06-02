@@ -24,7 +24,6 @@ public class ChocolateDAO {
 	private String contextPath;
 	
 	public ChocolateDAO() {
-		
 	}
 	
 	public ChocolateDAO(String contextPath) {
@@ -86,7 +85,7 @@ public class ChocolateDAO {
 		
 	}
 	
-	public Chocolate save(ChocolateDTO dto, User loggedInManager) {
+	public Chocolate save(ChocolateDTO dto, Factory factory) {
 		Chocolate chocolate = dto.ConvertToChocolate();
 	    Long maxId = -1L; 
 	    for (Long id : chocolates.keySet()) { 
@@ -97,12 +96,16 @@ public class ChocolateDAO {
 	    maxId++;
 	    chocolate.setId(maxId);
 	    
-	    chocolate.setFactory(loggedInManager.getFactory());
-	    loggedInManager.getFactory().getChocolates().add(chocolate);
+	   
+	    if(factory != null) {
+	        chocolate.setFactory(factory);
+	    } else {
+	    	throw new IllegalArgumentException("Factory " + factory.getId() + " does not exist.");
+	    }
 	    chocolate.setStatus(ChocolateStatus.outOfStock);
 		
 	    chocolates.put(maxId, chocolate); 
-	    System.out.println("Saving chocolate: " + chocolate.toStringForFile()); // Debug ispis
+	    System.out.println("Saving chocolate: " + chocolate.toStringForFile());
 	    writeToFile();
 	    return chocolate;
 	}
@@ -147,7 +150,7 @@ public class ChocolateDAO {
 	        out = new BufferedWriter(new FileWriter(file));
 	        for (Chocolate chocolate : chocolates.values()) {
 	            String chocolateData = chocolate.toStringForFile();
-	            System.out.println("Writing chocolate data: " + chocolateData); // Debug ispis
+	            System.out.println("Writing chocolate data: " + chocolateData); 
 	            out.write(chocolateData + "\n");
 	        }
 	    } catch (Exception e) {
@@ -161,25 +164,6 @@ public class ChocolateDAO {
 	    }
 	}
 
-
-	/*private void writeToFileJSON() {
-		try {
-			File file = new File(contextPath + "/chocolates.txt");
-			FileWriter fileWriter = new FileWriter(file);
-			BufferedWriter output = new BufferedWriter(fileWriter);
-
-			for (Chocolate chocolate : chocolates.values()) {
-				output.write(chocolate.toStringForFile() + "\n");
-			}
-
-			output.close();
-		}
-
-		catch (Exception e) {
-			e.getStackTrace();
-		}
-
-	}*/
 	
 	public Collection<Chocolate> findByFactoryId(Long factoryId) {
 	    List<Chocolate> foundChocolates = new ArrayList<>();

@@ -16,7 +16,7 @@
     
   </div>
   <h3>Chocolates</h3>
-  <button @click="addChocolate" class="add-button">
+  <button @click="addChocolate(factory.id)" class="add-button">
     <i class="fas fa-plus"></i> Add Chocolate
   </button>
     <div class="chocolates">
@@ -80,8 +80,8 @@ function loadChocolates(factoryId) {
     });
 }
 
-function addChocolate() {
-  router.push('/add-chocolate');
+function addChocolate(factoryId) {
+  router.push(`/add-chocolate/${factoryId}`);
 }
 
 function updateChocolate(id) {
