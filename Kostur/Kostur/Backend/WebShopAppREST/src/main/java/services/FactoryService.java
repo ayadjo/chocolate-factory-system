@@ -17,6 +17,7 @@ import beans.Factory;
 import beans.Location;
 import dao.ChocolateDAO;
 import dao.FactoryDAO;
+import enums.ChocolateType;
 
 @Path("/factories")
 public class FactoryService {
@@ -86,6 +87,17 @@ public class FactoryService {
 	public Collection<Factory> sortDescending(){
 		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
 		return dao.findAllSortedDescending();
+	}
+	
+	@GET
+	@Path("/filter")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Factory> filter(
+			@QueryParam("chocolateType") String chocolateType,
+	        @QueryParam("chocolateKind") String chocolateKind,
+	        @QueryParam("isOpen") @DefaultValue("") Boolean isOpen){
+		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
+		return dao.filter(chocolateType, chocolateKind, isOpen);
 	}
 
 }

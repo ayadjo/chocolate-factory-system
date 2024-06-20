@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import beans.Chocolate;
 import beans.Factory;
 import beans.Location;
+import enums.ChocolateKind;
+import enums.ChocolateType;
 
 public class FactoryDAO {
 	private HashMap<Long, Factory> factories = new HashMap<Long, Factory>();
@@ -140,6 +142,26 @@ public class FactoryDAO {
 
         Collections.sort(sortedFactories, comparator);
         return sortedFactories;
+    }
+    
+    public Collection<Factory> filter(String chocolateType, String chocolateKind, boolean isOpen) {
+        return factories.values().stream()
+                .filter(f -> (chocolateType == null || hasChocolateType(f.getId(), chocolateType)) &&
+                             (chocolateKind == null || chocolateKind.isEmpty() || hasChocolateKind(f.getId(), chocolateKind)) &&
+                             (isOpen ? f.isOpen() : !f.isOpen()))
+                .collect(Collectors.toList());
+    }
+
+    private boolean hasChocolateType(Long factoryId, String chocolateType) {
+        Collection<Chocolate> chocolates = chocolateDAO.findByFactoryId(factoryId);
+        return chocolates.stream()
+        		.anyMatch(c -> c.getType().name().equals(chocolateType));
+    }
+
+    private boolean hasChocolateKind(Long factoryId, String chocolateKind) {
+        Collection<Chocolate> chocolates = chocolateDAO.findByFactoryId(factoryId);
+        return chocolates.stream()
+        		.anyMatch(c -> c.getKind().name().equals(chocolateKind));
     }
 
 	
