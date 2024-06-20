@@ -71,5 +71,21 @@ public class FactoryService {
 	    FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
 	    return dao.search(name, chocolateName, location, grade);
 	}
+	
+	@GET
+	@Path("/sortAscending")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Factory> sortAscending(){
+		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
+		return dao.findAllSortedAscending();
+	}
+	
+	@GET
+	@Path("/sortDescending")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Factory> sortDescending(){
+		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
+		return dao.findAllSortedDescending();
+	}
 
 }

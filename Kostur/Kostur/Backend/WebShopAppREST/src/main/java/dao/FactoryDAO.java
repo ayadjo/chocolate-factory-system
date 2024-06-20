@@ -118,6 +118,29 @@ public class FactoryDAO {
 	    return chocolates.stream()
 	                     .anyMatch(c -> c.getName().toLowerCase().contains(chocolateName));
 	}
+	
+    public Collection<Factory> findAllSortedAscending() {
+        return findAllSorted(true);
+    }
+
+    public Collection<Factory> findAllSortedDescending() {
+        return findAllSorted(false);
+    }
+
+    private List<Factory> findAllSorted(boolean ascending) {
+        List<Factory> sortedFactories = new ArrayList<>(factories.values());
+
+        Comparator<Factory> comparator = Comparator.comparing(Factory::getName)
+                .thenComparing(f -> f.getLocation().getAddress())
+                .thenComparing(Factory::getGrade);
+
+        if (!ascending) {
+            comparator = comparator.reversed();
+        }
+
+        Collections.sort(sortedFactories, comparator);
+        return sortedFactories;
+    }
 
 	
 }
