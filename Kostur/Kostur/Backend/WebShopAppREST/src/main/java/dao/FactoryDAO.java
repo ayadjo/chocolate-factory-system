@@ -10,20 +10,29 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
+import beans.Chocolate;
 import beans.Factory;
 import beans.Location;
 
 public class FactoryDAO {
 	private HashMap<Long, Factory> factories = new HashMap<Long, Factory>();
+	private ChocolateDAO chocolateDAO;
 	
 	public FactoryDAO() {
 		
 	}
 	
+    public FactoryDAO(String contextPath, ChocolateDAO chocolateDAO) {
+        this.chocolateDAO = chocolateDAO; // Postavljanje ChocolateDAO instance
+        loadFactories(contextPath);
+    }
+	
 	public FactoryDAO(String contextPath) {
 		loadFactories(contextPath);
 	}
+	
 	
 	public HashMap<Long, Factory> getFactories() {
         return factories;
@@ -93,4 +102,22 @@ public class FactoryDAO {
 		}
 		
 	}
+	
+	
+	public Collection<Factory> search(String name, String chocolateName, String location, double grade) {
+	    return factories.values().stream()
+	            .filter(f -> (name.isEmpty() || f.getName().toLowerCase().contains(name.toLowerCase())) &&
+	                         (location.isEmpty() || f.getLocation().getAddress().toLowerCase().contains(location.toLowerCase())) &&
+	                         (f.getGrade() >= grade) &&
+	                         (chocolateName.isEmpty() || hasChocolateWithName(f.getId(), chocolateName.toLowerCase())))
+	            .collect(Collectors.toList());
+	}
+
+	private boolean hasChocolateWithName(Long factoryId, String chocolateName) {
+	    Collection<Chocolate> chocolates = chocolateDAO.findByFactoryId(factoryId);
+	    return chocolates.stream()
+	                     .anyMatch(c -> c.getName().toLowerCase().contains(chocolateName));
+	}
+
+	
 }
