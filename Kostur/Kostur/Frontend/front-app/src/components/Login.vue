@@ -16,12 +16,36 @@
   
   <script setup>
     import { ref } from 'vue';
+    import axios from 'axios';
+    import { useRouter } from 'vue-router';
   
     const username = ref('');
     const password = ref('');
+    const router = useRouter();
+
   
     const handleSubmit = () => {
-      console.log('Submitting:', username.value, password.value);
+      login(username.value, password.value);
+    };
+  
+    const login = (username, password) => {
+      const url = 'http://localhost:8080/WebShopAppREST/rest/users/login';
+      axios.post(url, { username, password })
+        .then(response => {
+          const result = response.data;
+          if (!result) {
+            alert("Invalid credentials!");
+            username.value = "";
+            password.value = "";
+          } else {
+            localStorage.setItem("loggedUserId", result.id);
+            router.push('/');
+          }
+        })
+        .catch(error => {
+          console.error('Login failed:', error);
+          alert("Login failed, please try again!");
+        });
     };
   </script>
   
@@ -36,13 +60,13 @@
       color: white;
       text-align: center;
     }
-
+  
     .login-container h2 {
-        text-align: center;
-        margin-bottom: 1rem;
-        font-weight: 100;
-        font-size: 1.3vw;
-      }
+      text-align: center;
+      margin-bottom: 1rem;
+      font-weight: 100;
+      font-size: 1.3vw;
+    }
   
     .logo {
       width: 100px;
@@ -54,40 +78,34 @@
       margin-bottom: 15px;
     }
   
-    label {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 5px;
-    }
-  
     input[type="text"],
     input[type="password"],
     button {
-        width: 80%;
-        padding: 0.5rem;
-        border: 1px solid #ccc;
-        border-radius: 15px;
-        background-color: rgb(252, 244, 234);
+      width: 80%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 15px;
+      background-color: rgb(252, 244, 234);
     }
   
-    button{
-        background-color: #8f0710;
-        color: white;
-        border: none;
-        border-radius: 20px;
-        padding: 8px 16px;
-        cursor: pointer;
-        font-size: 0.9em;
-        transition: background-color 0.3s;
-        width: 80%;
-        height: 40px;
-        margin-top: 40px;
-      }
-      
-      button:hover {
-        background-color: white;
-        color: black;
-        border: 1px solid #8f0710;
-      }
+    button {
+      background-color: #8f0710;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: background-color 0.3s;
+      width: 80%;
+      height: 40px;
+      margin-top: 40px;
+    }
+  
+    button:hover {
+      background-color: white;
+      color: black;
+      border: 1px solid #8f0710;
+    }
   </style>
   

@@ -90,7 +90,7 @@
   
   <style scoped>
   .registration-form {
-    max-width: 800px; /* Povećajte širinu prema potrebi */
+    max-width: 800px; 
     margin: 10px auto;
     padding: 2rem;
     background: #201d0e;
