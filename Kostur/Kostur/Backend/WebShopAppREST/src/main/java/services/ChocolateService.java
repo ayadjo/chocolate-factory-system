@@ -109,4 +109,20 @@ public class ChocolateService {
 		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
 		return dao.findByFactoryId(factoryId);
 	}
+	
+	@GET
+	@Path("/types")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<String> findAllChocolateTypes(){
+		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
+		return dao.findAllChocolateTypes();
+	}
+	
+	@GET
+	@Path("/kinds")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<String> findAllChocolateKinds(){
+		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
+		return dao.findAllChocolateKinds();
+	}
 }

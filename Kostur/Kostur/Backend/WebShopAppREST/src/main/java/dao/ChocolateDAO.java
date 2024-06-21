@@ -8,7 +8,9 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import beans.Chocolate;
@@ -177,6 +179,22 @@ public class ChocolateDAO {
 
 	    return foundChocolates;
 	}
+	
+	public Collection<String> findAllChocolateTypes() {
+	    Set<String> types = new HashSet<>();
+	    for (Chocolate chocolate : chocolates.values()) {
+	        types.add(chocolate.getType().toString());
+	    }
+	    return types;
+	}
 
+
+	public Collection<String> findAllChocolateKinds() {
+	    Set<String> kinds = new HashSet<>();
+	    for (Chocolate chocolate : chocolates.values()) {
+	        kinds.add(chocolate.getKind().toString());
+	    }
+	    return kinds;
+	}
 
 }

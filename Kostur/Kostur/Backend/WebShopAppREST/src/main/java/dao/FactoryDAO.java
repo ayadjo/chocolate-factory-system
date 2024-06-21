@@ -10,20 +10,31 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
+import beans.Chocolate;
 import beans.Factory;
 import beans.Location;
+import enums.ChocolateKind;
+import enums.ChocolateType;
 
 public class FactoryDAO {
 	private HashMap<Long, Factory> factories = new HashMap<Long, Factory>();
+	private ChocolateDAO chocolateDAO;
 	
 	public FactoryDAO() {
 		
 	}
 	
-	public FactoryDAO(String contextPath) {
+    public FactoryDAO(String contextPath, ChocolateDAO chocolateDAO) {
+        this.chocolateDAO = chocolateDAO; 
+        loadFactories(contextPath);
+    }
+	
+	/*public FactoryDAO(String contextPath) {
 		loadFactories(contextPath);
-	}
+	}*/
+	
 	
 	public HashMap<Long, Factory> getFactories() {
         return factories;
@@ -93,4 +104,65 @@ public class FactoryDAO {
 		}
 		
 	}
+	
+	
+	public Collection<Factory> search(String name, String chocolateName, String location, double grade) {
+	    return factories.values().stream()
+	            .filter(f -> (name.isEmpty() || f.getName().toLowerCase().contains(name.toLowerCase())) &&
+	                         (location.isEmpty() || f.getLocation().getAddress().toLowerCase().contains(location.toLowerCase())) &&
+	                         (f.getGrade() >= grade) &&
+	                         (chocolateName.isEmpty() || hasChocolateWithName(f.getId(), chocolateName.toLowerCase())))
+	            .collect(Collectors.toList());
+	}
+
+	private boolean hasChocolateWithName(Long factoryId, String chocolateName) {
+	    Collection<Chocolate> chocolates = chocolateDAO.findByFactoryId(factoryId);
+	    return chocolates.stream()
+	                     .anyMatch(c -> c.getName().toLowerCase().contains(chocolateName));
+	}
+	
+    public Collection<Factory> findAllSortedAscending() {
+        return findAllSorted(true);
+    }
+
+    public Collection<Factory> findAllSortedDescending() {
+        return findAllSorted(false);
+    }
+
+    private List<Factory> findAllSorted(boolean ascending) {
+        List<Factory> sortedFactories = new ArrayList<>(factories.values());
+
+        Comparator<Factory> comparator = Comparator.comparing(Factory::getName)
+                .thenComparing(f -> f.getLocation().getAddress())
+                .thenComparing(Factory::getGrade);
+
+        if (!ascending) {
+            comparator = comparator.reversed();
+        }
+
+        Collections.sort(sortedFactories, comparator);
+        return sortedFactories;
+    }
+    
+    public Collection<Factory> filter(String chocolateType, String chocolateKind, boolean isOpen) {
+        return factories.values().stream()
+                .filter(f -> (chocolateType.isEmpty() || hasChocolateType(f.getId(), chocolateType)) &&
+                             (chocolateType.isEmpty() || chocolateKind.isEmpty() || hasChocolateKind(f.getId(), chocolateKind)) &&
+                             (isOpen ? f.isOpen() : !f.isOpen()))
+                .collect(Collectors.toList());
+    }
+
+    private boolean hasChocolateType(Long factoryId, String chocolateType) {
+        Collection<Chocolate> chocolates = chocolateDAO.findByFactoryId(factoryId);
+        return chocolates.stream()
+        		.anyMatch(c -> c.getType().name().equals(chocolateType));
+    }
+
+    private boolean hasChocolateKind(Long factoryId, String chocolateKind) {
+        Collection<Chocolate> chocolates = chocolateDAO.findByFactoryId(factoryId);
+        return chocolates.stream()
+        		.anyMatch(c -> c.getKind().name().equals(chocolateKind));
+    }
+
+	
 }
