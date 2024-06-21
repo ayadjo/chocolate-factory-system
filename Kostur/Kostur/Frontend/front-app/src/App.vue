@@ -10,7 +10,10 @@
           </router-link>
           <router-link v-if="!isLoggedIn" to="/registration">Sign Up</router-link>
         </div>
-        <img src="./assets/cake.png" alt="Logo" class="navbar-logo"/>
+        <div class="navbar-middle">
+          <img src="./assets/cake.png" alt="Logo" class="navbar-logo"/>
+          <label class="navbar-text">Chocolate Factory System</label>
+        </div>
       </div>
     </nav>
     <router-view/>
@@ -75,7 +78,7 @@
   }
 
   nav {
-    padding: 10px;
+    padding: 20px;
     border: 1px solid #8f0710;
     border-radius: 5px;
     background-color: #201d0e;
@@ -133,10 +136,25 @@
     color: #b3141e;
   }
 
+  .navbar-middle {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
   .navbar-logo {
     height: 40px;
     width: 40px;
     object-fit: cover;
-    margin: 0 auto;
+    margin-right: 5px; 
   }
+  
+  .navbar-text {
+    color: rgb(220, 204, 180);
+    font-size: 13px;
+  }
+  
+  
 </style>
