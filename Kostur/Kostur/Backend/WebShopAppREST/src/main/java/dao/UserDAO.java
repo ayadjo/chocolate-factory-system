@@ -169,12 +169,12 @@ public class UserDAO {
 				}
 				
 				CustomerType type = types.get(typeId);
-	            if (type == null && typeId != null) {
+	            if (type == null && !typeId.equals("-1")) {
 	                type = new CustomerType(Long.parseLong(typeId));
 	            }
                 
                 Factory factory = factories.get(Long.parseLong(factoryId));
-                if (factory == null && factoryId != null) {
+                if (factory == null && !factoryId.equals("-1")) {
                 	factory = new Factory(Long.parseLong(factoryId));
                 }
                 

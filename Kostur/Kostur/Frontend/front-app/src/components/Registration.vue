@@ -51,6 +51,7 @@
   <script setup>
   import { ref } from 'vue';
   import axios from 'axios';
+  import { useRouter } from 'vue-router';
   
   const form = ref({
     username: "",
@@ -62,6 +63,8 @@
     birthday: "",
     role: 'Customer'
   });
+
+  const router = useRouter();
   
   const submitForm = async () => {
   if (form.value.password !== form.value.confirmPassword) {
@@ -81,6 +84,8 @@
     });
 
     console.log("Server response:", response.data);
+    alert("Customer successffully registrated!")
+    router.push("/");
   } catch (error) {
     console.error("Error submitting form:", error);
     alert("Something went wrong, please try again!")
