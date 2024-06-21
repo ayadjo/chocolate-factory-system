@@ -31,16 +31,10 @@ public class FactoryService {
 	
 	@PostConstruct
 	public void init() {
-		String contextPath = ctx.getRealPath("");
-		//ChocolateDAO chocolateDao = new ChocolateDAO(contextPath); 
-		if (ctx.getAttribute("chocolateDAO") == null) { 	
-			ChocolateDAO chocolateDao = new ChocolateDAO(contextPath); 
-            ctx.setAttribute("chocolateDAO", chocolateDao);
-		}
-		
+			
 		if(ctx.getAttribute("factoryDAO") == null) {
-			ChocolateDAO chocolateDao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
-			ctx.setAttribute("factoryDAO", new FactoryDAO(contextPath, chocolateDao));
+			String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("factoryDAO", new FactoryDAO(contextPath));
 		}
 		
 	}

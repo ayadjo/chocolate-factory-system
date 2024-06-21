@@ -44,11 +44,14 @@ public class ChocolateService {
             ctx.setAttribute("chocolateDAO", chocolateDao);
 		}
 		
-		if (ctx.getAttribute("factoryDAO") == null) {
-	        String contextPath = ctx.getRealPath("");
-	        FactoryDAO factoryDAO = new FactoryDAO(contextPath); 
-	        ctx.setAttribute("factoryDAO", factoryDAO);
-	    }
+		/*if (ctx.getAttribute("factoryDAO") == null) {
+	        //String contextPath = ctx.getRealPath("");
+	        //FactoryDAO factoryDAO = new FactoryDAO(contextPath); 
+	        //ctx.setAttribute("factoryDAO", factoryDAO);
+	        
+	        ChocolateDAO chocolateDao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
+			ctx.setAttribute("factoryDAO", new FactoryDAO("factoryDAO", chocolateDao));
+	    }*/
 	}
 	
 	public ChocolateService() {

@@ -20,20 +20,16 @@ import enums.ChocolateType;
 
 public class FactoryDAO {
 	private HashMap<Long, Factory> factories = new HashMap<Long, Factory>();
-	private ChocolateDAO chocolateDAO;
+	private String contextPath;
 	
 	public FactoryDAO() {
 		
 	}
 	
-    public FactoryDAO(String contextPath, ChocolateDAO chocolateDAO) {
-        this.chocolateDAO = chocolateDAO; 
-        loadFactories(contextPath);
-    }
-	
-	/*public FactoryDAO(String contextPath) {
+    public FactoryDAO(String contextPath) {
+    	this.contextPath = contextPath;
 		loadFactories(contextPath);
-	}*/
+	}
 	
 	
 	public HashMap<Long, Factory> getFactories() {
@@ -116,6 +112,8 @@ public class FactoryDAO {
 	}
 
 	private boolean hasChocolateWithName(Long factoryId, String chocolateName) {
+		ChocolateDAO chocolateDAO = new ChocolateDAO(contextPath);
+		
 	    Collection<Chocolate> chocolates = chocolateDAO.findByFactoryId(factoryId);
 	    return chocolates.stream()
 	                     .anyMatch(c -> c.getName().toLowerCase().contains(chocolateName));
@@ -153,12 +151,14 @@ public class FactoryDAO {
     }
 
     private boolean hasChocolateType(Long factoryId, String chocolateType) {
+    	ChocolateDAO chocolateDAO = new ChocolateDAO(contextPath);
         Collection<Chocolate> chocolates = chocolateDAO.findByFactoryId(factoryId);
         return chocolates.stream()
         		.anyMatch(c -> c.getType().name().equals(chocolateType));
     }
 
     private boolean hasChocolateKind(Long factoryId, String chocolateKind) {
+    	ChocolateDAO chocolateDAO = new ChocolateDAO(contextPath);
         Collection<Chocolate> chocolates = chocolateDAO.findByFactoryId(factoryId);
         return chocolates.stream()
         		.anyMatch(c -> c.getKind().name().equals(chocolateKind));

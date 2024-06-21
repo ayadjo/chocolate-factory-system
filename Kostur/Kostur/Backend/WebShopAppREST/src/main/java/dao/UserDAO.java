@@ -128,6 +128,7 @@ public class UserDAO {
 			CustomerTypeDAO typeDAO = new CustomerTypeDAO(contextPath);
             HashMap<Long, CustomerType> types = typeDAO.getTypes();
             
+           
             FactoryDAO factoryDAO = new FactoryDAO(contextPath);
             HashMap<Long, Factory> factories = factoryDAO.getFactories();
 			
