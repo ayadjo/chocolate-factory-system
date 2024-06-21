@@ -22,21 +22,21 @@
               <div class="form-group">
                 <label>Gender</label>
                 <div class="radio-group">
-                  <input type="radio" id="male" value="male" v-model="form.gender" required />
+                  <input type="radio" id="male" value="Male" v-model="form.gender" required />
                   <label for="male">Male</label>
                 </div>
                 <div class="radio-group">
-                  <input type="radio" id="female" value="female" v-model="form.gender" required />
+                  <input type="radio" id="female" value="Female" v-model="form.gender" required />
                   <label for="female">Female</label>
                 </div>
                 <div class="radio-group">
-                  <input type="radio" id="other" value="other" v-model="form.gender" required />
+                  <input type="radio" id="other" value="Other" v-model="form.gender" required />
                   <label for="other">Other</label>
                 </div>
               </div>
               <div class="form-group">
-                <label for="birthDate">Birth Date</label>
-                <input type="date" id="birthDate" v-model="form.birthDate" required />
+                <label for="birthday">Birth Date</label>
+                <input type="date" id="birthday" v-model="form.birthday" required />
               </div>
               <button type="submit">Register</button>
             </form>
@@ -49,26 +49,44 @@
   </template>
   
   <script setup>
-  import { reactive } from 'vue';
+  import { ref } from 'vue';
+  import axios from 'axios';
   
-  const form = reactive({
-    username: '',
-    password: '',
-    confirmPassword: '',
-    firstName: '',
-    lastName: '',
-    gender: '',
-    birthDate: ''
+  const form = ref({
+    username: "",
+    password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    gender: "",
+    birthday: "",
+    role: 'Customer'
   });
   
-  const submitForm = () => {
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-  
-    console.log("Form submitted:", form);
-  };
+  const submitForm = async () => {
+  if (form.value.password !== form.value.confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  try {
+    const response = await axios.post('http://localhost:8080/WebShopAppREST/rest/users/createCustomer', {
+      username: form.value.username,
+      password: form.value.password,
+      firstName: form.value.firstName,
+      lastName: form.value.lastName,
+      gender: form.value.gender,
+      birthday: form.value.birthday,
+      role: "Customer"
+    });
+
+    console.log("Server response:", response.data);
+    // Optionally, handle success response here (e.g., show a success message)
+  } catch (error) {
+    console.error("Error submitting form:", error);
+    // Optionally, handle error here (e.g., show an error message)
+  }
+};
   </script>
   
   <style scoped>

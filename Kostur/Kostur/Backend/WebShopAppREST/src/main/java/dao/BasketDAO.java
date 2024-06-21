@@ -38,9 +38,16 @@ public class BasketDAO {
 	public Basket createBasketForUser(User user) {
 		Basket basket = new Basket();
 		basket.setUser(user);
-		basket.setId(nextId());
+		Long maxId = -1L; 
+	    for (Long id : baskets.keySet()) { 
+	        if (id > maxId) { 
+	            maxId = id;
+	        }
+	    }
+	    maxId++;
+	    basket.setId(maxId);
 		basket.setPrice((double) 0);
-		baskets.put(basket.getId(), basket); 
+		baskets.put(maxId, basket); 
 		writeToFile();
 		return basket;
 	}

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
@@ -63,17 +64,25 @@ public class UserDAO {
 	        LOGGER.warning("Regular customer type not found");
 	        return null;
 	    }
+	    
+	    Long maxId = -1L; 
+	    for (Long id : users.keySet()) { 
+	        if (id > maxId) { 
+	            maxId = id;
+	        }
+	    }
+	    maxId++;
+	    user.setId(maxId);
 
 	    user.setType(regularType);
-	    user.setId(nextId());
 	    user.setBlocked(false);
-	    users.put(user.getId(), user); 
+	    user.setFactory(null);
+	    users.put(maxId, user); 
 	    writeToFile();
 	    
 	    BasketDAO basketDAO = new BasketDAO(contextPath);
 	    basketDAO.createBasketForUser(user);
 
-	    LOGGER.info("New customer created with ID: " + user.getId());
 	    return user;
 	}
 
@@ -88,15 +97,7 @@ public class UserDAO {
 	}
 
 	
-	private Long nextId() {
-		long id = 0;
-		for (User user : users.values()) {
-			if (user.getId() > id) {
-				id = user.getId();
-			}
-		}
-		return id + 1;
-	}
+
 	
 	private void writeToFile() {
 	    BufferedWriter out = null;
@@ -158,18 +159,19 @@ public class UserDAO {
 					isBlocked = st.nextToken().trim();
 				}
 				
-				CustomerType type = types.get(Long.parseLong(typeId));
-                if (type == null) {
-                    type = new CustomerType(Long.parseLong(typeId));
-                }
-                
+				CustomerType type = types.get(typeId);
+	            if (type == null && typeId != null) {
+	                type = new CustomerType(Long.parseLong(typeId));
+	            }
                 
                 Factory factory = factories.get(Long.parseLong(factoryId));
-                if (factory == null) {
+                if (factory == null && factoryId != null) {
                 	factory = new Factory(Long.parseLong(factoryId));
                 }
                 
-                Date parsedBirthday = dateFormat.parse(birthday);
+                SimpleDateFormat inputDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.UK);
+                Date parsedBirthday = inputDateFormat.parse(birthday);
+
 				
 				users.put(Long.parseLong(id), new User(Long.parseLong(id), username, password, firstName, lastName, Gender.valueOf(gender), parsedBirthday, Role.valueOf(role), Integer.parseInt(points), type, factory, Boolean.parseBoolean(isBlocked)));
 			}

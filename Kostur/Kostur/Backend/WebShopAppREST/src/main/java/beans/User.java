@@ -50,8 +50,8 @@ public class User {
 	public String toStringForFile() {
         return id + ";" + username + ";" + password + ";" + firstName + ";" +  lastName + ";" + gender + ";" + birthday + ";" +
         		role + ";"+ points + ";" + 
-        		(type != null ? type.getId() : "null") + ";" +
-               (factory != null ? factory.getId() : "null") + ";" + isBlocked;
+        		(type != null ? type.getId() : -1) + ";" +
+               (factory != null ? factory.getId() : -1) + ";" + isBlocked;
     }
 	
 	public User(Long id) {
