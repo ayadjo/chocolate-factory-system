@@ -27,13 +27,13 @@ public class FactoryDAO {
 	}
 	
     public FactoryDAO(String contextPath, ChocolateDAO chocolateDAO) {
-        this.chocolateDAO = chocolateDAO; // Postavljanje ChocolateDAO instance
+        this.chocolateDAO = chocolateDAO; 
         loadFactories(contextPath);
     }
 	
-	public FactoryDAO(String contextPath) {
+	/*public FactoryDAO(String contextPath) {
 		loadFactories(contextPath);
-	}
+	}*/
 	
 	
 	public HashMap<Long, Factory> getFactories() {
@@ -146,8 +146,8 @@ public class FactoryDAO {
     
     public Collection<Factory> filter(String chocolateType, String chocolateKind, boolean isOpen) {
         return factories.values().stream()
-                .filter(f -> (chocolateType == null || hasChocolateType(f.getId(), chocolateType)) &&
-                             (chocolateKind == null || chocolateKind.isEmpty() || hasChocolateKind(f.getId(), chocolateKind)) &&
+                .filter(f -> (chocolateType.isEmpty() || hasChocolateType(f.getId(), chocolateType)) &&
+                             (chocolateType.isEmpty() || chocolateKind.isEmpty() || hasChocolateKind(f.getId(), chocolateKind)) &&
                              (isOpen ? f.isOpen() : !f.isOpen()))
                 .collect(Collectors.toList());
     }

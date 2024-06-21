@@ -27,13 +27,13 @@ const routes = [
     props: true,
   },
   {
-    path: "/add-chocolate/:id", // putanja za stranicu dodavanja čokolade
-    name: "addChocolate", // Naziv rute
+    path: "/add-chocolate/:id", 
+    name: "addChocolate", 
     component: AddChocolateView,
   },
   {
-    path: "/edit-chocolate/:id", // putanja za stranicu dodavanja čokolade
-    name: "editChocolate", // Naziv rute
+    path: "/edit-chocolate/:id",
+    name: "editChocolate", 
     component: EditChocolateView,
   },
   

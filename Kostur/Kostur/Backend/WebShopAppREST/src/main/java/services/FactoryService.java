@@ -32,14 +32,14 @@ public class FactoryService {
 	@PostConstruct
 	public void init() {
 		String contextPath = ctx.getRealPath("");
-		ChocolateDAO chocolateDao = new ChocolateDAO(contextPath); 
+		//ChocolateDAO chocolateDao = new ChocolateDAO(contextPath); 
 		if (ctx.getAttribute("chocolateDAO") == null) { 	
+			ChocolateDAO chocolateDao = new ChocolateDAO(contextPath); 
             ctx.setAttribute("chocolateDAO", chocolateDao);
 		}
 		
 		if(ctx.getAttribute("factoryDAO") == null) {
-			
-			//ctx.setAttribute("factoryDAO", new FactoryDAO(contextPath));
+			ChocolateDAO chocolateDao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
 			ctx.setAttribute("factoryDAO", new FactoryDAO(contextPath, chocolateDao));
 		}
 		
@@ -95,7 +95,7 @@ public class FactoryService {
 	public Collection<Factory> filter(
 			@QueryParam("chocolateType") String chocolateType,
 	        @QueryParam("chocolateKind") String chocolateKind,
-	        @QueryParam("isOpen") @DefaultValue("") Boolean isOpen){
+	        @QueryParam("isOpen") Boolean isOpen){
 		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
 		return dao.filter(chocolateType, chocolateKind, isOpen);
 	}
