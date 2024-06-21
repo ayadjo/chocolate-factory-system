@@ -22,6 +22,7 @@ import beans.Factory;
 import beans.Location;
 import beans.Purchase;
 import beans.User;
+import dto.LoginDTO;
 import dto.RegisterUserDTO;
 import enums.Gender;
 import enums.Role;
@@ -86,6 +87,14 @@ public class UserDAO {
 	    return user;
 	}
 
+	public User login(LoginDTO dto) {
+		for (User user : users.values()) {
+			if (user.getUsername().equals(dto.getUsername()) && user.getPassword().equals(dto.getPassword()) && user.isBlocked() == false) {
+				return user;
+			}
+		}
+		return null;
+	}
 	
 	private boolean isUsernameUnique(String username) {
 	    for (User u : users.values()) { 

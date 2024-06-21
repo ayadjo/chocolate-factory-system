@@ -81,17 +81,16 @@
     });
 
     console.log("Server response:", response.data);
-    // Optionally, handle success response here (e.g., show a success message)
   } catch (error) {
     console.error("Error submitting form:", error);
-    // Optionally, handle error here (e.g., show an error message)
+    alert("Something went wrong, please try again!")
   }
 };
   </script>
   
   <style scoped>
   .registration-form {
-    max-width: 800px; /* Povećajte širinu prema potrebi */
+    max-width: 800px; 
     margin: 10px auto;
     padding: 2rem;
     background: #201d0e;
