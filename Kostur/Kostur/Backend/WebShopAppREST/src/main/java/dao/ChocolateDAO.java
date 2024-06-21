@@ -197,4 +197,15 @@ public class ChocolateDAO {
 	    return kinds;
 	}
 
+	public Chocolate editQuantity(Long id, int quantity) {
+		Chocolate foundChocolate = findById(id);
+		if (foundChocolate == null) {
+			return null;
+		}
+		foundChocolate.setOnStock(quantity);
+		
+		writeToFile();
+
+		return foundChocolate;
+	}
 }

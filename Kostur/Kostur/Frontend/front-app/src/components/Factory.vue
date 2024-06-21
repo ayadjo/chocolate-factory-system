@@ -31,7 +31,7 @@
           <p><strong>Type:</strong> {{ chocolate.type }}</p>
           <p><strong>Kind:</strong> {{ chocolate.kind }}</p>
           <p><strong>Price:</strong> ${{ chocolate.price }}</p>
-          <p><strong>Weight:</strong> {{ chocolate.weight }}g</p>
+          <p><strong>:</strong> {{ chocolate.onStock }}g</p> 
           <div class="card-actions">
             <button @click="updateChocolate(chocolate.id)" class="action-button">
               <i class="fas fa-pencil-alt"></i>
@@ -58,7 +58,7 @@
       <span @click="closeModal" class="close">&times;</span>
       <img src="../assets/chocolates.png" class="chocolates-image" alt="Chocolates Image" />
       <h3>Edit Chocolate Quantity</h3>
-      <input v-model="currentChocolate.quantity" type="number" min="0" />
+      <input v-model="editedChocolate.onStock" type="number" min="0" />
       <button @click="updateQuantity" class="edit-quantity-button">Edit</button>
     </div>
   </div>
@@ -76,7 +76,10 @@ const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
 
-const currentChocolate = ref({ id: null, quantity: 0 });
+const editedChocolate = ref({
+  id: null,
+  onStock: 0
+});
 
 onMounted(() => {
   loadFactory(route.params.id);
@@ -117,6 +120,7 @@ async function deleteChocolate(id) {
 
 
 function openQuantityModal(chocolate) {
+  editedChocolate.value = { id: chocolate.id, onStock: chocolate.onStock };
   showModal.value = true;
 }
 
@@ -125,8 +129,20 @@ function closeModal() {
 }
 
 function updateQuantity() { 
-    alert("Quantity successfully updated!");
-    closeModal();
+  const id = editedChocolate.value.id;
+  const onStock = editedChocolate.value.onStock;
+
+  axios.patch(`http://localhost:8080/WebShopAppREST/rest/chocolates/quantity/${id}/${onStock}`)
+    .then(() => {
+        alert("Quantity successfully updated! New quantity: " + editedChocolate.value.onStock);
+        loadChocolates(route.params.id);    
+        closeModal();
+      })
+      .catch(error => {
+        console.error("There was an error updating the quantity!", error);
+        alert("Failed to update the quantity.");
+      });
+  
 }
 
 </script>

@@ -13,6 +13,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.PathParam;
@@ -127,5 +128,13 @@ public class ChocolateService {
 	public Collection<String> findAllChocolateKinds(){
 		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
 		return dao.findAllChocolateKinds();
+	}
+	
+	@PATCH
+	@Path("/quantity/{id}/{onStock}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Chocolate editChocolateQuantity(@PathParam("id") Long id, @PathParam("onStock") int onStock) {
+		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
+		return dao.editQuantity(id, onStock);
 	}
 }
