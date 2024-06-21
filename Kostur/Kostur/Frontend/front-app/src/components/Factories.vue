@@ -247,7 +247,7 @@ function deleteFilters() {
   display: flex;
   justify-content: center;
   margin-bottom: 30px;
-  width: 70%;
+  width: 90%;
   margin: 0 auto;
   margin-top: 10px;
 }
