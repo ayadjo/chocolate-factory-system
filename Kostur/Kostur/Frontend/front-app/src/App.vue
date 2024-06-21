@@ -1,7 +1,7 @@
 <template>
   <nav>
     <router-link  to="/">Home</router-link> 
-    <!--<router-link to="/about">About</router-link>-->
+    <router-link to="/registration">Sign Up</router-link>
   </nav>
   <router-view/>
 </template>
@@ -24,6 +24,7 @@ nav {
 
 nav a {
   font-weight: bold;
+  margin-right: 10px;
   color:rgb(220, 204, 180)
 }
 

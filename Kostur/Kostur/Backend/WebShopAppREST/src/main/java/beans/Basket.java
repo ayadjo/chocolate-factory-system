@@ -6,20 +6,32 @@ public class Basket {
 	private Long id;
 	private User user;
 	private ArrayList<Chocolate> chocolates;
-	int price;
+	private Double price;
 	
 	public Basket() {
 		chocolates = new ArrayList<Chocolate>();
 	}
 
-	public Basket(Long id, User user, ArrayList<Chocolate> chocolates, int price) {
+	public Basket(Long id, User user, Double price) {
 		super();
 		this.id = id;
 		this.user = user;
-		this.chocolates = chocolates;
 		this.price = price;
+		this.chocolates = new ArrayList<>();
+	}
+	
+	
+
+	public Basket(Long id) {
+		super();
+		this.id = id;
 	}
 
+	public String toStringForFile() {
+        return id + ";"  + (user != null ? user.getId() : "null") + ";" + price;
+    }
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -44,11 +56,11 @@ public class Basket {
 		this.chocolates = chocolates;
 	}
 
-	public int getPrice() {
+	public Double getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 	

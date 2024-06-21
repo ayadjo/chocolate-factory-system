@@ -7,44 +7,67 @@ import enums.Gender;
 import enums.Role;
 
 public class User {
+	private Long id;
 	private String username;
 	private String password;
-	private String confirmationPassword;
 	private String firstName;
 	private String lastName;
 	private Gender gender;
 	private Date birthday;
 	private Role role;
-	private ArrayList<Purchase> purchases;
-	private Basket basket;
-	private int points;
-	private CustomerType type;
-	private Factory factory;
-	
+	private ArrayList<Purchase> purchases; //customer
+	private int points; //customer
+	private CustomerType type; //customer
+	private Factory factory; //manager
+	private boolean isBlocked;
 	
 	
 	public User() {
 		super();
+		this.purchases = new ArrayList<>();
 	}
 
 
-	public User(String username, String password, String confirmationPassword, String firstName, String lastName,
-			Gender gender, Date birthday, Role role, ArrayList<Purchase> purchases, Basket basket, int points,
-			CustomerType type, Factory factory) {
+	public User(Long id, String username, String password, String firstName, String lastName,
+			Gender gender, Date birthday, Role role, int points,
+			CustomerType type, Factory factory, boolean isBlocked) {
 		super();
+		this.id = id;
 		this.username = username;
 		this.password = password;
-		this.confirmationPassword = confirmationPassword;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.gender = gender;
 		this.birthday = birthday;
 		this.role = role;
-		this.purchases = purchases;
-		this.basket = basket;
 		this.points = points;
 		this.type = type;
 		this.factory = factory;
+		this.isBlocked = isBlocked;
+		this.purchases =  new ArrayList<>();
+	}
+	
+	public String toStringForFile() {
+        return id + ";" + username + ";" + password + ";" + firstName + ";" +  lastName + ";" + gender + ";" + birthday + ";" +
+        		role + ";"+ points + ";" + 
+        		(type != null ? type.getId() : "null") + ";" +
+               (factory != null ? factory.getId() : "null") + ";" + isBlocked;
+    }
+	
+	public User(Long id) {
+		super();
+		this.id = id;
+	}
+
+	
+	
+	public Long getId() {
+		return id;
+	}
+
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 
@@ -67,15 +90,6 @@ public class User {
 		this.password = password;
 	}
 
-
-	public String getConfirmationPassword() {
-		return confirmationPassword;
-	}
-
-
-	public void setConfirmationPassword(String confirmationPassword) {
-		this.confirmationPassword = confirmationPassword;
-	}
 
 
 	public String getFirstName() {
@@ -138,15 +152,6 @@ public class User {
 	}
 
 
-	public Basket getBasket() {
-		return basket;
-	}
-
-
-	public void setBasket(Basket basket) {
-		this.basket = basket;
-	}
-
 
 	public int getPoints() {
 		return points;
@@ -175,6 +180,16 @@ public class User {
 
 	public void setFactory(Factory factory) {
 		this.factory = factory;
+	}
+
+
+	public boolean isBlocked() {
+		return isBlocked;
+	}
+
+
+	public void setBlocked(boolean isBlocked) {
+		this.isBlocked = isBlocked;
 	}
 	
 	
