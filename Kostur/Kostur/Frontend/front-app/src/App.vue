@@ -9,6 +9,7 @@
             {{ isLoggedIn ? 'Logout' : 'Sign In' }}
           </router-link>
           <router-link v-if="!isLoggedIn" to="/registration">Sign Up</router-link>
+          <router-link to="/new-factory">Create Factory</router-link>
         </div>
         <div class="navbar-middle">
           <img src="./assets/cake.png" alt="Logo" class="navbar-logo"/>
