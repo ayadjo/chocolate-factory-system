@@ -88,6 +88,7 @@
   }
 
   .menu-button {
+    margin-left: 20px;
     cursor: pointer;
     color: rgb(220, 204, 180);
     text-align: left;
