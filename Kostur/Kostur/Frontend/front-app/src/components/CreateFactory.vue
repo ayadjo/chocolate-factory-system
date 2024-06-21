@@ -4,7 +4,8 @@
       <i class="fas fa-map-marker-alt"></i>
     </h2>
     <div id="map" ref="mapContainer"></div>
-    <button class="next-button">Next</button>
+    <p class="address">{{ selectedAddress }}</p>
+    <button class="next-button" @click="saveLocation">Next</button>
   </template>
   
   <script setup>
@@ -24,6 +25,7 @@
   const mapContainer = ref(null);
   const map = ref(null);
   let marker = ref(null);
+  const selectedAddress = ref('');  // Dodali smo promenljivu za čuvanje odabrane adrese
   
   onMounted(() => {
     map.value = L.map(mapContainer.value).setView([45.2671, 19.8335], 13);
@@ -42,6 +44,7 @@
       marker.value = L.marker([lat, lng]).addTo(map.value);
   
       const address = await getAddress(lat, lng);
+      selectedAddress.value = address;  // Postavljamo odabranu adresu
       console.log(`Latitude: ${lat}, Longitude: ${lng}, Address: ${address}`);
     });
   });
@@ -57,6 +60,22 @@
       return 'Address not found';
     }
   }
+
+  async function saveLocation() {
+  try {
+    const response = await axios.post('http://localhost:8080/WebShopAppREST/rest/locations/', {
+      latitude: marker.value.getLatLng().lat,
+      longitude: marker.value.getLatLng().lng,
+      address: selectedAddress.value
+    });
+
+    console.log('Saved location:', response.data);
+    alert("Location successffully saved!")
+
+  } catch (error) {
+    console.error('Error saving location:', error);
+  }
+}
   
   onBeforeUnmount(() => {
     if (map.value) {
@@ -67,7 +86,6 @@
   </script>
   
   <style scoped>
-
   .title {
     text-align: center;
     font-weight: 100;
@@ -83,7 +101,12 @@
     height: 500px;
     width: 80%;
   }
-
+  .address {
+    text-align: center;
+    font-size: 1.1em;
+    margin-top: 20px;
+    color: #201d0e;
+  }
   .next-button {
     background-color: #201d0e;
     color: white;
@@ -95,11 +118,10 @@
     transition: background-color 0.3s;
     width: 10%;
     height: 40px;
-    margin-top: 50px;
+    margin-top: 30px;
   }
-  
-  button[type="submit"]:hover {
-    background-color: white; /* Darker shade of primary color */
+  .next-button:hover {
+    background-color: white;
     color: black;
     border: 1px solid #201d0e;
   }

@@ -23,6 +23,10 @@ public class Location {
 		super();
 		this.id = id;
 	}
+	
+	public String toStringForFile() {
+        return id + ";" + longitude + ";" + latitude + ";" + address;
+    }
 
 	public Long getId() {
 		return id;
