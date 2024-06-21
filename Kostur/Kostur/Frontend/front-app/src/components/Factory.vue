@@ -36,6 +36,9 @@
             <button @click="updateChocolate(chocolate.id)" class="action-button">
               <i class="fas fa-pencil-alt"></i>
             </button>
+            <button @click="openQuantityModal(chocolate)" class="action-button">
+              <i class="fas fa-box"></i>
+            </button>
             <button @click="deleteChocolate(chocolate.id)" class="action-button">
               <i class="fas fa-trash-alt"></i>
             </button>
@@ -48,6 +51,17 @@
       <p>No comments available.</p>
       <i class="far fa-comment-alt fa-3x"></i>
     </div>
+
+    
+  <div v-if="showModal" class="modal">
+    <div class="modal-content">
+      <span @click="closeModal" class="close">&times;</span>
+      <img src="../assets/chocolates.png" class="chocolates-image" alt="Chocolates Image" />
+      <h3>Edit Chocolate Quantity</h3>
+      <input v-model="currentChocolate.quantity" type="number" min="0" />
+      <button @click="updateQuantity" class="edit-quantity-button">Edit</button>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -60,6 +74,9 @@ const factory = ref({ name: "", grade: 0, logo: "", location: { address: "", lon
 const chocolates = ref([]);
 const route = useRoute();
 const router = useRouter();
+const showModal = ref(false);
+
+const currentChocolate = ref({ id: null, quantity: 0 });
 
 onMounted(() => {
   loadFactory(route.params.id);
@@ -97,6 +114,21 @@ async function deleteChocolate(id) {
     console.error('Error deleting chocolate:', error);
   }
 }
+
+
+function openQuantityModal(chocolate) {
+  showModal.value = true;
+}
+
+function closeModal() {
+  showModal.value = false;
+}
+
+function updateQuantity() { 
+    alert("Quantity successfully updated!");
+    closeModal();
+}
+
 </script>
 
 <style scoped>
@@ -234,5 +266,77 @@ async function deleteChocolate(id) {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: white; 
   height: auto;
+}
+
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal input {
+  width: 70%;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  margin-right: 10px;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal-content .close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.modal-content .close:hover,
+.modal-content .close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.edit-quantity-button {
+  margin-top: 20px;
+  background-color: #8f0710; 
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s;
+}
+
+.edit-quantity-button:hover {
+  background-color: white; 
+  color: black;
+  border: 1px solid #8f0710;
+
+}
+
+.chocolates-image{
+  width: 100px;
+  height: auto;
+  margin: 0 auto 20px;
 }
 </style>
