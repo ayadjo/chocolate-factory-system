@@ -81,10 +81,9 @@
     });
 
     console.log("Server response:", response.data);
-    // Optionally, handle success response here (e.g., show a success message)
   } catch (error) {
     console.error("Error submitting form:", error);
-    // Optionally, handle error here (e.g., show an error message)
+    alert("Something went wrong, please try again!")
   }
 };
   </script>
