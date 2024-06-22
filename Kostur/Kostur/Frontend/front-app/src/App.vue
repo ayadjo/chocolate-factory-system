@@ -9,6 +9,7 @@
             {{ isLoggedIn ? 'Logout' : 'Sign In' }}
           </router-link>
           <router-link v-if="!isLoggedIn" to="/registration">Sign Up</router-link>
+          <router-link v-if="isAdmin" to="/new-factory">Create Factory</router-link>
         </div>
         <div class="navbar-middle">
           <img src="./assets/cake.png" alt="Logo" class="navbar-logo"/>
@@ -28,11 +29,16 @@
   const router = useRouter();
   const isLoggedIn = ref(null);
   const menuOpen = ref(false);
+  const userRole = ref(null);
+  const isAdmin = ref(false);
 
   const checkLoggedIn = () => {
-    const userId = localStorage.getItem('loggedUserId');
-    isLoggedIn.value = userId ? true : false;
-  };
+  const userId = localStorage.getItem('loggedUserId');
+  const role = localStorage.getItem('userRole');
+  isLoggedIn.value = userId ? true : false;
+  userRole.value = role;
+  isAdmin.value = role === 'Admin';
+};
 
   const handleLogoutOrRedirect = () => {
     if (isLoggedIn.value) {
@@ -44,7 +50,10 @@
 
   const handleLogout = () => {
     localStorage.removeItem('loggedUserId');
+    localStorage.removeItem('userRole');
     isLoggedIn.value = false;
+    userRole.value = null;
+    isAdmin.value = false;
     router.push('/');
   };
 

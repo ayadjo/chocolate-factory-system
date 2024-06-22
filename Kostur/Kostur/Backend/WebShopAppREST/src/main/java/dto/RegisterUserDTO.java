@@ -53,6 +53,25 @@ public class RegisterUserDTO {
 	    
 	    return user;
 	}
+	
+	public User convertToManager() throws ParseException {
+	    User user = new User();
+	    user.setId((long) 0);
+	    user.setUsername(username);
+	    user.setPassword(password);
+	    user.setFirstName(firstName);
+	    user.setLastName(lastName);
+	    user.setGender(gender);
+	    
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date parsedBirthday = dateFormat.parse(birthday);
+        user.setBirthday(parsedBirthday);
+	    
+	    user.setRole(Role.Manager);
+	    user.setPoints(0);
+	    
+	    return user;
+	}
 
 	public static RegisterUserDTO convertToDTO(User user) {
 		RegisterUserDTO dto = new RegisterUserDTO();

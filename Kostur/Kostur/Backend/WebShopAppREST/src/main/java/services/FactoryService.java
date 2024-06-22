@@ -4,8 +4,10 @@ import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -13,10 +15,15 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.PathParam;
 
+import beans.Chocolate;
 import beans.Factory;
 import beans.Location;
 import dao.ChocolateDAO;
 import dao.FactoryDAO;
+import dao.LocationDAO;
+import dto.ChocolateDTO;
+import dto.FactoryDTO;
+import dto.LocationDTO;
 import enums.ChocolateType;
 
 @Path("/factories")
@@ -93,5 +100,25 @@ public class FactoryService {
 		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
 		return dao.filter(chocolateType, chocolateKind, isOpen);
 	}
+	
+	@POST
+	@Path("/{locationId}")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public FactoryDTO saveFactory(FactoryDTO factoryDTO, @PathParam("locationId") Long locationId) {  
+        FactoryDAO factoryDAO = (FactoryDAO) ctx.getAttribute("factoryDAO");
+        
+        LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("locationDAO");
+	    Location location = locationDAO.findById(locationId);
+        
+	    Factory factory = factoryDAO.save(factoryDTO, location);
+        
+        if (factory == null) {
+			return null;
+		}
+        
+        return FactoryDTO.convertToDTO(factory);
+    }
+	
 
 }

@@ -39,6 +39,7 @@
             password.value = "";
           } else {
             localStorage.setItem("loggedUserId", result.id);
+            localStorage.setItem("userRole", result.role);
             router.push('/');
           }
         })

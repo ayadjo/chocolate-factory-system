@@ -1,23 +1,30 @@
 package dao;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
+import beans.Chocolate;
 import beans.Factory;
 import beans.Location;
+import beans.Product;
+import dto.LocationDTO;
 
 public class LocationDAO {
 	private HashMap<Long, Location> locations = new HashMap<Long, Location>();
+	private String contextPath;
 	
 	public LocationDAO() {
 		
 	}
 	
 	public LocationDAO(String contextPath) {
+		this.contextPath = contextPath;
 		loadLocations(contextPath);
 	}
 	
@@ -28,6 +35,26 @@ public class LocationDAO {
 	public Collection<Location> findAll() {
 		return locations.values();
 	}
+	
+	public Location save(LocationDTO locationDto) {
+		Location location = locationDto.ConvertToLocation();
+		Long maxId = -1L; 
+		for (Long id : locations.keySet()) {
+			if (id > maxId) {
+				maxId = id;
+			}
+		}
+		maxId++;
+		location.setId(maxId);
+		locations.put(maxId, location);
+		System.out.println("Saving location: " + location.toStringForFile());
+	    writeToFile();
+		return location;
+	}
+	
+	public Location findById(Long id) {
+        return locations.get(id);
+    }
 	
 
 	private void loadLocations(String contextPath) {
@@ -62,5 +89,27 @@ public class LocationDAO {
 			}
 		}
 		
+	}
+	
+	private void writeToFile() {
+	    BufferedWriter out = null;
+	    try {
+	        String filePath = this.contextPath + "locations.txt";
+	        File file = new File(filePath);
+	        out = new BufferedWriter(new FileWriter(file));
+	        for (Location location : locations.values()) {
+	            String locationData = location.toStringForFile();
+	            System.out.println("Writing location data: " + locationData); 
+	            out.write(locationData + "\n");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        if (out != null) {
+	            try {
+	                out.close();
+	            } catch (Exception e) {}
+	        }
+	    }
 	}
 }
