@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import beans.Basket;
+import beans.BasketItem;
 import beans.Chocolate;
 import beans.CustomerType;
 import beans.Location;
@@ -152,9 +153,23 @@ public class BasketDAO {
             throw new IllegalArgumentException("Chocolate not found: " + chocolateId);
         }
 
-        for (int i = 0; i < quantity; i++) {
-            basket.getChocolates().add(chocolate);
+        boolean itemFound = false;
+        for (BasketItem item : basket.getItems()) {
+            if (item.getChocolate().getId().equals(chocolateId) && item.getBasketId().equals(basket.getId())) {
+                item.setQuantity(item.getQuantity() + quantity);
+                itemFound = true;
+                break;
+            }
         }
+
+        if (!itemFound) {
+            BasketItem newItem = new BasketItem();
+            newItem.setChocolate(chocolate);
+            newItem.setQuantity(quantity);
+            newItem.setBasketId(basket.getId());
+            basket.getItems().add(newItem);
+        }
+
 
         basket.setPrice(basket.getPrice() + (chocolate.getPrice() * quantity));
 
@@ -164,5 +179,56 @@ public class BasketDAO {
         
     }
 
-		
+	public Basket incrementQuantity(Long userId, Long chocolateId) {
+        Basket basket = findByUserId(userId);
+        if (basket == null) {
+            throw new IllegalArgumentException("Basket not found for user: " + userId);
+        }
+        
+        ChocolateDAO chocolateDAO = new ChocolateDAO(contextPath);
+        Chocolate chocolate = chocolateDAO.findById(chocolateId);
+        if (chocolate == null) {
+            throw new IllegalArgumentException("Chocolate not found: " + chocolateId);
+        }
+
+
+        for (BasketItem item : basket.getItems()) {
+            if (item.getChocolate().getId().equals(chocolateId) && item.getBasketId().equals(basket.getId())) {
+                item.setQuantity(item.getQuantity() + 1);
+                basket.setPrice(basket.getPrice() + item.getChocolate().getPrice());
+                break;
+            }
+        }
+
+        writeToFile();
+        
+        return basket;        
+    }
+
+	
+	public Basket decrementQuantity(Long userId, Long chocolateId) {
+        Basket basket = findByUserId(userId);
+        if (basket == null) {
+            throw new IllegalArgumentException("Basket not found for user: " + userId);
+        }
+        
+        ChocolateDAO chocolateDAO = new ChocolateDAO(contextPath);
+        Chocolate chocolate = chocolateDAO.findById(chocolateId);
+        if (chocolate == null) {
+            throw new IllegalArgumentException("Chocolate not found: " + chocolateId);
+        }
+
+
+        for (BasketItem item : basket.getItems()) {
+            if (item.getChocolate().getId().equals(chocolateId) && item.getBasketId().equals(basket.getId())) {
+                item.setQuantity(item.getQuantity() - 1);
+                basket.setPrice(basket.getPrice() - item.getChocolate().getPrice());
+                break;
+            }
+        }
+
+        writeToFile();
+        
+        return basket;        
+    }
 }

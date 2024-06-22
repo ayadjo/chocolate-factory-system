@@ -15,7 +15,7 @@
           <label class="navbar-text">Chocolate Factory System</label>
         </div>
         <div class="navbar-right">
-          <router-link to="/cart" class="cart-button">
+          <router-link to="/basket" class="cart-button" v-if="isLoggedIn">
             <i class="fas fa-shopping-cart cart-icon"></i>
             <span class="cart-count">{{ cartItemCount }}</span>
           </router-link>
@@ -30,14 +30,19 @@
 <script setup>
   import { useRouter } from 'vue-router';
   import { ref, onMounted, watch } from 'vue';
+  import axios from 'axios';
 
   const router = useRouter();
   const isLoggedIn = ref(null);
   const menuOpen = ref(false);
+  const cartItemCount = ref(0);
 
   const checkLoggedIn = () => {
     const userId = localStorage.getItem('loggedUserId');
     isLoggedIn.value = userId ? true : false;
+    if (userId != null) {
+      fetchBasketData();
+    } 
   };
 
   const handleLogoutOrRedirect = () => {
@@ -67,6 +72,19 @@
   watch(isLoggedIn, (newValue) => {
     logoutOrSignInLink.value = newValue ? '/' : '/login';
   });
+
+  const fetchBasketData = async () => {
+    try {
+      const userId = localStorage.getItem('loggedUserId');
+      if (userId.value !== null) {
+        const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/baskets/${userId}`);
+        const basket = response.data;
+        cartItemCount.value = basket.items.length;
+      }
+    } catch (error) {
+      console.error('Error fetching basket data:', error);
+    }
+  };
 
   onMounted(() => {
     checkLoggedIn();
@@ -172,17 +190,18 @@
 }
 
 .cart-icon {
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .cart-count {
   background-color: white;
-  color: red;
-  font-size: 8px;
-  border-radius: 50%;
+  color: black;
+  font-size: 9px;
+  border-radius: 45%;
   padding: 2px 6px;
-  margin-left: -23px;
+  margin-left: -25px;
 }
+
 
 
 </style>

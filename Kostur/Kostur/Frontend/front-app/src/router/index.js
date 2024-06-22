@@ -6,6 +6,7 @@ import AddChocolateView from '../components/AddChocolateView.vue';
 import EditChocolateView from '../components/EditChocolateView.vue';
 import Registration from '../views/RegistrationView.vue';
 import Login from '../views/LoginView.vue';
+import Basket from '../components/Basket.vue';
 
 const routes = [
   {
@@ -22,17 +23,20 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
   },
+
   {
     path: "/factory/:id",
     name: "factory",
     component: FactoryView,
     props: true,
   },
+
   {
     path: "/add-chocolate/:id", 
     name: "addChocolate", 
     component: AddChocolateView,
   },
+
   {
     path: "/edit-chocolate/:id",
     name: "editChocolate", 
@@ -40,15 +44,21 @@ const routes = [
   },
 
   {
-    path: "/registration", // putanja za stranicu dodavanja čokolade
-    name: "registration", // Naziv rute
+    path: "/registration", 
+    name: "registration", 
     component: Registration,
   },
 
   {
-    path: "/login", // putanja za stranicu dodavanja čokolade
-    name: "login", // Naziv rute
+    path: "/login", 
+    name: "login", 
     component: Login,
+  },
+
+  {
+    path: "/basket", 
+    name: "basket", 
+    component: Basket,
   },
   
 ];

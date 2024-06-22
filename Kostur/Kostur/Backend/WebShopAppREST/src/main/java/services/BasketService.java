@@ -29,8 +29,7 @@ public class BasketService {
 	    	String contextPath = ctx.getRealPath("");
 	    	BasketDAO basketDao = new BasketDAO(contextPath); 
             ctx.setAttribute("basketDAO", basketDao);
-		}
-		
+		}	
 	}
 	
 	public BasketService() {
@@ -53,5 +52,20 @@ public class BasketService {
         return dao.addChocolateToBasket(userId, chocolateId, quantity);
     }
 	
+	@PUT
+    @Path("incrementQuantity/{userId}/{chocolateId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Basket incrementQuantity(@PathParam("userId") Long userId, @PathParam("chocolateId") Long chocolateId) {
+        BasketDAO dao = (BasketDAO) ctx.getAttribute("basketDAO");
+        return dao.incrementQuantity(userId, chocolateId);
+    }
+	
+	@PUT
+    @Path("decrementQuantity/{userId}/{chocolateId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Basket decrementQuantity(@PathParam("userId") Long userId, @PathParam("chocolateId") Long chocolateId) {
+        BasketDAO dao = (BasketDAO) ctx.getAttribute("basketDAO");
+        return dao.decrementQuantity(userId, chocolateId);
+    }
 	
 }
