@@ -42,6 +42,67 @@
         </form>
       </div>
     </div>
+
+    <div v-if="currentView === 'availableManagers'">
+      <h2 class="title">
+        Available Managers
+        <i class="fas fa-users"></i>
+      </h2>
+      <div class="available-managers">
+      <div class="manager-card" v-for="manager in availableManagers" :key="manager.id">
+        <img class="manager-image" src="../assets/manager.png" alt="Manager Image">
+        <b class="manager-username">{{ manager.username }}</b>
+        <p class="manager-name">{{ manager.firstName }} {{ manager.lastName }}</p>
+        <button @click="chooseManager(manager.id)" class="choose-button">Choose</button>
+      </div>
+      </div>
+    </div>
+    <div v-if="currentView === 'addManagerForm'"  class="form-page">
+      <h2 class="title">
+        Add New Manager
+        <i class="fas fa-user-plus"></i>
+      </h2>
+      <div class="form-container">
+      <form @submit.prevent="submitManagerForm" class="factory-form">
+        <div class="form-group">
+          <input type="text" id="username" v-model="managerForm.username" placeholder="Username" required />
+        </div>
+        <div class="form-group">
+          <input type="password" id="password" v-model="managerForm.password" placeholder="Password" required />
+        </div>
+        <div class="form-group">
+          <input type="password" id="confirmPassword" v-model="managerForm.confirmPassword" placeholder="Confirm Password" required />
+        </div>
+        <div class="form-group">
+          <input type="text" id="firstName" v-model="managerForm.firstName" placeholder="First Name" required />
+        </div>
+        <div class="form-group">
+          <input type="text" id="lastName" v-model="managerForm.lastName" placeholder="Last Name" required />
+        </div>
+        <div class="form-group">
+          <label class="gender-label">Gender</label>
+          <div class="radio-group">
+            <input type="radio" id="male" value="Male" v-model="managerForm.gender" required />
+            <label for="male">Male</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="female" value="Female" v-model="managerForm.gender" required />
+            <label for="female">Female</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="other" value="Other" v-model="managerForm.gender" required />
+            <label for="other">Other</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="birthday">Birth Date</label>
+          <input type="date" id="birthday" v-model="managerForm.birthday" required />
+        </div>
+        <button type="submit" class="finish-button">Finish</button>
+      </form>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -50,6 +111,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -70,6 +132,22 @@ const name = ref('');
 const startTime = ref('');
 const endTime = ref('');
 const logo = ref('');
+const availableManagers = ref([]);
+
+const savedFactoryId = ref(null);
+
+const managerForm = ref({
+  username: '',
+  password: '',
+  confirmPassword: '',
+  firstName: '',
+  lastName: '',
+  gender: '',
+  birthday: '',
+  role: 'Manager'
+});
+
+const router = useRouter();
 
 onMounted(() => {
   map.value = L.map(mapContainer.value).setView([45.2671, 19.8335], 13);
@@ -144,12 +222,91 @@ async function submitFactoryDetails() {
     });
 
     console.log('Saved factory:', response.data);
+    savedFactoryId.value = response.data.id;
     alert("Factory successfully saved!");
+    checkAvailableManagers();
 
   } catch (error) {
     console.error('Error saving factory:', error);
   }
 }
+
+async function checkAvailableManagers() {
+  try {
+    const response = await axios.get('http://localhost:8080/WebShopAppREST/rest/users/availableManagers');
+    availableManagers.value = response.data;
+
+    if (availableManagers.value.length > 0) {
+      currentView.value = 'availableManagers';
+      alert("Almost there...\n\nThe last step is to choose manager.")
+    } else {
+      currentView.value = 'addManagerForm';
+      alert("Almost there...\n\nSorry, but right now there is no available managers, you have to create a new one.")
+    }
+
+  } catch (error) {
+    console.error('Error fetching available managers:', error);
+  }
+}
+
+
+async function submitManagerForm() {
+  if (managerForm.value.password !== managerForm.value.confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  if (!savedFactoryId.value) {
+    alert("Factory ID is not available.");
+    return;
+  }
+
+  try {
+    const response = await axios.post(`http://localhost:8080/WebShopAppREST/rest/users/createManager/${savedFactoryId.value}`, {
+      username: managerForm.value.username,
+      password: managerForm.value.password,
+      firstName: managerForm.value.firstName,
+      lastName: managerForm.value.lastName,
+      gender: managerForm.value.gender,
+      birthday: managerForm.value.birthday,
+      role: 'Manager'
+    });
+
+    console.log('New manager added:', response.data);
+    alert("New manager successfully assigned to the factory!");
+    router.push("/");
+
+    managerForm.value = {
+      username: '',
+      password: '',
+      confirmPassword: '',
+      firstName: '',
+      lastName: '',
+      gender: '',
+      birthday: ''
+    };
+  } catch (error) {
+    console.error('Error registering manager:', error);
+  }
+}
+
+async function chooseManager(managerId) {
+  if (!savedFactoryId.value) {
+    alert("Please save the factory details before assigning a manager.");
+    return;
+  }
+
+  try {
+    const response = await axios.patch(`http://localhost:8080/WebShopAppREST/rest/users/${managerId}/${savedFactoryId.value}`);
+
+    console.log('Assigned manager:', response.data);
+    alert("Manager successfully assigned!");
+    router.push("/");
+  } catch (error) {
+    console.error('Error assigning manager:', error);
+  }
+}
+
 onBeforeUnmount(() => {
   if (map.value) {
     map.value.off();
@@ -264,4 +421,124 @@ onBeforeUnmount(() => {
   margin: 0 auto;
   border-radius: 10px;
 }
+
+.radio-group {
+  display: inline-block;
+  margin-right: 1rem;
+  font-weight: 100;
+  font-size: 1.3vw;
+}
+
+.radio-group input[type="radio"] {
+  display: none;
+}
+
+.radio-group label {
+  cursor: pointer;
+  font-weight: 100;
+  font-size: 0.9vw;
+}
+
+.radio-group label:before {
+  content: "";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  margin-right: 0.5em;
+  position: relative;
+  top: 0.2em;
+  background-color: transparent;
+}
+
+.radio-group input[type="radio"]:checked + label:before {
+  background-color: #8f0710;
+  border-color: rgb(220, 204, 180);
+}
+
+.finish-button {
+  background-color: #8f0710; 
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s;
+  width: 20%;
+  height: 40px;
+}
+
+.finish-button:hover {
+  background-color: white;
+  color: black;
+  border: 1px solid #8f0710;
+}
+
+.form-group .gender-label {
+  margin-bottom: 0.5rem;
+  font-weight: 120;
+  font-size: 1.0vw;
+  color: #201d0e;
+  margin-left: 280px;
+}
+
+.available-managers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+
+.manager-card {
+  background-color: rgb(252, 244, 234);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 200px;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+
+.manager-image {
+  width: 80%;
+  height: auto;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.manager-username,
+.manager-name {
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+.choose-button {
+  background-color: #8f0710;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s;
+  width: 80%;
+  height: 40px;
+  margin-top: 10px;
+}
+
+.choose-button:hover {
+  background-color: white;
+  color: black;
+  border: 1px solid #201d0e;
+}
+
 </style>

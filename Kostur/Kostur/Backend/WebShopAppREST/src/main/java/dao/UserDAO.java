@@ -9,8 +9,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
@@ -106,6 +109,34 @@ public class UserDAO {
 	}
 
 	
+	public User createManager(RegisterUserDTO userDTO, Factory factory) throws ParseException {
+	    User user = userDTO.convertToManager();
+	    if (!isUsernameUnique(user.getUsername())) {
+	        LOGGER.warning("Username not unique: " + user.getUsername());
+	        return null;
+	    }
+	    
+	    Long maxId = -1L; 
+	    for (Long id : users.keySet()) { 
+	        if (id > maxId) { 
+	            maxId = id;
+	        }
+	    }
+	    maxId++;
+	    user.setId(maxId);
+
+	    user.setBlocked(false);
+	    
+	    if(factory != null) {
+	        user.setFactory(factory);
+	    } else {
+	    	throw new IllegalArgumentException("Factory " + factory.getId() + " does not exist.");
+	    }
+	    
+	    users.put(maxId, user); 
+	    writeToFile();
+	    return user;
+	}
 
 	
 	private void writeToFile() {
@@ -197,4 +228,35 @@ public class UserDAO {
 		}
 		
 	}
+	
+	public Collection<User> findAvailableManagers() {
+        List<User> availableManagers = new ArrayList<>();
+
+        for (User user : users.values()) {
+            if (user.getRole() == Role.Manager && user.getFactory() == null) {
+                availableManagers.add(user);
+            }
+        }
+
+        return availableManagers;
+    }
+	
+	
+	public User chooseManager(Long id, Factory factory) {
+		User foundUser = findById(id);
+		if (foundUser == null) {
+			return null;
+		}
+		
+		foundUser.setFactory(factory);
+		
+		writeToFile();
+
+		return foundUser;
+	}
+	
+	public User findById(Long id) {
+		return users.containsKey(id) ? users.get(id) : null;
+	}
+
 }
