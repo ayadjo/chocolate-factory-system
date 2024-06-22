@@ -22,6 +22,7 @@ import dao.ChocolateDAO;
 import dao.FactoryDAO;
 import dao.LocationDAO;
 import dto.ChocolateDTO;
+import dto.FactoryDTO;
 import dto.LocationDTO;
 import enums.ChocolateType;
 
@@ -99,6 +100,25 @@ public class FactoryService {
 		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
 		return dao.filter(chocolateType, chocolateKind, isOpen);
 	}
+	
+	@POST
+	@Path("/{locationId}")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public FactoryDTO saveFactory(FactoryDTO factoryDTO, @PathParam("locationId") Long locationId) {  
+        FactoryDAO factoryDAO = (FactoryDAO) ctx.getAttribute("factoryDAO");
+        
+        LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("locationDAO");
+	    Location location = locationDAO.findById(locationId);
+        
+	    Factory factory = factoryDAO.save(factoryDTO, location);
+        
+        if (factory == null) {
+			return null;
+		}
+        
+        return FactoryDTO.convertToDTO(factory);
+    }
 	
 
 }

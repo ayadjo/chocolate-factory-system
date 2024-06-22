@@ -1,8 +1,10 @@
 package dao;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,7 +17,10 @@ import java.util.stream.Collectors;
 import beans.Chocolate;
 import beans.Factory;
 import beans.Location;
+import dto.ChocolateDTO;
+import dto.FactoryDTO;
 import enums.ChocolateKind;
+import enums.ChocolateStatus;
 import enums.ChocolateType;
 
 public class FactoryDAO {
@@ -52,6 +57,33 @@ public class FactoryDAO {
 	public Factory findById(Long id) {
         return factories.get(id);
     }
+	
+	public Factory save(FactoryDTO dto, Location location) {
+		Factory factory = dto.ConvertToFactory();
+	    Long maxId = -1L; 
+	    for (Long id : factories.keySet()) { 
+	        if (id > maxId) { 
+	            maxId = id;
+	        }
+	    }
+	    maxId++;
+	    factory.setId(maxId);
+	    
+	   
+	    if(location != null) {
+	        factory.setLocation(location);
+	    } else {
+	    	throw new IllegalArgumentException("Location " + location.getId() + " does not exist.");
+	    }
+	  
+	    factory.setOpen(true);
+	    factory.setGrade(0);
+		
+	    factories.put(maxId, factory); 
+	    System.out.println("Saving factory: " + factory.toStringForFile());
+	    writeToFile();
+	    return factory;
+	}
 	
 	private void loadFactories(String contextPath) {
 		BufferedReader in = null;
@@ -99,6 +131,28 @@ public class FactoryDAO {
 			}
 		}
 		
+	}
+	
+	private void writeToFile() {
+	    BufferedWriter out = null;
+	    try {
+	        String filePath = this.contextPath + "factories.txt";
+	        File file = new File(filePath);
+	        out = new BufferedWriter(new FileWriter(file));
+	        for (Factory factory : factories.values()) {
+	            String factoryData = factory.toStringForFile();
+	            System.out.println("Writing factory data: " + factoryData); 
+	            out.write(factoryData + "\n");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        if (out != null) {
+	            try {
+	                out.close();
+	            } catch (Exception e) {}
+	        }
+	    }
 	}
 	
 	

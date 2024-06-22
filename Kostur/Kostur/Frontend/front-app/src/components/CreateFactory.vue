@@ -95,7 +95,7 @@ onMounted(() => {
 
 async function getAddress(lat, lng) {
   try {
-    const response = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
+    const response = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=sr-Latn`);
     const data = response.data;
     const address = `${data.address.road || ''} ${data.address.house_number || ''}, ${data.address.city || data.address.town || data.address.village || ''}, ${data.address.country || ''}`;
     return address.trim().replace(/^,|,$/g, ''); 
@@ -105,7 +105,13 @@ async function getAddress(lat, lng) {
   }
 }
 
+
 async function saveLocation() {
+  if (!selectedAddress.value) {
+    alert("Please select a location on the map before proceeding.");
+    return;
+  }
+
   try {
     const response = await axios.post('http://localhost:8080/WebShopAppREST/rest/locations/', {
       latitude: marker.value.getLatLng().lat,
@@ -114,7 +120,7 @@ async function saveLocation() {
     });
 
     console.log('Saved location:', response.data);
-    savedLocation.value = response.data;
+    savedLocation.value = response.data.id; // Čuvamo samo ID sacuvane lokacije
     alert("Location successfully saved!");
     currentView.value = 'form';
 
@@ -123,16 +129,26 @@ async function saveLocation() {
   }
 }
 
-function submitFactoryDetails() {
-  const factoryDetails = {
-    name: name.value,
-    startTime: startTime.value,
-    endTime: endTime.value,
-    logo: logo.value,
-    location: savedLocation.value 
-  };
+async function submitFactoryDetails() {
+  if (!savedLocation.value) {
+    alert("Please save the location before submitting factory details.");
+    return;
+  }
 
-  console.log('Factory Details:', factoryDetails);
+  try {
+    const response = await axios.post(`http://localhost:8080/WebShopAppREST/rest/factories/${savedLocation.value}`, {
+      name: name.value,
+      startTime: startTime.value,
+      endTime: endTime.value,
+      logo: logo.value,
+    });
+
+    console.log('Saved factory:', response.data);
+    alert("Factory successfully saved!");
+
+  } catch (error) {
+    console.error('Error saving factory:', error);
+  }
 }
 onBeforeUnmount(() => {
   if (map.value) {
@@ -141,6 +157,8 @@ onBeforeUnmount(() => {
   }
 });
 </script>
+
+
 
 <style scoped>
 .title {

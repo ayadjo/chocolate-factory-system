@@ -40,10 +40,12 @@ public class Factory {
 		this.logo = logo;
 		this.chocolates = new ArrayList<>();
 	}
+	
+	public String toStringForFile() {
+        return id + ";" + name + ";" + startTime + ";" + endTime + ";" + isOpen + ";" +
+               (location != null ? location.getId() : "-1") + ";" + grade + ";" + logo;
+    }
 
-	/*public Factory(long id) {
-		this.id = id;
-	}*/
 
 	public Long getId() {
 		return id;

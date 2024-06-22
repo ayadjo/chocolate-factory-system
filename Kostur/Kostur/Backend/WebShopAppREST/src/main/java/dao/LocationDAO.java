@@ -52,6 +52,10 @@ public class LocationDAO {
 		return location;
 	}
 	
+	public Location findById(Long id) {
+        return locations.get(id);
+    }
+	
 
 	private void loadLocations(String contextPath) {
 		BufferedReader in = null;
