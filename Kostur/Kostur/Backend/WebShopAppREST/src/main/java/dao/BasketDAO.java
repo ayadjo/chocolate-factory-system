@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import beans.Basket;
+import beans.Chocolate;
 import beans.CustomerType;
 import beans.Location;
 import beans.User;
@@ -128,5 +129,40 @@ public class BasketDAO {
 		}
 		
 	}
+	
+	
+	public Basket findByUserId(Long userId) {
+        for (Basket basket : baskets.values()) {
+            if (basket.getUser().getId().equals(userId)) {
+                return basket;
+            }
+        }
+        return null; 
+    }
+	
+	public Basket addChocolateToBasket(Long userId, Long chocolateId, int quantity) {
+        Basket basket = findByUserId(userId);
+        if (basket == null) {
+            throw new IllegalArgumentException("Basket not found for user: " + userId);
+        }
+        
+        ChocolateDAO chocolateDAO = new ChocolateDAO(contextPath);
+        Chocolate chocolate = chocolateDAO.findById(chocolateId);
+        if (chocolate == null) {
+            throw new IllegalArgumentException("Chocolate not found: " + chocolateId);
+        }
+
+        for (int i = 0; i < quantity; i++) {
+            basket.getChocolates().add(chocolate);
+        }
+
+        basket.setPrice(basket.getPrice() + (chocolate.getPrice() * quantity));
+
+        writeToFile();
+        
+        return basket;
+        
+    }
+
 		
 }

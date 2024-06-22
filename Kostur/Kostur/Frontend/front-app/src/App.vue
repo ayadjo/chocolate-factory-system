@@ -14,6 +14,12 @@
           <img src="./assets/cake.png" alt="Logo" class="navbar-logo"/>
           <label class="navbar-text">Chocolate Factory System</label>
         </div>
+        <div class="navbar-right">
+          <router-link to="/cart" class="cart-button">
+            <i class="fas fa-shopping-cart cart-icon"></i>
+            <span class="cart-count">{{ cartItemCount }}</span>
+          </router-link>
+        </div>
       </div>
     </nav>
     <router-view/>
@@ -93,6 +99,7 @@
     position: relative;
   }
 
+
   nav a {
     margin-right: 20px;
     color: rgb(220, 204, 180);
@@ -156,5 +163,26 @@
     font-size: 13px;
   }
   
-  
+  .navbar-right {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    right: 1%;
+    transform: translateX(40%);
+}
+
+.cart-icon {
+  font-size: 20px;
+}
+
+.cart-count {
+  background-color: white;
+  color: red;
+  font-size: 8px;
+  border-radius: 50%;
+  padding: 2px 6px;
+  margin-left: -23px;
+}
+
+
 </style>

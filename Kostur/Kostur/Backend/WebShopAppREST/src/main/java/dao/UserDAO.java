@@ -106,7 +106,9 @@ public class UserDAO {
 	}
 
 	
-
+	public User findById(Long id) {
+		return users.containsKey(id) ? users.get(id) : null;
+	}
 	
 	private void writeToFile() {
 	    BufferedWriter out = null;
