@@ -198,8 +198,7 @@ async function saveLocation() {
     });
 
     console.log('Saved location:', response.data);
-    savedLocation.value = response.data.id; // Čuvamo samo ID sacuvane lokacije
-    alert("Location successfully saved!");
+    savedLocation.value = response.data.id; 
     currentView.value = 'form';
 
   } catch (error) {
@@ -223,7 +222,6 @@ async function submitFactoryDetails() {
 
     console.log('Saved factory:', response.data);
     savedFactoryId.value = response.data.id;
-    alert("Factory successfully saved!");
     checkAvailableManagers();
 
   } catch (error) {

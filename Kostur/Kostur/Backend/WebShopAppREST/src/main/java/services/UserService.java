@@ -127,4 +127,12 @@ public class UserService {
 	    return RegisterUserDTO.convertToDTO(user);
 	}
 	
+	@GET
+	@Path("/getUser/{userId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public User findUser(@PathParam("userId") Long userId){
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		return userDAO.findById(userId);
+	}
+	
 }
