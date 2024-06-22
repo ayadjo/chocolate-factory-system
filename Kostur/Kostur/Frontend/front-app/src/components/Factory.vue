@@ -31,7 +31,7 @@
           <p><strong>Type:</strong> {{ chocolate.type }}</p>
           <p><strong>Kind:</strong> {{ chocolate.kind }}</p>
           <p><strong>Price:</strong> ${{ chocolate.price }}</p>
-          <p><strong>:</strong> {{ chocolate.onStock }}g</p> 
+          <p><strong>Weight:</strong> {{ chocolate.weight }}g</p> 
           <div class="card-actions">
             <button @click="updateChocolate(chocolate.id)" class="action-button">
               <i class="fas fa-pencil-alt"></i>
