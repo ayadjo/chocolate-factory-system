@@ -199,4 +199,13 @@ public class UserDAO {
 		}
 		
 	}
+
+	public User updatePoints(Long id, double price) {
+		User user = findById(id);
+		
+		int newPoints = (int) (price / 1000 * 133);
+		user.setPoints(user.getPoints() + newPoints);
+		
+		return user;
+	}
 }

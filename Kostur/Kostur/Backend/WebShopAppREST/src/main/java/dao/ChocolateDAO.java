@@ -15,8 +15,11 @@ import java.util.StringTokenizer;
 
 import beans.Chocolate;
 import beans.Factory;
+import beans.Purchase;
+import beans.PurchaseItem;
 import beans.User;
 import dto.ChocolateDTO;
+import dto.PurchaseDTO;
 import enums.ChocolateKind;
 import enums.ChocolateStatus;
 import enums.ChocolateType;
@@ -208,4 +211,24 @@ public class ChocolateDAO {
 
 		return foundChocolate;
 	}
+	
+	public void updateQuantityAfterPurchase(PurchaseDTO purchaseDto){
+		Purchase purchase = purchaseDto.ConvertToPurchase();
+		
+		for (PurchaseItem item : purchase.getItems()) {
+	        Chocolate chocolate = item.getChocolate();
+	        int quantity = item.getQuantity();
+	        
+	  
+	        Chocolate storedChocolate = findById(chocolate.getId());
+	        if (storedChocolate != null) {
+                storedChocolate.setOnStock(storedChocolate.getOnStock() - quantity); 
+	        } else {
+	            throw new RuntimeException("Chocolate with ID: " + chocolate.getId() + " not found in the database.");
+	        }
+	    }
+		
+	}
+	
+	
 }

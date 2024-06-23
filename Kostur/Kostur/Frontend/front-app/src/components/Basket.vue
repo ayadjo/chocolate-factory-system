@@ -1,6 +1,6 @@
 <template>
   <div class="basket-container">
-    <label class="title"><i class="fas fa-shopping-cart fa-1x"></i>Shopping Cart</label>
+    <label v-if="items.length != 0" class="title"><i class="fas fa-shopping-cart fa-1x"></i>Shopping Cart</label>
 
 
     <div class="items">
@@ -32,7 +32,7 @@
         
       <div class="checkout" v-if="items.length > 0">
         <label class="total-price"><strong>Total&nbsp;</strong> ${{ totalPrice }}</label>
-        <button @click="checkout()" class="checkout-button">Checkout</button>
+        <button @click="checkout(items)" class="checkout-button">Checkout</button>
       </div>
              
     </div>  
@@ -40,9 +40,11 @@
 </template>
 
 <script setup>
-  import { useRouter } from 'vue-router';
+  import { useRouter, useRoute } from 'vue-router';
   import { ref, onMounted, watch, computed } from 'vue';
   import axios from 'axios';
+  const route = useRoute();
+  const router = useRouter();
 
   const items = ref([]);
   const quantities = ref({});
@@ -67,9 +69,11 @@
 
   async function decrementQuantity(item) {
   try {
-    const userId = localStorage.getItem('loggedUserId');
-    const response = await axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/decrementQuantity/${userId}/${item.chocolate.id}`);
-    fetchBasketData(); 
+    if (item.quantity > 1) {
+      const userId = localStorage.getItem('loggedUserId');
+      const response = await axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/decrementQuantity/${userId}/${item.chocolate.id}`);
+      fetchBasketData(); 
+    }
   } catch (error) {
     console.error('Error updating basket:', error);
   }
@@ -100,6 +104,46 @@ function removeChocolate(item) {
     console.error('Error removing chocolate from basket:', error);
     alert('Failed to remove chocolate from the basket. Please try again.');
   }
+}
+
+function checkout(items){
+  const purchase = {
+        items: items,
+        price: this.totalPrice
+      };
+  const userId = localStorage.getItem('loggedUserId');
+
+ axios.post(`http://localhost:8080/WebShopAppREST/rest/purchases/${userId}`, purchase)
+    .then(() => {
+      alert("Successful purchases!");
+
+      axios.put(`http://localhost:8080/WebShopAppREST/rest/users/points/${userId}?price=${this.totalPrice}`)
+        .then(() => {
+          console.log('Points updated successfully!');
+        })
+        .catch(error => {
+          console.error('Something went wrong while updating points!', error);
+        });
+
+      axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/clearBasket/${userId}`)
+        .then(() => {
+          fetchBasketData();
+        })
+        .catch(error => {
+          console.error('Spmething went wrong with the basket!', error);
+        });
+
+        axios.put(`http://localhost:8080/WebShopAppREST/rest/chocolates/purchase`, purchase)
+        .then(() => {
+          console.log('Chocolates updated successfully!');
+        })
+        .catch(error => {
+          console.error('Spmething went wrong with the basket!', error);
+        });
+    })
+    .catch(error => {
+      console.error('Spmething went wrong!', error);
+    });
 }
 
 
@@ -173,6 +217,7 @@ function removeChocolate(item) {
 
 .itemPrice {
   margin-bottom: 5px;
+  margin-left: -10px;
 }
 
 .remove-button {

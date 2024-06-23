@@ -1,4 +1,4 @@
 0;admin;admin;Pera;Peric;Male;Fri Dec 28 00:00:00 CET 2001;Admin;-1;-1;-1;false
 1;employee;employee;Mika;Mikic;Male;Fri Dec 28 00:00:00 CET 2001;Employee;-1;-1;-1;false
 2;manager;manager;Maja;Majic;Female;Fri Dec 28 00:00:00 CET 2001;Manager;-1;-1;-1;false
-3;customer;customer;Mila;Peric;Female;Fri Dec 28 00:00:00 CET 2001;Customer;-1;0;-1;false
+3;customer;customer;Mila;Peric;Female;Fri Dec 28 00:00:00 CET 2001;Customer;-1;0;1;false

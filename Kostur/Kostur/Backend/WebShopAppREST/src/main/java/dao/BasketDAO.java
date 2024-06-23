@@ -256,4 +256,17 @@ public class BasketDAO {
         
 		return basket;
 	}
+	
+	 public Basket clearBasket(Long userId) {
+        Basket basket = findByUserId(userId);
+        if (basket == null) {
+            throw new IllegalArgumentException("Basket not found for user: " + userId);
+        }
+        
+        basket.setPrice(0.0);
+        basket.getItems().clear();
+
+        return basket;
+	        
+	 }
 }

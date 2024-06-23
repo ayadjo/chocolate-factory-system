@@ -90,6 +90,8 @@ const userRole = ref(null);
 
 const quantities = ref({});
 
+
+
 const checkLoggedIn = () => {
   const userId = localStorage.getItem('loggedUserId');
     if (userId) {
@@ -223,6 +225,7 @@ function addToBasket(chocolate, quantity) {
     alert('Failed to add chocolate to the basket. Please try again.');
   }
 }
+
 
 
 </script>

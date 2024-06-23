@@ -76,4 +76,11 @@ public class BasketService {
         return dao.removeChocolateFromBasket(userId, chocolateId);
     }
 	
+	@PUT
+    @Path("clearBasket/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Basket clearBasket(@PathParam("userId") Long userId) {
+        BasketDAO dao = (BasketDAO) ctx.getAttribute("basketDAO");
+        return dao.clearBasket(userId);
+    }
 }
