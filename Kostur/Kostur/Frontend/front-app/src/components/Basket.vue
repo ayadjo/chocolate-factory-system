@@ -1,6 +1,6 @@
 <template>
   <div class="basket-container">
-    <label class="title">Shopping Cart</label>
+    <label class="title"><i class="fas fa-shopping-cart fa-1x"></i>Shopping Cart</label>
 
 
     <div class="items">
@@ -13,9 +13,9 @@
           <img :src="item.chocolate.image" alt="Chocolate Image" class="item-image">
           <div class="item-info">
             <h4 class="item-name">{{ item.chocolate.name }}</h4>
-            <p class="p"><strong>Weight:</strong> {{ item.chocolate.weight }}</p>
-            <p class="p"><strong>Type:</strong> {{ item.chocolate.type }}</p>
-            <p class="p"><strong>Kind:</strong> {{ item.chocolate.kind }}</p>         
+            <p class="p"> {{ item.chocolate.weight }}g</p>
+            <p class="p"> {{ item.chocolate.type }}</p>
+            <p class="p">{{ item.chocolate.kind }}</p>         
           </div>
           <div class="item-quantity">
             <button @click="decrementQuantity(item)" class="quantity-button">-</button>
@@ -23,12 +23,15 @@
             <button @click="incrementQuantity(item)" class="quantity-button">+</button>
           </div>
           <div class="item-price">
-            <p><strong>${{ (item.chocolate.price * item.quantity).toFixed(2) }}</strong></p>
+            <p class="itemPrice"><strong>${{ (item.chocolate.price * item.quantity).toFixed(2) }}</strong></p>
+            <button @click="removeChocolate(item)" class="remove-button">
+              <i class="fas fa-trash-alt"></i> Remove
+            </button>
           </div>       
       </div>
         
       <div class="checkout" v-if="items.length > 0">
-        <label class="total-price"><strong>Total:</strong> ${{ totalPrice }}</label>
+        <label class="total-price"><strong>Total&nbsp;</strong> ${{ totalPrice }}</label>
         <button @click="checkout()" class="checkout-button">Checkout</button>
       </div>
              
@@ -73,14 +76,32 @@
 };
 
   async function incrementQuantity(item) {
-  try {
-    const userId = localStorage.getItem('loggedUserId');
-    const response = await axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/incrementQuantity/${userId}/${item.chocolate.id}`);
-    fetchBasketData(); 
-  } catch (error) {
-    console.error('Error updating basket:', error);
-  }
+    try {
+      const userId = localStorage.getItem('loggedUserId');
+      if (item.quantity < item.chocolate.onStock) {
+        await axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/incrementQuantity/${userId}/${item.chocolate.id}`);
+        fetchBasketData();
+      } else {
+        alert(`Cannot add more than ${item.chocolate.onStock} of ${item.chocolate.name} to the basket.`);
+      }
+    } catch (error) {
+      console.error('Error updating basket:', error);
+    }
 };
+
+function removeChocolate(item) {
+  const userId = localStorage.getItem('loggedUserId');
+
+  try {
+    axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/removeChocolate/${userId}/${item.chocolate.id}`);
+    alert(`Removed ${item.chocolate.name} from the basket.`);
+    fetchBasketData();
+  } catch (error) {
+    console.error('Error removing chocolate from basket:', error);
+    alert('Failed to remove chocolate from the basket. Please try again.');
+  }
+}
+
 
   onMounted(() => {
     fetchBasketData();
@@ -104,7 +125,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    margin-top: 16px;
+    margin-top: 40px;
     justify-content: center;
   }
 
@@ -145,18 +166,38 @@
 
 
 .item-price {
+  align-items: center;
   width: 30px;
   text-align: right;
 }
 
+.itemPrice {
+  margin-bottom: 5px;
+}
+
+.remove-button {
+  color: #8f0710;
+  border: none;
+  background: white;
+  font-size: 10px;
+  width: 70px;
+  margin-left: -17px;
+  cursor: pointer;
+}
+
 .checkout {
   text-align: center;
+  margin-top: 20px;
 }
 
 .title {
   text-align: center;
   font-size: 24px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.title i {
+  margin-right: 10px; 
 }
 
 .quantity-selector {

@@ -68,4 +68,12 @@ public class BasketService {
         return dao.decrementQuantity(userId, chocolateId);
     }
 	
+	@PUT
+    @Path("removeChocolate/{userId}/{chocolateId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Basket removeChocolateFromBasket(@PathParam("userId") Long userId, @PathParam("chocolateId") Long chocolateId) {
+        BasketDAO dao = (BasketDAO) ctx.getAttribute("basketDAO");
+        return dao.removeChocolateFromBasket(userId, chocolateId);
+    }
+	
 }

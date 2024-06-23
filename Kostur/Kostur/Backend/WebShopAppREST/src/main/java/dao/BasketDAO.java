@@ -231,4 +231,29 @@ public class BasketDAO {
         
         return basket;        
     }
+	
+	public Basket removeChocolateFromBasket(Long userId, Long chocolateId) {
+		Basket basket = findByUserId(userId);
+        if (basket == null) {
+            throw new IllegalArgumentException("Basket not found for user: " + userId);
+        }
+        
+        ChocolateDAO chocolateDAO = new ChocolateDAO(contextPath);
+        Chocolate chocolate = chocolateDAO.findById(chocolateId);
+        if (chocolate == null) {
+            throw new IllegalArgumentException("Chocolate not found: " + chocolateId);
+        }
+
+        for (BasketItem item : basket.getItems()) {
+            if (item.getChocolate().getId().equals(chocolateId) && item.getBasketId().equals(basket.getId())) {            	
+                basket.setPrice(basket.getPrice() - item.getChocolate().getPrice()*item.getQuantity());
+                basket.getItems().remove(item);
+                break;
+            }
+        }
+
+        writeToFile();
+        
+		return basket;
+	}
 }
