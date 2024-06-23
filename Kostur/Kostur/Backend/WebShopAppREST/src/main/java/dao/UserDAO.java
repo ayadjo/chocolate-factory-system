@@ -25,8 +25,10 @@ import beans.Factory;
 import beans.Location;
 import beans.Purchase;
 import beans.User;
+import dto.ChocolateDTO;
 import dto.LoginDTO;
 import dto.RegisterUserDTO;
+import dto.UpdateUserDTO;
 import enums.Gender;
 import enums.Role;
 import services.UserService;
@@ -200,13 +202,13 @@ public class UserDAO {
 					isBlocked = st.nextToken().trim();
 				}
 				
-				CustomerType type = types.get(typeId);
-	            if (type == null && !typeId.equals("-1")) {
-	                type = new CustomerType(Long.parseLong(typeId));
-	            }
+				CustomerType type = types.get(Long.parseLong(typeId));
+				if (type == null) {
+					type = new CustomerType(Long.parseLong(typeId));
+                }
                 
                 Factory factory = factories.get(Long.parseLong(factoryId));
-                if (factory == null && !factoryId.equals("-1")) {
+                if (factory == null) {
                 	factory = new Factory(Long.parseLong(factoryId));
                 }
                 
@@ -257,6 +259,24 @@ public class UserDAO {
 	
 	public User findById(Long id) {
 		return users.containsKey(id) ? users.get(id) : null;
+	}
+	
+	public User updateUser(Long id, UpdateUserDTO dto) throws ParseException {
+		User user = users.containsKey(id) ? users.get(id) : null;
+		if (user == null) {
+			return null;
+		} else {
+			user.setUsername(dto.getUsername());
+			user.setFirstName(dto.getFirstName());
+			user.setLastName(dto.getLastName());
+			user.setGender(dto.getGender());
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	        Date parsedBirthday = dateFormat.parse(dto.getBirthday());
+	        user.setBirthday(parsedBirthday);
+		}
+		writeToFile();
+		
+		return user;
 	}
 
 

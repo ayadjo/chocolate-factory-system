@@ -8,6 +8,8 @@ import Registration from '../views/RegistrationView.vue';
 import Login from '../views/LoginView.vue';
 import CreateFactory from '../views/CreateFactoryView.vue';
 import Basket from '../components/Basket.vue';
+import Profile from '../views/ProfileView.vue';
+import EditProfile from '../views/EditProfileView.vue';
 
 const routes = [
   {
@@ -67,6 +69,19 @@ const routes = [
     name: "basket", 
     component: Basket,
   },
+  
+  {
+    path: "/profile",
+    name: "profile", 
+    component: Profile,
+  },
+
+  {
+    path: '/edit-profile/:id',
+    name: 'editProfile',
+    component: EditProfile,
+    props: true 
+  }
   
 ];
 

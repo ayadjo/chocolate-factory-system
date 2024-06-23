@@ -5,6 +5,7 @@
         <div @click="toggleMenu" class="menu-button">Menu</div>
         <div v-if="menuOpen" class="dropdown-menu">
           <router-link to="/">Home</router-link>
+          <router-link v-if="isLoggedIn" to="/profile">Profile</router-link>
           <router-link v-if="isLoggedIn !== null" @click="handleLogoutOrRedirect" :to="logoutOrSignInLink">
             {{ isLoggedIn ? 'Logout' : 'Sign In' }}
           </router-link>

@@ -25,8 +25,10 @@ import beans.User;
 import dao.ChocolateDAO;
 import dao.FactoryDAO;
 import dao.UserDAO;
+import dto.ChocolateDTO;
 import dto.LoginDTO;
 import dto.RegisterUserDTO;
+import dto.UpdateUserDTO;
 
 
 @Path("/users")
@@ -151,6 +153,21 @@ public class UserService {
 	public User updatePoints(@PathParam("id") Long id,  @QueryParam("price") double price) {
 		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
 		return dao.updatePoints(id, price);
+
+	}
+	
+	@PUT
+	@Path("/updateUser/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public UpdateUserDTO updateUser(@PathParam("id") Long id, UpdateUserDTO userDto) throws ParseException {
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		User updatedUser = userDAO.updateUser(id, userDto);
+		
+		if (updatedUser == null) {
+			return null;
+		}
+		
+		return UpdateUserDTO.convertToDTO(updatedUser);
 	}
 	
 }
