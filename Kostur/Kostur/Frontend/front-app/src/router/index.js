@@ -7,6 +7,7 @@ import EditChocolateView from '../components/EditChocolateView.vue';
 import Registration from '../views/RegistrationView.vue';
 import Login from '../views/LoginView.vue';
 import CreateFactory from '../views/CreateFactoryView.vue';
+import Profile from '../views/ProfileView.vue';
 
 const routes = [
   {
@@ -56,6 +57,12 @@ const routes = [
     path: "/new-factory", // putanja za stranicu dodavanja čokolade
     name: "newFactory", // Naziv rute
     component: CreateFactory,
+  },
+  
+  {
+    path: "/profile",
+    name: "profile", 
+    component: Profile,
   },
   
 ];
