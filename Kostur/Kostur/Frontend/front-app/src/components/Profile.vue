@@ -6,7 +6,7 @@
               <img src="../assets/settings.png" alt="Edit Icon" />
             </button>
             <ul v-if="showDropdown" class="dropdown-menu">
-              <li><a @click="editProfile">Edit</a></li>
+                <li><button class="edit-profile-button" @click="navigateToEditProfile"> <i class="fas fa-pencil-alt"></i>Edit</button></li>
             </ul>
           </div>
         <div class="profile-pic">
@@ -15,7 +15,7 @@
         <div class="username">{{ user.username }}</div>
       </div>
       <div class="personal-info">
-        <h2>MY PERSONAL INFORMATION</h2>
+        <h2>Personal Information</h2>
         <div class="info-item">
           <span class="info-label">NAME</span>
           <span class="info-value">{{ user.firstName }}</span>
@@ -34,8 +34,20 @@
         </div>
         <div class="info-item">
             <span class="info-label">BIRTHDAY</span>
-            <span class="info-value">{{ formatDate(user.birthday) }}</span>
-          </div>
+            <span class="info-value">{{ user.birthday }}</span>
+        </div>
+        <div v-if="userRole == 'Manager' " class="info-item">
+            <span class="info-label">FACTORY</span>
+            <span class="info-value">{{ user.factory.name }}</span>
+        </div>
+        <div v-if="userRole == 'Customer' " class="info-item">
+            <span class="info-label">CUSTOMER TYPE</span>
+            <span class="info-value">{{ user.type.name }}</span>
+        </div>
+        <div v-if="userRole == 'Customer' " class="info-item">
+            <span class="info-label">POINTS</span>
+            <span class="info-value">{{ user.points }}</span>
+        </div>
       </div>
     </div>
     <div v-else>
@@ -45,18 +57,29 @@
   
   <script setup>
   import { ref, onMounted } from 'vue';
+  import { useRouter } from 'vue-router';
   
   const user = ref(null);
   const userId = localStorage.getItem('loggedUserId');
+  const userRole = localStorage.getItem('userRole');
   const showDropdown = ref(false);
+  const router = useRouter();
   
   const fetchUser = async () => {
     try {
       const response = await fetch(`http://localhost:8080/WebShopAppREST/rest/users/getUser/${userId}`);
       if (response.ok) {
-        user.value = await response.json();
+        const userData = await response.json();
+        if (userData.birthday) {
+          const dateParts = userData.birthday.split('T')[0].split('-'); 
+          const formattedDate = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`; 
+          userData.birthday = formattedDate;
+          user.value = userData;
+        } else {
+          console.error('Empty or null value received for birthday field');
+        }
       } else {
-        console.error('Failed to fetch user data');
+        console.error('Failed to fetch user data:', response.status);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -83,9 +106,12 @@
   showDropdown.value = !showDropdown.value;
 };
 
-const editProfile = () => {
-  
-  console.log('Editing profile...');
+const navigateToEditProfile = () => {
+  if (userId) {
+    router.push({ name: 'editProfile', params: { id: userId } });
+  } else {
+    console.error('User ID not found');
+  }
 };
   </script>
   
@@ -98,6 +124,7 @@ const editProfile = () => {
     width: 500px;
     margin: 0 auto;
     margin-top: 50px;
+    margin-bottom: 50px;
     border-radius: 20px;
     background-color: #f9f9f9;
   }
@@ -125,8 +152,7 @@ const editProfile = () => {
   }
   
   .username {
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 1.1vw;
     margin-top: 10px;
   }
   
@@ -202,6 +228,7 @@ const editProfile = () => {
   
   .dropdown-menu li {
     list-style-type: none;
+    width: 100%;
   }
   
   .dropdown-menu li a {
@@ -211,6 +238,34 @@ const editProfile = () => {
     color: #333;
     cursor: pointer;
   }
+  
+  .edit-profile-button .fas{
+    color: white;
+    margin-right: 10px
+  }
+  
+  .edit-profile-button{
+    background-color: #8f0710; 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+    width: 90%;
+  }
+  
+  .edit-profile-button:hover{
+    background-color: white; 
+    color: #503216;
+    border: 1px solid #8f0710;
+  }
+  
+  .edit-profile-button:hover .fas{
+    color:#503216
+  }
+  
   
   
   </style>

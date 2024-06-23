@@ -11,6 +11,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -23,8 +24,10 @@ import beans.User;
 import dao.ChocolateDAO;
 import dao.FactoryDAO;
 import dao.UserDAO;
+import dto.ChocolateDTO;
 import dto.LoginDTO;
 import dto.RegisterUserDTO;
+import dto.UpdateUserDTO;
 
 
 @Path("/users")
@@ -133,6 +136,20 @@ public class UserService {
 	public User findUser(@PathParam("userId") Long userId){
 		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
 		return userDAO.findById(userId);
+	}
+	
+	@PUT
+	@Path("/updateUser/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public UpdateUserDTO updateUser(@PathParam("id") Long id, UpdateUserDTO userDto) throws ParseException {
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		User updatedUser = userDAO.updateUser(id, userDto);
+		
+		if (updatedUser == null) {
+			return null;
+		}
+		
+		return UpdateUserDTO.convertToDTO(updatedUser);
 	}
 	
 }

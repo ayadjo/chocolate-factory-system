@@ -8,6 +8,7 @@ import Registration from '../views/RegistrationView.vue';
 import Login from '../views/LoginView.vue';
 import CreateFactory from '../views/CreateFactoryView.vue';
 import Profile from '../views/ProfileView.vue';
+import EditProfile from '../views/EditProfileView.vue';
 
 const routes = [
   {
@@ -64,6 +65,13 @@ const routes = [
     name: "profile", 
     component: Profile,
   },
+
+  {
+    path: '/edit-profile/:id',
+    name: 'editProfile',
+    component: EditProfile,
+    props: true 
+  }
   
 ];
 
