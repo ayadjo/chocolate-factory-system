@@ -16,7 +16,7 @@
           <label class="navbar-text">Chocolate Factory System</label>
         </div>
         <div class="navbar-right">
-          <router-link to="/basket" class="cart-button" v-if="isLoggedIn">
+          <router-link to="/basket" class="cart-button" v-if="isCustomer">
             <i class="fas fa-shopping-cart cart-icon"></i>
             <span class="cart-count">{{ cartItemCount }}</span>
           </router-link>
@@ -30,7 +30,7 @@
 
 <script setup>
   import { useRouter } from 'vue-router';
-  import { ref, onMounted, watch } from 'vue';
+  import { ref, onMounted, watch, computed } from 'vue';
   import axios from 'axios';
 
   const router = useRouter();
@@ -46,9 +46,6 @@
     isLoggedIn.value = userId ? true : false;
     userRole.value = role;
     isAdmin.value = role === 'Admin';
-    if (userId != null) {
-      fetchBasketData();
-    } 
 };
  
 
@@ -98,6 +95,14 @@
 
   onMounted(() => {
     checkLoggedIn();
+
+    if (isCustomer.value) {
+      fetchBasketData();
+    } 
+  });
+
+  const isCustomer = computed(() => {
+    return userRole.value === 'Customer';
   });
 </script>
 
