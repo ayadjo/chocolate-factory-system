@@ -5,11 +5,11 @@ import java.util.ArrayList;
 public class Basket {
 	private Long id;
 	private User user;
-	private ArrayList<Chocolate> chocolates;
+	private ArrayList<BasketItem> items;
 	private Double price;
 	
 	public Basket() {
-		chocolates = new ArrayList<Chocolate>();
+		items = new ArrayList<BasketItem>();
 	}
 
 	public Basket(Long id, User user, Double price) {
@@ -17,7 +17,7 @@ public class Basket {
 		this.id = id;
 		this.user = user;
 		this.price = price;
-		this.chocolates = new ArrayList<>();
+		this.items = new ArrayList<>();
 	}
 	
 	
@@ -48,12 +48,12 @@ public class Basket {
 		this.user = user;
 	}
 
-	public ArrayList<Chocolate> getChocolates() {
-		return chocolates;
+	public ArrayList<BasketItem> getItems() {
+		return items;
 	}
 
-	public void setChocolates(ArrayList<Chocolate> chocolates) {
-		this.chocolates = chocolates;
+	public void setItems(ArrayList<BasketItem> items) {
+		this.items = items;
 	}
 
 	public Double getPrice() {

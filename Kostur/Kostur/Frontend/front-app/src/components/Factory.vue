@@ -33,15 +33,24 @@
           <p><strong>Price:</strong> ${{ chocolate.price }}</p>
           <p><strong>Weight:</strong> {{ chocolate.weight }}g</p> 
           <div class="card-actions">
-            <button @click="updateChocolate(chocolate.id)" class="action-button">
+            <button @click="updateChocolate(chocolate.id)" v-if="isManager" class="action-button">
               <i class="fas fa-pencil-alt"></i>
             </button>
-            <button @click="openQuantityModal(chocolate)" class="action-button">
+            <button @click="openQuantityModal(chocolate)" v-if="isEmployee"  class="action-button">
               <i class="fas fa-box"></i>
             </button>
-            <button @click="deleteChocolate(chocolate.id)" class="action-button">
+            <button @click="deleteChocolate(chocolate.id)" v-if="isManager" class="action-button">
               <i class="fas fa-trash-alt"></i>
             </button>
+            <div v-if="isCustomer">
+              <button @click="decrementQuantity(chocolate.id)" class="quantity-button">-</button>
+              <input type="number" v-model="quantities[chocolate.id]" class="quantity-input" min="1">
+              <button @click="incrementQuantity(chocolate)" class="quantity-button">+</button>
+              <button @click="addToBasket(chocolate, quantities[chocolate.id])" class="action-button">
+                <i class="fas fa-cart-plus"></i> 
+              </button>
+            </div>
+            
           </div>
         
       </div>
@@ -65,8 +74,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute, useRouter  } from 'vue-router';
+import { ref, onMounted, computed} from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import '@fortawesome/fontawesome-free/css/all.css';
 
@@ -76,14 +85,54 @@ const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
 
+const isLoggedIn = ref(null);
+const userRole = ref(null);
+
+const quantities = ref({});
+
+
+
+const checkLoggedIn = () => {
+  const userId = localStorage.getItem('loggedUserId');
+    if (userId) {
+      axios.get(`http://localhost:8080/WebShopAppREST/rest/users/${userId}`)
+        .then(response => {
+          const user = response.data;
+          isLoggedIn.value = true;
+          userRole.value = user.role;
+        })
+        .catch(error => {
+          console.error('Error fetching user data:', error);
+          isLoggedIn.value = false;
+          userRole.value = null;
+        });
+    } else {
+      isLoggedIn.value = false;
+      userRole.value = null;
+    }
+};
+
 const editedChocolate = ref({
   id: null,
   onStock: 0
 });
 
+const isManager = computed(() => {
+    return userRole.value === 'Manager';
+  });
+
+const isEmployee = computed(() => {
+    return userRole.value === 'Employee';
+  });
+
+const isCustomer = computed(() => {
+  return userRole.value === 'Customer';
+});
+
 onMounted(() => {
   loadFactory(route.params.id);
   loadChocolates(route.params.id);
+  checkLoggedIn();
 });
 
 function loadFactory(id) {
@@ -97,6 +146,9 @@ function loadChocolates(factoryId) {
   axios.get(`http://localhost:8080/WebShopAppREST/rest/chocolates/byFactory/${factoryId}`)
     .then(response => {
       chocolates.value = response.data;
+      chocolates.value.forEach(chocolate => {
+        quantities.value[chocolate.id] = 1; 
+      });
     });
 }
 
@@ -144,6 +196,37 @@ function updateQuantity() {
       });
   
 }
+
+function incrementQuantity(chocolate) {
+  if (quantities.value[chocolate.id] < chocolate.onStock) {
+    quantities.value[chocolate.id] += 1;
+  }
+}
+
+
+function decrementQuantity(chocolateId) {
+  if (quantities.value[chocolateId] > 1) {
+    quantities.value[chocolateId] -= 1;
+  }
+}
+
+function addToBasket(chocolate, quantity) {
+  const userId = localStorage.getItem('loggedUserId'); // Assuming the user is logged in and their ID is stored in localStorage.
+  if (!userId) {
+    alert("Please log in to add chocolates to the basket.");
+    return;
+  }
+
+  try {
+    axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/addChocolateToBasket/${userId}/${chocolate.id}/${quantity}`);
+    alert(`Added ${quantity} of ${chocolate.name} to the basket.`);
+  } catch (error) {
+    console.error('Error adding chocolate to basket:', error);
+    alert('Failed to add chocolate to the basket. Please try again.');
+  }
+}
+
+
 
 </script>
 
@@ -354,5 +437,44 @@ function updateQuantity() {
   width: 100px;
   height: auto;
   margin: 0 auto 20px;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .quantity-button {
+    background-color:rgb(220, 204, 180);
+    border: none;
+    border-radius: 8px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #333;
+    transition: color 0.3s; /* Add transition for smoother color change */
+    margin: 5px;
+  }
+
+  .quantity-button:hover {
+    background-color: white;
+    border: 1px solid #8f0710;
+  }
+
+  .quantity-input {
+    width: 50px;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 </style>

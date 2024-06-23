@@ -15,6 +15,12 @@
           <img src="./assets/cake.png" alt="Logo" class="navbar-logo"/>
           <label class="navbar-text">Chocolate Factory System</label>
         </div>
+        <div class="navbar-right">
+          <router-link to="/basket" class="cart-button" v-if="isLoggedIn">
+            <i class="fas fa-shopping-cart cart-icon"></i>
+            <span class="cart-count">{{ cartItemCount }}</span>
+          </router-link>
+        </div>
       </div>
     </nav>
     <router-view/>
@@ -25,20 +31,26 @@
 <script setup>
   import { useRouter } from 'vue-router';
   import { ref, onMounted, watch } from 'vue';
+  import axios from 'axios';
 
   const router = useRouter();
   const isLoggedIn = ref(null);
   const menuOpen = ref(false);
+  const cartItemCount = ref(0);
   const userRole = ref(null);
   const isAdmin = ref(false);
 
   const checkLoggedIn = () => {
-  const userId = localStorage.getItem('loggedUserId');
-  const role = localStorage.getItem('userRole');
-  isLoggedIn.value = userId ? true : false;
-  userRole.value = role;
-  isAdmin.value = role === 'Admin';
+    const userId = localStorage.getItem('loggedUserId');
+    const role = localStorage.getItem('userRole');
+    isLoggedIn.value = userId ? true : false;
+    userRole.value = role;
+    isAdmin.value = role === 'Admin';
+    if (userId != null) {
+      fetchBasketData();
+    } 
 };
+ 
 
   const handleLogoutOrRedirect = () => {
     if (isLoggedIn.value) {
@@ -71,6 +83,19 @@
     logoutOrSignInLink.value = newValue ? '/' : '/login';
   });
 
+  const fetchBasketData = async () => {
+    try {
+      const userId = localStorage.getItem('loggedUserId');
+      if (userId.value !== null) {
+        const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/baskets/${userId}`);
+        const basket = response.data;
+        cartItemCount.value = basket.items.length;
+      }
+    } catch (error) {
+      console.error('Error fetching basket data:', error);
+    }
+  };
+
   onMounted(() => {
     checkLoggedIn();
   });
@@ -101,6 +126,7 @@
     width: 100%;
     position: relative;
   }
+
 
   nav a {
     margin-right: 20px;
@@ -165,5 +191,27 @@
     font-size: 13px;
   }
   
-  
+  .navbar-right {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    right: 1%;
+    transform: translateX(40%);
+}
+
+.cart-icon {
+  font-size: 22px;
+}
+
+.cart-count {
+  background-color: white;
+  color: black;
+  font-size: 9px;
+  border-radius: 45%;
+  padding: 2px 6px;
+  margin-left: -25px;
+}
+
+
+
 </style>

@@ -11,9 +11,11 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -133,6 +135,22 @@ public class UserService {
 	public User findUser(@PathParam("userId") Long userId){
 		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
 		return userDAO.findById(userId);
+	}
+	
+	@GET
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public User getUser(@PathParam("id") Long id) {
+		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
+		return dao.findById(id);
+	}
+	
+	@PUT
+	@Path("/points/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public User updatePoints(@PathParam("id") Long id,  @QueryParam("price") double price) {
+		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
+		return dao.updatePoints(id, price);
 	}
 	
 }

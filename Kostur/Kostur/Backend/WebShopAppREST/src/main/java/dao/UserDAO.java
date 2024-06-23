@@ -138,6 +138,9 @@ public class UserDAO {
 	    return user;
 	}
 
+	public User findById(Long id) {
+		return users.containsKey(id) ? users.get(id) : null;
+	}
 	
 	private void writeToFile() {
 	    BufferedWriter out = null;
@@ -259,4 +262,13 @@ public class UserDAO {
 		return users.containsKey(id) ? users.get(id) : null;
 	}
 
+
+	public User updatePoints(Long id, double price) {
+		User user = findById(id);
+		
+		int newPoints = (int) (price / 1000 * 133);
+		user.setPoints(user.getPoints() + newPoints);
+		
+		return user;
+	}
 }

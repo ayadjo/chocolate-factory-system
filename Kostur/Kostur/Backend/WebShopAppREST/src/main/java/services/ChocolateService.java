@@ -28,6 +28,7 @@ import beans.User;
 import dao.ChocolateDAO;
 import dao.FactoryDAO;
 import dto.ChocolateDTO;
+import dto.PurchaseDTO;
 import enums.Gender;
 import enums.Role;
 
@@ -44,15 +45,6 @@ public class ChocolateService {
 	    	ChocolateDAO chocolateDao = new ChocolateDAO(contextPath); 
             ctx.setAttribute("chocolateDAO", chocolateDao);
 		}
-		
-		/*if (ctx.getAttribute("factoryDAO") == null) {
-	        //String contextPath = ctx.getRealPath("");
-	        //FactoryDAO factoryDAO = new FactoryDAO(contextPath); 
-	        //ctx.setAttribute("factoryDAO", factoryDAO);
-	        
-	        ChocolateDAO chocolateDao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
-			ctx.setAttribute("factoryDAO", new FactoryDAO("factoryDAO", chocolateDao));
-	    }*/
 	}
 	
 	public ChocolateService() {
@@ -136,5 +128,13 @@ public class ChocolateService {
 	public Chocolate editChocolateQuantity(@PathParam("id") Long id, @PathParam("onStock") int onStock) {
 		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
 		return dao.editQuantity(id, onStock);
+	}
+	
+	@PUT
+	@Path("/purchase")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void updateQuantityAfterPurchase(PurchaseDTO purchaseDto) {
+		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
+		dao.updateQuantityAfterPurchase(purchaseDto);
 	}
 }

@@ -1,15 +1,15 @@
 package beans;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import enums.PurchaseStatus;
 
 public class Purchase {
 	private Long id;  //10 karaktera
-	private Factory factory;
-	private ArrayList<Chocolate> chocolates;
-	private String purchaseDateAndTime;
-	private int price;
+	private ArrayList<PurchaseItem> items;
+	private Date purchaseDateAndTime;
+	private double price;
 	private User user;
 	private PurchaseStatus status;
 	
@@ -17,12 +17,11 @@ public class Purchase {
 		super();
 	}
 
-	public Purchase(Long id, Factory factory, ArrayList<Chocolate> chocolates, String purchaseDateAndTime, int price,
+	public Purchase(Long id, ArrayList<PurchaseItem> items, Date purchaseDateAndTime, double price,
 			User user, PurchaseStatus status) {
 		super();
 		this.id = id;
-		this.factory = factory;
-		this.chocolates = chocolates;
+		this.items = items;
 		this.purchaseDateAndTime = purchaseDateAndTime;
 		this.price = price;
 		this.user = user;
@@ -37,35 +36,27 @@ public class Purchase {
 		this.id = id;
 	}
 
-	public Factory getFactory() {
-		return factory;
+	public ArrayList<PurchaseItem> getItems() {
+		return items;
 	}
 
-	public void setFactory(Factory factory) {
-		this.factory = factory;
+	public void setItems(ArrayList<PurchaseItem> items) {
+		this.items = items;
 	}
 
-	public ArrayList<Chocolate> getChocolates() {
-		return chocolates;
-	}
-
-	public void setChocolates(ArrayList<Chocolate> chocolates) {
-		this.chocolates = chocolates;
-	}
-
-	public String getPurchaseDateAndTime() {
+	public Date getPurchaseDateAndTime() {
 		return purchaseDateAndTime;
 	}
 
-	public void setPurchaseDateAndTime(String purchaseDateAndTime) {
+	public void setPurchaseDateAndTime(Date purchaseDateAndTime) {
 		this.purchaseDateAndTime = purchaseDateAndTime;
 	}
 
-	public int getPrice() {
+	public double getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 
