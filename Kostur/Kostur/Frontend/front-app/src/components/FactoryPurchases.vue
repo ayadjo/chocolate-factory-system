@@ -33,11 +33,47 @@
 
             <p class="user-name"><strong>{{ purchase.user.firstName }} {{ purchase.user.lastName }}</strong></p>
             <p class="purchase-date">Date: {{ purchase.purchaseDateAndTime }}</p>
-            <p class="purchase-price">Price: {{ purchase.price }}</p>
-            <button class="details-button">Show Details</button>
+            <p class="purchase-price">Price: ${{ formatPrice(purchase.price) }}</p>
+            <button class="details-button" @click="showDetails(purchase)">Show Details</button>
         </div>
 
     </div>
+
+
+    <div v-if="selectedPurchase" class="modal" @click.self="closeModal">
+    <div class="modal-content">
+      <span class="close-button" @click="closeModal">&times;</span>
+      <h4>Purchase Details</h4>
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>Chocolate Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in selectedPurchase.items" :key="item.id">
+            <td>{{ item.chocolate.name }}</td>
+            <td>${{ formatPrice(item.chocolate.price) }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.chocolate.description }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="status-buttons">
+        <button class="approve-button" @click="approvePurchase(purchase)">
+          <i class="fas fa-check"></i> Approve
+        </button>
+        <button class="reject-button" @click="rejectPurchase(purchase)">
+          <i class="fas fa-times"></i> Reject
+        </button>
+      </div>
+      
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -48,6 +84,7 @@ import axios from 'axios';
 const purchases = ref([])
 const route = useRoute();
 const factoryId = route.params.id;
+const selectedPurchase = ref(null);
 
 const getPurchases = async (factoryId) => {
   try {
@@ -84,6 +121,27 @@ const getPurchases = async (factoryId) => {
   }
   return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
 };
+
+const showDetails = (purchase) => {
+  selectedPurchase.value = purchase;
+};
+
+const closeModal = () => {
+  selectedPurchase.value = null;
+};
+
+const formatPrice = (price) => {
+  return parseFloat(price).toFixed(2);
+};
+
+const approvePurchase = (purchase) => {
+  console.log("Purchase approved:", purchase);
+};
+
+const rejectPurchase = (purchase) => {
+  console.log("Purchase rejected:", purchase);
+};
+
 
 onMounted(() => {
     getPurchases(factoryId);
@@ -170,5 +228,118 @@ onMounted(() => {
   margin-bottom: 10px;
 }
 
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 600px;
+}
+
+.close-button {
+  color: #aaa;
+  float: right;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  color: #333;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.styled-table th, .styled-table td {
+  padding: 10px;
+  text-align: center;
+  border: none;
+}
+
+.styled-table th {
+  background: rgb(220, 204, 180);
+  color: black;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+  border-bottom: 2px solid rgb(220, 204, 180);
+}
+
+.styled-table tbody tr.active-row {
+  font-weight: bold;
+  color: rgb(35, 35, 53);
+}
+
+.status-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.approve-button, .reject-button {
+  background-color: #8f0710; 
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s;
+  margin-right: 10px;
+}
+
+.reject-button:hover,
+.approve-button:hover {
+  background-color: white; 
+  color: black;
+  border: 1px solid #8f0710;
+}
+
+.approve-button i {
+  color: white;
+  margin-right: 4px;
+}
+
+.reject-button i {
+  color: white;
+  margin-right: 4px;
+}
+
+.approve-button:hover i {
+  color: black;
+}
+
+.reject-button:hover i {
+  color: black;
+}
 
 </style>

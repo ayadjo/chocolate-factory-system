@@ -12,7 +12,7 @@
       <p>{{ factory.location.longitude }}</p>
       <p>{{ factory.location.latitude }}</p>
     </div>
-    <button @click="navigateToPurchases(factory.id)" class="purchases-button"><i class="fas fa-shopping-cart search-icon"></i>Purchases</button>
+    <button v-if="isManager" @click="navigateToPurchases(factory.id)" class="purchases-button"><i class="fas fa-shopping-cart search-icon"></i>Purchases</button>
     
   </div>
   <h3>Chocolates</h3>
