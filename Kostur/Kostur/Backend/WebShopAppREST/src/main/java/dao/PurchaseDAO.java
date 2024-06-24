@@ -131,4 +131,33 @@ public class PurchaseDAO {
         }
         return userPurchases; 
     }
+	
+	public Collection<Purchase> findAllByFactoryId(Long factoryId) {
+		List<Purchase> factoryPurchases = new ArrayList<>();
+        for (Purchase purchase : purchases.values()) {		
+        	for (PurchaseItem item : purchase.getItems()) {  
+        		if (item.getChocolate().getFactory().getId().equals(factoryId)) {  
+        			factoryPurchases.add(purchase);  
+        		}
+        	}
+        }
+        
+        List<Purchase> updatedFactoryPurchases = new ArrayList<>();
+        for (Purchase purchase : factoryPurchases) {		//prodji kroz sve kupovine fabrike
+        	purchase.setPrice(0);
+        	ArrayList<PurchaseItem> updatedItems = new ArrayList<>();
+        	for (PurchaseItem item : purchase.getItems()){
+        		if (item.getChocolate().getFactory().getId().equals(factoryId)) {
+        			purchase.setPrice(purchase.getPrice() + item.getChocolate().getPrice()*item.getQuantity());
+        			updatedItems.add(item);
+        		}	
+        	}
+        	purchase.setItems(null);
+        	purchase.setItems(updatedItems);
+        	updatedFactoryPurchases.add(purchase);
+        }
+        
+        return updatedFactoryPurchases; 
+    }
+	
 }

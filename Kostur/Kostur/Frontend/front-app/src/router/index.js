@@ -13,6 +13,7 @@ import EditProfile from '../views/EditProfileView.vue';
 import AllUsers from '../views/AllUsersView.vue';
 import Employees from '../views/EmployeesView.vue';
 import NewEmployee from '../views/NewEmployeeView.vue';
+import FactoryPurchases from '../components/FactoryPurchases.vue';
 
 const routes = [
   {
@@ -103,6 +104,12 @@ const routes = [
     name: "newEmployee", 
     component: NewEmployee,
   },
+  {
+    path: '/factory-purchases/:id',
+    name: 'factoryPurchases',
+    component: FactoryPurchases,
+    props: true 
+  }
   
 ];
 
