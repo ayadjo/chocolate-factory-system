@@ -23,8 +23,8 @@
               </div>
             </div>
             <div class="filter-button">
-              <button class="apply-button">Apply</button>
-              <button class="delete-button">Remove</button>
+                <button class="apply-button" @click="applyFilters">Apply</button>
+                <button class="delete-button" @click="resetFilters">Remove</button>
             </div>
           </div>
       <div class="right">
@@ -232,13 +232,27 @@ const sortUsers = async (sortBy) => {
 };
 
   
-  const applyFilters = () => {
-   
+const applyFilters = () => {
+  const params = {
+    role: selectedRole.value,
+    type: selectedType.value
   };
+
+  axios.get(`http://localhost:8080/WebShopAppREST/rest/users/filter/${adminId}`, { params })
+    .then(response => {
+      allUsers.value = response.data;
+    })
+    .catch(error => {
+      console.error('Error applying filters:', error);
+    });
+};
+
+const resetFilters = () => {
+  fetchAllUsers();
+  selectedRole.value = null;
+  selectedType.value = null;
+};
   
-  const resetFilters = () => {
-    
-  };
   
   onMounted(() => {
     fetchRoles(); 

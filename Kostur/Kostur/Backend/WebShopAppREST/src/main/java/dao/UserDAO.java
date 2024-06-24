@@ -375,4 +375,28 @@ public class UserDAO {
 	            .collect(Collectors.toList());
     }
 
+	public Collection<User> filter(Long excludeId, String role, String type) {
+	    return users.values().stream()
+	            .filter(user -> (role.isEmpty() || user.getRole().toString().equals(role)) &&
+	                            (type.isEmpty() || (user.getType().getName() != null && user.getType().getName().equals(type))) &&
+	                            !user.getId().equals(excludeId))
+	            .collect(Collectors.toList());
+	}
+
+	 
+//	 private boolean hasRole(Long excludeId, String role) {
+//		    Collection<User> allUsers = users.values();
+//
+//		    return allUsers.stream()
+//		            .anyMatch(user -> user.getRole().toString().equals(role) && !user.getId().equals(excludeId));
+//		}
+//
+//
+//	 private boolean hasType(Long excludeId, String type) {
+//		    Collection<User> allUsers = users.values();
+//
+//		    return allUsers.stream()
+//		            .anyMatch(user -> user.getType().getName() != null && user.getType().getName().equals(type) && !user.getId().equals(excludeId));
+//		}
+
 }

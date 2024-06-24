@@ -266,4 +266,15 @@ public class UserService {
 		return userDAO.sortDescendingByPoints(excludeId);
 	}
 	
+	@GET
+	@Path("/filter/{excludeId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> filter(
+			@PathParam("excludeId") Long excludeId,
+			@QueryParam("role") @DefaultValue("") String role,
+	        @QueryParam("type") @DefaultValue("") String type){
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		return userDAO.filter(excludeId, role, type);
+	}
+	
 }
