@@ -170,4 +170,12 @@ public class UserService {
 		return UpdateUserDTO.convertToDTO(updatedUser);
 	}
 	
+	@GET
+	@Path("/allUsers/{adminId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> findAllUsers(@PathParam("adminId") Long adminId){
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		return userDAO.findAllUsers(adminId);
+	}
+	
 }

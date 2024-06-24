@@ -7,6 +7,7 @@
             </button>
             <ul v-if="showDropdown" class="dropdown-menu">
                 <li><button class="edit-profile-button" @click="navigateToEditProfile"> <i class="fas fa-pencil-alt"></i>Edit</button></li>
+                <li><button class="edit-profile-button" v-if="userRole == 'Admin'" @click="navigateToAllUsers"> <i class="fas fa-user"></i>Users</button></li>
             </ul>
           </div>
         <div class="profile-pic">
@@ -85,18 +86,6 @@
       console.error('Error fetching user data:', error);
     }
   };
-
-  const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  if (isNaN(date)) {
-    const parts = dateString.split('T')[0].split('-');
-    const year = parts[0];
-    const month = parts[1] - 1;
-    const day = parts[2];
-    return new Date(year, month, day).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-  }
-  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-};
   
   onMounted(() => {
     fetchUser();
@@ -113,9 +102,18 @@ const navigateToEditProfile = () => {
     console.error('User ID not found');
   }
 };
-  </script>
+
+const navigateToAllUsers = () => {
+  if (userRole == 'Admin') {
+    router.push('/all-users');
+  } else {
+    console.error('User role is not Admin!');
+  }
+};
+
+</script>
   
-  <style scoped>
+<style scoped>
   .user-profile {
     text-align: center;
     font-family: Arial, sans-serif;
@@ -229,6 +227,7 @@ const navigateToEditProfile = () => {
   .dropdown-menu li {
     list-style-type: none;
     width: 100%;
+    margin-bottom: 2px;
   }
   
   .dropdown-menu li a {

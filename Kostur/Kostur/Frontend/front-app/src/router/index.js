@@ -10,6 +10,7 @@ import CreateFactory from '../views/CreateFactoryView.vue';
 import Basket from '../components/Basket.vue';
 import Profile from '../views/ProfileView.vue';
 import EditProfile from '../views/EditProfileView.vue';
+import AllUsers from '../views/AllUsersView.vue';
 
 const routes = [
   {
@@ -81,7 +82,13 @@ const routes = [
     name: 'editProfile',
     component: EditProfile,
     props: true 
-  }
+  },
+
+  {
+    path: "/all-users",
+    name: "allUsers", 
+    component: AllUsers,
+  },
   
 ];
 

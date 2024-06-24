@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import beans.Basket;
 import beans.Chocolate;
@@ -287,5 +288,13 @@ public class UserDAO {
 		user.setPoints(user.getPoints() + newPoints);
 		
 		return user;
+	}
+	
+	public Collection<User> findAllUsers(Long excludeId) {
+	    Collection<User> allUsers = findAll();
+	    
+	    return allUsers.stream()
+	                   .filter(user -> !user.getId().equals(excludeId))
+	                   .collect(Collectors.toList());
 	}
 }
