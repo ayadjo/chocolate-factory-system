@@ -8,13 +8,16 @@ import java.io.FileWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -297,4 +300,11 @@ public class UserDAO {
 	                   .filter(user -> !user.getId().equals(excludeId))
 	                   .collect(Collectors.toList());
 	}
+	
+	public Collection<String> findAllRoles() {
+        String[] roles = Arrays.stream(Role.values())
+                                .map(Enum::name)
+                                .toArray(String[]::new);
+        return Arrays.asList(roles);
+    }
 }

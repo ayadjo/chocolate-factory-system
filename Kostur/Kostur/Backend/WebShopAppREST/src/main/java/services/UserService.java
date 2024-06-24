@@ -23,6 +23,7 @@ import beans.Chocolate;
 import beans.Factory;
 import beans.User;
 import dao.ChocolateDAO;
+import dao.CustomerTypeDAO;
 import dao.FactoryDAO;
 import dao.UserDAO;
 import dto.ChocolateDTO;
@@ -176,6 +177,16 @@ public class UserService {
 	public Collection<User> findAllUsers(@PathParam("adminId") Long adminId){
 		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
 		return userDAO.findAllUsers(adminId);
+	}
+	
+
+	
+	@GET
+	@Path("/roles")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<String> findAllRoles(){
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		return userDAO.findAllRoles();
 	}
 	
 }

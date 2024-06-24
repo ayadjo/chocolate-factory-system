@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.StringTokenizer;
 
+import beans.Chocolate;
 import beans.CustomerType;
 import beans.Location;
 
@@ -71,5 +74,13 @@ private HashMap<Long, CustomerType> types = new HashMap<Long, CustomerType>();
 			}
 		}
 		
+	}
+	
+	public Collection<String> findAllCustomerTypes() {
+	    Set<String> customerTypes = new HashSet<>();
+	    for (CustomerType type : types.values()) {
+	    	customerTypes.add(type.getName());
+	    }
+	    return customerTypes;
 	}
 }
