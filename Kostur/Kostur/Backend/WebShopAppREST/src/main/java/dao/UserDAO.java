@@ -316,5 +316,63 @@ public class UserDAO {
 	                         (username.isEmpty() || u.getUsername().toLowerCase().contains(username.toLowerCase())))
 	            .collect(Collectors.toList());
 	}
+	
+	public Collection<User> sortAscendingByFirstName(Long excludeId) {
+	    return users.values().stream()
+	            .filter(user -> !user.getId().equals(excludeId))
+	            .sorted(Comparator.comparing(User::getFirstName))
+	            .collect(Collectors.toList());
+	}
+
+	
+	public Collection<User> sortDescendingByFirstName(Long excludeId) {
+	    return users.values().stream()
+	            .filter(user -> !user.getId().equals(excludeId))
+	            .sorted(Comparator.comparing(User::getFirstName).reversed()) 
+	            .collect(Collectors.toList());
+	}
+
+	
+	public Collection<User> sortAscendingByLastName(Long excludeId) {
+        return users.values().stream()
+	            .filter(user -> !user.getId().equals(excludeId))
+	            .sorted(Comparator.comparing(User::getLastName))
+	            .collect(Collectors.toList());
+    }
+	
+	public Collection<User> sortDescendingByLastName(Long excludeId) {
+		return users.values().stream()
+	            .filter(user -> !user.getId().equals(excludeId))
+	            .sorted(Comparator.comparing(User::getLastName).reversed()) 
+	            .collect(Collectors.toList());
+    }
+	
+	public Collection<User> sortAscendingByUsername(Long excludeId) {
+		return users.values().stream()
+	            .filter(user -> !user.getId().equals(excludeId))
+	            .sorted(Comparator.comparing(User::getUsername))
+	            .collect(Collectors.toList());
+    }
+	
+	public Collection<User> sortDescendingByUsername(Long excludeId) {
+		return users.values().stream()
+	            .filter(user -> !user.getId().equals(excludeId))
+	            .sorted(Comparator.comparing(User::getUsername).reversed()) 
+	            .collect(Collectors.toList());
+    }
+	
+	public Collection<User> sortAscendingByPoints(Long excludeId) {
+		return users.values().stream()
+	            .filter(user -> !user.getId().equals(excludeId))
+	            .sorted(Comparator.comparing(User::getPoints))
+	            .collect(Collectors.toList());
+    }
+	
+	public Collection<User> sortDescendingByPoints(Long excludeId) {
+		return users.values().stream()
+	            .filter(user -> !user.getId().equals(excludeId))
+	            .sorted(Comparator.comparing(User::getPoints).reversed()) 
+	            .collect(Collectors.toList());
+    }
 
 }

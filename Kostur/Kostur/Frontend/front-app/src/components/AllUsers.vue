@@ -47,7 +47,7 @@
   
         <div class="sort-container">
           <label for="sort-select">Sort by </label>
-          <select id="sort-select">
+          <select id="sort-select" @change="handleSortChange">
             <option value="none">None</option>
             <option value="firstName">First Name (Ascending)</option>
             <option value="firstName_desc">First Name (Descending)</option>
@@ -107,6 +107,8 @@
   <script setup>
   import { ref, onMounted } from 'vue';
   import axios from 'axios';
+
+  const adminId = localStorage.getItem('loggedUserId');
   
   const allUsers = ref([]);
   const roles = ref([]);
@@ -201,6 +203,34 @@ function removeSearch() {
     searchQuery.value.lastName = '';
     searchQuery.value.username = '';
 }
+
+const handleSortChange = (event) => {
+  const sortBy = event.target.value;
+  if (sortBy !== 'none') {
+    sortUsers(sortBy);
+  } else {
+    fetchAllUsers(); 
+  }
+};
+
+const sortUsers = async (sortBy) => {
+  try {
+    let endpoint = `http://localhost:8080/WebShopAppREST/rest/users/sortAsc/${sortBy}/${adminId}`;
+    if (sortBy.endsWith('_desc')) {
+      endpoint = `http://localhost:8080/WebShopAppREST/rest/users/sortDesc/${sortBy.slice(0, -5)}/${adminId}`;
+    }
+    
+    const response = await axios.get(endpoint);
+    if (response.status === 200) {
+      allUsers.value = response.data;
+    } else {
+      console.error('Failed to fetch sorted users:', response.status);
+    }
+  } catch (error) {
+    console.error('Error sorting users:', error);
+  }
+};
+
   
   const applyFilters = () => {
    

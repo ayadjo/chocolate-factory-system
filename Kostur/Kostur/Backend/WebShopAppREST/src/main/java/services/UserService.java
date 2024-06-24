@@ -202,4 +202,68 @@ public class UserService {
 	    return userDAO.search(firstName, lastName, username, excludeId);
 	}
 	
+	@GET
+	@Path("/sortAsc/firstName/{excludeId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> sortAscendingByFirstName(@PathParam("excludeId") Long excludeId){
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		return userDAO.sortAscendingByFirstName(excludeId);
+	}
+	
+	@GET
+	@Path("/sortAsc/lastName/{excludeId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> sortAscendingByLastName(@PathParam("excludeId") Long excludeId){
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		return userDAO.sortAscendingByLastName(excludeId);
+	}
+	
+	@GET
+	@Path("/sortAsc/username/{excludeId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> sortAscendingByUsername(@PathParam("excludeId") Long excludeId){
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		return userDAO.sortAscendingByUsername(excludeId);
+	}
+	
+	@GET
+	@Path("/sortAsc/points/{excludeId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> sortAscendingByPoints(@PathParam("excludeId") Long excludeId){
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		return userDAO.sortAscendingByPoints(excludeId);
+	}
+	
+	@GET
+	@Path("/sortDesc/firstName/{excludeId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> sortDescendingByFirstName(@PathParam("excludeId") Long excludeId){
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		return userDAO.sortDescendingByFirstName(excludeId);
+	}
+	
+	@GET
+	@Path("/sortDesc/lastName/{excludeId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> sortDescendingByLastName(@PathParam("excludeId") Long excludeId){
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		return userDAO.sortDescendingByLastName(excludeId);
+	}
+	
+	@GET
+	@Path("/sortDesc/username/{excludeId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> sortDescendingByUsername(@PathParam("excludeId") Long excludeId){
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		return userDAO.sortDescendingByUsername(excludeId);
+	}
+	
+	@GET
+	@Path("/sortDesc/points/{excludeId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> sortDescendingByPoints(@PathParam("excludeId") Long excludeId){
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		return userDAO.sortDescendingByPoints(excludeId);
+	}
+	
 }
