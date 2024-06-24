@@ -10,6 +10,7 @@ import CreateFactory from '../views/CreateFactoryView.vue';
 import Basket from '../components/Basket.vue';
 import Profile from '../views/ProfileView.vue';
 import EditProfile from '../views/EditProfileView.vue';
+import FactoryPurchases from '../components/FactoryPurchases.vue';
 
 const routes = [
   {
@@ -80,6 +81,13 @@ const routes = [
     path: '/edit-profile/:id',
     name: 'editProfile',
     component: EditProfile,
+    props: true 
+  },
+
+  {
+    path: '/factory-purchases/:id',
+    name: 'factoryPurchases',
+    component: FactoryPurchases,
     props: true 
   }
   
