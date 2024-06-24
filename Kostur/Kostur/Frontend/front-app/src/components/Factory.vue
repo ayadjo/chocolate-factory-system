@@ -71,6 +71,14 @@
       <i class="far fa-comment-alt fa-3x"></i>
     </div>
 
+    <div>
+      <h2 class="title">
+        Where is {{ factory.name}} located?
+        <i class="fas fa-map-marker-alt"></i>
+      </h2>
+      <div id="map"  ref="savedMapContainer"></div>
+    </div>
+
     
   <div v-if="showModal" class="modal">
     <div class="modal-content">
@@ -88,6 +96,20 @@ import { ref, onMounted, computed} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import '@fortawesome/fontawesome-free/css/all.css';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png'
+});
+
+const savedMapContainer = ref(null);
+let savedMap = ref(null);
+let factoryMarker = ref(null);
 
 const factory = ref({ id: "",name: "", grade: 0, logo: "", location: { address: "", longitude: "", latitude: "" } });
 const chocolates = ref([]);
@@ -114,6 +136,20 @@ const navigateToEmployees = () => {
     console.error('User role is not Manager!');
   }
 };
+
+const setupMap = () => {
+  if (!savedMap.value) {
+    savedMap.value = L.map(savedMapContainer.value).setView([factory.value.location.latitude, factory.value.location.longitude], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> doprinosioci'
+    }).addTo(savedMap.value);
+
+    factoryMarker.value = L.marker([factory.value.location.latitude, factory.value.location.longitude]).addTo(savedMap.value);
+    factoryMarker.value.bindPopup(`<b>${factory.value.name}</b><br>${factory.value.location.address}`).openPopup();
+  }
+};
+
 
 const fetchUser = async () => {
     try {
@@ -178,12 +214,14 @@ onMounted(() => {
   fetchUser();
   loadChocolates(route.params.id);
   checkLoggedIn();
+  
 });
 
 function loadFactory(id) {
   axios.get(`http://localhost:8080/WebShopAppREST/rest/factories/${id}`)
     .then(response => {
       factory.value = response.data;
+      setupMap();
     });
 }
 
@@ -276,6 +314,24 @@ function addToBasket(chocolate, quantity) {
 </script>
 
 <style scoped>
+
+#map {
+  margin-top: 30px;
+  margin-left: 150px;
+  border-radius: 10px;
+  border: 1px solid black;
+  height: 500px;
+  width: 80%;
+  margin-bottom: 60px;
+}
+
+.title {
+  text-align: center;
+  font-weight: 100;
+  font-size: 1.3vw;
+  color: #201d0e;
+  margin-top: 100px;
+}
 .factory-detail {
   max-width: 600px;
   margin: 20px auto; 
