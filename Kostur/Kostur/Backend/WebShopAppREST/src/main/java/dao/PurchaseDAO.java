@@ -134,11 +134,15 @@ public class PurchaseDAO {
 	
 	public Collection<Purchase> findAllByFactoryId(Long factoryId) {
 		List<Purchase> factoryPurchases = new ArrayList<>();
+		boolean factoryItem = false;
         for (Purchase purchase : purchases.values()) {		
         	for (PurchaseItem item : purchase.getItems()) {  
-        		if (item.getChocolate().getFactory().getId().equals(factoryId)) {  
-        			factoryPurchases.add(purchase);  
+        		if (item.getChocolate().getFactory().getId().equals(factoryId)) { 
+        			factoryItem = true;
         		}
+        	}
+        	if(factoryItem) {
+        		factoryPurchases.add(purchase);  
         	}
         }
         
