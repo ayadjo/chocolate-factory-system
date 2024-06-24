@@ -507,7 +507,7 @@ onBeforeUnmount(() => {
 
 
 .manager-image {
-  width: 80%;
+  width: 60%;
   height: auto;
   border-radius: 50%;
   margin-bottom: 10px;

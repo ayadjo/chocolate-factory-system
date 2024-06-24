@@ -626,5 +626,7 @@ const resetFilters = () => {
   .remove-search-button:hover {
     background-color: #bab6b6; 
   }
+
+  
   </style>
   

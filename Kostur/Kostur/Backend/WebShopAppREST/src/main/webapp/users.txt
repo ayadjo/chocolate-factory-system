@@ -9,3 +9,4 @@
 8;regular_customer;regular_customer;Marko;Markic;Male;Fri Dec 13 00:00:00 CET 2001;Customer;10;3;-1;false
 9;admin1;admin1;Tesa;Tesic;Male;Fri Dec 14 00:00:00 CET 2001;Admin;0;-1;-1;false
 10;admin2;admin2;Mina;Minic;Female;Fri Dec 10 00:00:00 CET 2001;Admin;0;-1;-1;false
+11;emloyee1;employee1;Danica;Maric;Female;Fri Dec 21 00:00:00 CET 2001;Employee;0;-1;1;false

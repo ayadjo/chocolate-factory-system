@@ -11,6 +11,8 @@ import Basket from '../components/Basket.vue';
 import Profile from '../views/ProfileView.vue';
 import EditProfile from '../views/EditProfileView.vue';
 import AllUsers from '../views/AllUsersView.vue';
+import Employees from '../views/EmployeesView.vue';
+import NewEmployee from '../views/NewEmployeeView.vue';
 
 const routes = [
   {
@@ -88,6 +90,18 @@ const routes = [
     path: "/all-users",
     name: "allUsers", 
     component: AllUsers,
+  },
+
+  {
+    path: "/employees/:id", 
+    name: "employees", 
+    component: Employees,
+  },
+
+  {
+    path: "/new-employee/:id", 
+    name: "newEmployee", 
+    component: NewEmployee,
   },
   
 ];

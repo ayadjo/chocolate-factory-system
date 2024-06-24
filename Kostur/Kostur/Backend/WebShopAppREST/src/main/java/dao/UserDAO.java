@@ -383,6 +383,46 @@ public class UserDAO {
 	            .collect(Collectors.toList());
 	}
 
-	 
+	public Collection<User> findEmployeesByFactoryId(Long factoryId) {
+	    List<User> foundUsers = new ArrayList<>();
+	    Collection<User> allUsers = users.values();
+
+	    for (User u : allUsers) {
+	        if (u.getFactory().getId().equals(factoryId) && u.getRole().equals(Role.Employee)) {
+	        	foundUsers.add(u);
+	        }
+	    }
+
+	    return foundUsers;
+	}
+	
+	public User createEmployee(RegisterUserDTO userDTO, Factory factory) throws ParseException {
+	    User user = userDTO.convertToEmployee();
+	    if (!isUsernameUnique(user.getUsername())) {
+	        LOGGER.warning("Username not unique: " + user.getUsername());
+	        return null;
+	    }
+	    
+	    Long maxId = -1L; 
+	    for (Long id : users.keySet()) { 
+	        if (id > maxId) { 
+	            maxId = id;
+	        }
+	    }
+	    maxId++;
+	    user.setId(maxId);
+
+	    user.setBlocked(false);
+	    
+	    if(factory != null) {
+	        user.setFactory(factory);
+	    } else {
+	    	throw new IllegalArgumentException("Factory " + factory.getId() + " does not exist.");
+	    }
+	    
+	    users.put(maxId, user); 
+	    writeToFile();
+	    return user;
+	}
 
 }

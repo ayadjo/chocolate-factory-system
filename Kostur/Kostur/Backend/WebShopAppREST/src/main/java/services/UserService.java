@@ -277,4 +277,31 @@ public class UserService {
 		return userDAO.filter(excludeId, role, type);
 	}
 	
+	@GET
+	@Path("/byFactory/{factoryId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> findAllByFactoryId(@PathParam("factoryId") Long factoryId){
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		return userDAO.findEmployeesByFactoryId(factoryId);
+	}
+	
+	@POST
+	@Path("/addEmployee/{factoryId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public RegisterUserDTO createEmployee(RegisterUserDTO userDTO, @PathParam("factoryId") Long factoryId) throws ParseException {
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+	       FactoryDAO factoryDAO = (FactoryDAO) ctx.getAttribute("factoryDAO");
+		    
+	       Factory factory = factoryDAO.findById(factoryId);
+	       
+	       User user = userDAO.createEmployee(userDTO, factory);
+	       if (user == null) {
+	           LOGGER.warning("User creation failed for username: " + userDTO.getUsername());
+	           return null;
+	       }
+
+	       return RegisterUserDTO.convertToDTO(user);
+   }
+	
 }

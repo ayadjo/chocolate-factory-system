@@ -1,6 +1,16 @@
 <template>
   <div class="factory-detail">
-    <h2>{{ factory.name }}</h2>
+        <div class="header">
+          <div class="edit-button-container">
+            <button class="edit-button" @click="toggleDropdown">
+              <img src="../assets/more.png" alt="Edit Icon" />
+            </button>
+            <ul v-if="showDropdown" class="dropdown-menu">
+              <li><button class="edit-profile-button" v-if="userFactory == factoryId" @click="navigateToEmployees"><i class="fas fa-user"></i>Employees</button></li>
+            </ul>
+          </div>
+          <h2>{{ factory.name }}</h2>
+        </div>
     <div class="rating">
       {{ factory.grade }} <i class="fas fa-star"></i>
     </div>
@@ -79,7 +89,7 @@ import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import '@fortawesome/fontawesome-free/css/all.css';
 
-const factory = ref({ name: "", grade: 0, logo: "", location: { address: "", longitude: "", latitude: "" } });
+const factory = ref({ id: "",name: "", grade: 0, logo: "", location: { address: "", longitude: "", latitude: "" } });
 const chocolates = ref([]);
 const route = useRoute();
 const router = useRouter();
@@ -90,7 +100,41 @@ const userRole = ref(null);
 
 const quantities = ref({});
 
+const showDropdown = ref(false);
 
+const user = ref(null);
+const userId = localStorage.getItem('loggedUserId');
+const factoryId = route.params.id;
+const userFactory = ref("");
+
+const navigateToEmployees = () => {
+  if (isManager) {
+    router.push('/employees/' + factoryId);
+  } else {
+    console.error('User role is not Manager!');
+  }
+};
+
+const fetchUser = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/WebShopAppREST/rest/users/getUser/${userId}`);
+      if (response.ok) {
+        const userData = await response.json();
+        user.value = userData;
+        console.log("factryId: ",factoryId)
+        userFactory.value = user.value.factory.id;
+        console.log("user factory: ",userFactory.value)
+      } else {
+        console.error('Failed to fetch user data:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value;
+};
 
 const checkLoggedIn = () => {
   const userId = localStorage.getItem('loggedUserId');
@@ -131,6 +175,7 @@ const isCustomer = computed(() => {
 
 onMounted(() => {
   loadFactory(route.params.id);
+  fetchUser();
   loadChocolates(route.params.id);
   checkLoggedIn();
 });
@@ -241,6 +286,91 @@ function addToBasket(chocolate, quantity) {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: white; 
   height: auto;
+}
+
+.header {
+  position: relative;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.edit-button-container {
+  position: absolute;
+  top: 10px;
+  left: -20px;
+  display: inline-block;
+}
+
+
+.edit-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100px;
+}
+
+.edit-button img {
+  width: 20px;
+  height: 20px;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: -20px; 
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000; 
+  width: 160%;
+}
+
+.dropdown-menu li {
+  list-style-type: none;
+  width: 100%;
+  margin-bottom: 2px;
+}
+
+.dropdown-menu li a {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  color: #333;
+  cursor: pointer;
+}
+
+.edit-profile-button .fas{
+  color: white;
+  margin-right: 10px
+}
+
+.edit-profile-button{
+  background-color: #8f0710; 
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s;
+  width: 90%;
+}
+
+.edit-profile-button:hover{
+  background-color: white; 
+  color: #503216;
+  border: 1px solid #8f0710;
+}
+
+.edit-profile-button:hover .fas{
+  color:#503216
 }
 
 .rating {
@@ -477,4 +607,6 @@ input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
+
 </style>
