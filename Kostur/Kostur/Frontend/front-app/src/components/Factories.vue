@@ -457,7 +457,8 @@ function deleteFilters() {
   font-size: 0.9em;
   transition: background-color 0.3s;
   margin-top: 30px;
-  width: 11%;
+  margin-right: 10px;
+  width: 10%;
 }
 
 .descending-button:hover {
