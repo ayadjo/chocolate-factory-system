@@ -307,4 +307,14 @@ public class UserDAO {
                                 .toArray(String[]::new);
         return Arrays.asList(roles);
     }
+	
+	public Collection<User> search(String firstName, String lastName, String username, Long excludeId) {
+	    return users.values().stream()
+	            .filter(u -> (firstName.isEmpty() || u.getFirstName().toLowerCase().contains(firstName.toLowerCase())) &&
+	                         (lastName.isEmpty() || u.getLastName().toLowerCase().contains(lastName.toLowerCase())) &&
+	                         !u.getId().equals(excludeId) &&  
+	                         (username.isEmpty() || u.getUsername().toLowerCase().contains(username.toLowerCase())))
+	            .collect(Collectors.toList());
+	}
+
 }

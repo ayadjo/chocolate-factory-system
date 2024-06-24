@@ -30,18 +30,19 @@
       <div class="right">
         <div class="search-container">
           <div class="search-input-wrapper">
-            <input type="text" placeholder="Search by First Name" />
+            <input type="text" v-model="searchQuery.firstName" placeholder="Search by First Name" />
             <i class="material-icons search-icon">person</i>
           </div>
           <div class="search-input-wrapper">
-            <input type="text" placeholder="Search by Last Name" />
+            <input type="text" v-model="searchQuery.lastName" placeholder="Search by Last Name" />
             <i class="material-icons search-icon">person</i>
           </div>
           <div class="search-input-wrapper">
-            <input type="text" placeholder="Search by Username" />
+            <input type="text" v-model="searchQuery.username" placeholder="Search by Username" />
             <i class="material-icons search-icon">account_circle</i>
           </div>
-          <button class="search-button"><i class="bi bi-search"></i> Search</button>
+          <button class="search-button" @click="search"><i class="bi bi-search"></i> Search</button>
+          <button class="remove-search-button" @click="removeSearch"><i class="bi bi-x"></i></button>
         </div>
   
         <div class="sort-container">
@@ -105,15 +106,22 @@
   
   <script setup>
   import { ref, onMounted } from 'vue';
+  import axios from 'axios';
   
   const allUsers = ref([]);
   const roles = ref([]);
   const types = ref([]);
+
+  const searchQuery = ref({
+  firstName: '',
+  lastName: '',
+  username: ''
+});
   
   const selectedRole = ref(null);
   const selectedType = ref(null);
+
   
-  // Function to fetch roles from backend
   const fetchRoles = async () => {
     try {
       const response = await fetch('http://localhost:8080/WebShopAppREST/rest/users/roles', {
@@ -125,7 +133,7 @@
   
       if (response.ok) {
         const data = await response.json();
-        roles.value = data; // Set the fetched roles to the roles ref
+        roles.value = data; 
       } else {
         console.error('Failed to fetch roles:', response.status);
       }
@@ -134,7 +142,6 @@
     }
   };
   
-  // Function to fetch customer types from backend
   const fetchTypes = async () => {
     try {
       const response = await fetch('http://localhost:8080/WebShopAppREST/rest/types/', {
@@ -146,7 +153,7 @@
   
       if (response.ok) {
         const data = await response.json();
-        types.value = data; // Set the fetched types to the types ref
+        types.value = data; 
       } else {
         console.error('Failed to fetch types:', response.status);
       }
@@ -155,7 +162,6 @@
     }
   };
   
-  // Function to fetch all users from backend
   const fetchAllUsers = async () => {
     const adminId = localStorage.getItem('loggedUserId');
     try {
@@ -170,21 +176,44 @@
       console.error('Error fetching users:', error);
     }
   };
+
+  function search() {
+   const params = {
+    firstName: searchQuery.value.firstName,
+    lastName: searchQuery.value.lastName,
+    username: searchQuery.value.username,
+    excludeId: localStorage.getItem('loggedUserId')
+  };
+
+
+  axios.get('http://localhost:8080/WebShopAppREST/rest/users/search', { params })
+    .then(response => {
+      allUsers.value = response.data; 
+    })
+    .catch(error => {
+      console.error('Error fetching users:', error);
+    });
+}
+
+function removeSearch() {
+   fetchAllUsers();
+    searchQuery.value.firstName = '';
+    searchQuery.value.lastName = '';
+    searchQuery.value.username = '';
+}
   
-  // Apply filters function
   const applyFilters = () => {
-    // Filter logic
+   
   };
   
-  // Reset filters function
   const resetFilters = () => {
-    // Reset logic
+    
   };
   
   onMounted(() => {
-    fetchRoles(); // Fetch roles on component mount
-    fetchTypes(); // Fetch types on component mount
-    fetchAllUsers(); // Fetch all users on component mount
+    fetchRoles(); 
+    fetchTypes(); 
+    fetchAllUsers(); 
   });
   </script>
   
@@ -350,7 +379,7 @@
   }
   
   .regular-customer {
-    border: 1px solid #8b4513;
+    border: 1px solid #cacaad;
     background-color: #f5f5dc;
   }
   
@@ -525,6 +554,33 @@
     border-color: rgb(220, 204, 180);
   }
 
+  .remove-search-button {
+    background-color: #f0f0f0; 
+    color: white; 
+    border: none; 
+    border-radius: 50%;
+    width: 35x; 
+    height: 35px; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-left: 10px
+  }
+  
+  .remove-search-button i {
+    font-size: 1.2rem; 
+    color: #201d0e;
+  }
+  
+  .remove-search-button:hover {
+    background-color: #201d0e; 
+  }
 
+  .remove-search-button:hover {
+    background-color: #bab6b6; 
+  }
   </style>
   

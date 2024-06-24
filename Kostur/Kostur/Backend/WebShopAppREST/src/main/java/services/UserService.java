@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
@@ -187,6 +188,18 @@ public class UserService {
 	public Collection<String> findAllRoles(){
 		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
 		return userDAO.findAllRoles();
+	}
+	
+	@GET
+	@Path("/search")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> search(
+			@QueryParam("excludeId") Long excludeId,
+	        @QueryParam("firstName") @DefaultValue("") String firstName,
+	        @QueryParam("lastName") @DefaultValue("") String lastName,
+	        @QueryParam("username") @DefaultValue("") String username) {
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+	    return userDAO.search(firstName, lastName, username, excludeId);
 	}
 	
 }
