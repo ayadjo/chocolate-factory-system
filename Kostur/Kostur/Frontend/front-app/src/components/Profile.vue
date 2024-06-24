@@ -37,7 +37,7 @@
             <span class="info-label">BIRTHDAY</span>
             <span class="info-value">{{ user.birthday }}</span>
         </div>
-        <div v-if="userRole == 'Manager' " class="info-item">
+        <div v-if="userRole == 'Manager' || userRole == 'Employee'" class="info-item">
             <span class="info-label">FACTORY</span>
             <span class="info-value">{{ user.factory.name }}</span>
         </div>

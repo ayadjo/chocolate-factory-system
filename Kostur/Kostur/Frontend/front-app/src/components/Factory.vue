@@ -6,7 +6,7 @@
               <img src="../assets/more.png" alt="Edit Icon" />
             </button>
             <ul v-if="showDropdown" class="dropdown-menu">
-              <li><button class="edit-profile-button" v-if="userFactory == factoryId" @click="navigateToEmployees"><i class="fas fa-user"></i>Employees</button></li>
+              <li><button class="edit-profile-button" v-if="userFactory == factoryId && isManager" @click="navigateToEmployees"><i class="fas fa-user"></i>Employees</button></li>
             </ul>
           </div>
           <h2>{{ factory.name }}</h2>
