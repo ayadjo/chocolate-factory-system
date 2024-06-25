@@ -286,4 +286,23 @@ public class BasketDAO {
         return basket;
 	        
 	 }
+	 
+	 public boolean isOrderInProgressForFactory(Long userId, Long factoryId) {
+		    Basket basket = findByUserId(userId);
+		    if (basket == null) {
+		        return false; 
+		    }
+		    
+		    BasketItemDAO itemDAO = new BasketItemDAO(contextPath);
+		    Collection<BasketItem> items = itemDAO.findAll();
+
+		    for (BasketItem item : items) {
+		        if (!item.getIsDeleted() && item.getBasket().getId().equals(basket.getId()) && !item.getChocolate().getFactory().getId().equals(factoryId)) {
+		            return false; 
+		        }
+		    }
+
+		    return true;
+		}
+
 }

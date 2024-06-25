@@ -324,6 +324,31 @@ function decrementQuantity(chocolateId) {
 //   }
 // }
 
+// async function addToBasket(chocolate, quantity) {
+//   const userId = localStorage.getItem('loggedUserId'); 
+//   if (!userId) {
+//     alert("Please log in to add chocolates to the basket.");
+//     return;
+//   }
+
+//   try {
+//     const response = await axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/addChocolateToBasket/${userId}/${chocolate.id}/${quantity}`);
+//     const updatedChocolate = response.data; 
+
+//     const chocolateIndex = chocolates.value.findIndex(choc => choc.id === updatedChocolate.id);
+//     if (chocolateIndex !== -1) {
+//       chocolates.value[chocolateIndex].onStock = updatedChocolate.onStock;
+//       chocolates.value[chocolateIndex].status = updatedChocolate.status;
+//     }
+
+
+//     alert(`Added ${quantity} of ${chocolate.name} to the basket.`);
+//   } catch (error) {
+//     console.error('Error adding chocolate to basket:', error);
+//     alert('Failed to add chocolate to the basket. Please try again.');
+//   }
+// }
+
 async function addToBasket(chocolate, quantity) {
   const userId = localStorage.getItem('loggedUserId'); 
   if (!userId) {
@@ -332,6 +357,14 @@ async function addToBasket(chocolate, quantity) {
   }
 
   try {
+    const canOrderResponse = await axios.get(`http://localhost:8080/WebShopAppREST/rest/baskets/canOrder/${userId}/${chocolate.factory.id}`);
+    const canOrder = canOrderResponse.data;
+
+    if (!canOrder) {
+      alert("You can only order from one factory at a time.");
+      return;
+    }
+
     const response = await axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/addChocolateToBasket/${userId}/${chocolate.id}/${quantity}`);
     const updatedChocolate = response.data; 
 
@@ -341,13 +374,13 @@ async function addToBasket(chocolate, quantity) {
       chocolates.value[chocolateIndex].status = updatedChocolate.status;
     }
 
-
     alert(`Added ${quantity} of ${chocolate.name} to the basket.`);
   } catch (error) {
     console.error('Error adding chocolate to basket:', error);
     alert('Failed to add chocolate to the basket. Please try again.');
   }
 }
+
 
 
 function navigateToPurchases(factoryId) {

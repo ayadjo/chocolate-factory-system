@@ -85,4 +85,13 @@ public class BasketService {
         BasketDAO dao = (BasketDAO) ctx.getAttribute("basketDAO");
         return dao.clearBasket(userId);
     }
+	
+	@GET
+    @Path("/canOrder/{userId}/{factoryId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Boolean isOrderInProgressForFactory(@PathParam("userId") Long userId, @PathParam("factoryId") Long factoryId) {
+		BasketDAO dao = (BasketDAO) ctx.getAttribute("basketDAO");
+        boolean result = dao.isOrderInProgressForFactory(userId, factoryId);
+        return result;
+    }
 }
