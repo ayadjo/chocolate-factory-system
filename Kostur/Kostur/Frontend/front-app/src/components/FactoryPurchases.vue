@@ -263,6 +263,44 @@ const sortPurchases = async (attribute, order) => {
   }
 };
 
+const search = async () => {
+  try {
+    const params = {};
+    if (searchQuery.value.factoryName) {
+      params.factoryName = searchQuery.value.factoryName;
+    }
+    if (searchQuery.value.priceFrom) {
+      params.priceFrom = searchQuery.value.priceFrom;
+    }
+    if (searchQuery.value.priceTo) {
+      params.priceTo = searchQuery.value.priceTo;
+    }
+    if (searchQuery.value.dateFrom) {
+      params.dateFrom = searchQuery.value.dateFrom;
+    }
+    if (searchQuery.value.dateTo) {
+      params.dateTo = searchQuery.value.dateTo;
+    }
+
+    const response = await axios.get('http://localhost:8080/WebShopAppREST/rest/purchases/search', { params });
+    if (response && response.data) {
+      purchases.value = response.data;
+
+      purchases.value.forEach(purchase => {
+        const date = purchase.purchaseDateAndTime;
+        if (date) {
+          const dateParts = date.split('T')[0].split('-');
+          const formattedDate = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
+          purchase.purchaseDateAndTime = formattedDate;
+        } else {
+          console.error('Empty or null value received for date field');
+        }
+      });
+    }
+  } catch (error) {
+    console.error("There was an error searching purchases.", error);
+  }
+};
 
 
 onMounted(async () => {

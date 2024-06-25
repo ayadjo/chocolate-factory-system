@@ -5,7 +5,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -191,6 +193,32 @@ public class PurchaseDAO {
 
 	    return stream.sorted(comparator).collect(Collectors.toList());
 	}
+
+	 public Collection<Purchase> searchPurchases(String factoryName, Double priceFrom, Double priceTo, String dateFrom, String dateTo) {
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+	        List<Date> dateFromParsed = new ArrayList<>();
+	        List<Date> dateToParsed = new ArrayList<>();
+	        
+	        try {
+	            if (dateFrom != null) {
+	                dateFromParsed.add(sdf.parse(dateFrom));
+	            }
+	            if (dateTo != null) {
+	                dateToParsed.add(sdf.parse(dateTo));
+	            }
+	        } catch (ParseException e) {
+	            e.printStackTrace();
+	        }
+	        
+	        return purchases.values().stream()
+	            //.filter(p -> factoryName == null || p.getFactory().getName().toLowerCase().contains(factoryName.toLowerCase()))
+	            .filter(p -> priceFrom == null || p.getPrice() >= priceFrom)
+	            .filter(p -> priceTo == null || p.getPrice() <= priceTo)
+	            .filter(p -> dateFromParsed.isEmpty() || p.getPurchaseDateAndTime().compareTo(dateFromParsed.get(0)) >= 0)
+	            .filter(p -> dateToParsed.isEmpty() || p.getPurchaseDateAndTime().compareTo(dateToParsed.get(0)) <= 0)
+	            .collect(Collectors.toList());
+	    }
 
 	
 }
