@@ -8,11 +8,14 @@ import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import beans.Basket;
 import beans.Chocolate;
@@ -163,5 +166,31 @@ public class PurchaseDAO {
         
         return updatedFactoryPurchases; 
     }
+	
+	public Collection<Purchase> sortByAttribute(String attribute, String order) {
+	    Stream<Purchase> stream = purchases.values().stream();
+	    Comparator<Purchase> comparator;
+
+	    switch (attribute) {
+	        case "price":
+	            comparator = Comparator.comparing(Purchase::getPrice);
+	            break;
+	        case "date":
+	            comparator = Comparator.comparing(Purchase::getPurchaseDateAndTime);
+	            break;
+	        /*case "factoryName":
+	            comparator = Comparator.comparing(p -> p.getFactory().getName());
+	            break;*/
+	        default:
+	            throw new IllegalArgumentException("Unknown attribute: " + attribute);
+	    }
+
+	    if ("desc".equals(order)) {
+	        comparator = comparator.reversed();
+	    }
+
+	    return stream.sorted(comparator).collect(Collectors.toList());
+	}
+
 	
 }

@@ -73,4 +73,14 @@ public class PurchaseService {
 		return dao.findAllByFactoryId(factoryId);
 	}
 	
+	@GET
+	@Path("/sortBy/{attribute}/{order}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Purchase> sortByAttribute(@PathParam("attribute") String attribute, @PathParam("order") String order) {
+	    PurchaseDAO dao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
+	    return dao.sortByAttribute(attribute, order);
+	}
+
+
+	
 }

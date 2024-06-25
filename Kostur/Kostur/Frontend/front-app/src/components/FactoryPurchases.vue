@@ -1,4 +1,47 @@
 <template>
+    <div class="search-filter-container">
+      <div class="search-container">     
+        <div v-if="isCustomer" class="search-input-wrapper">
+          <input type="text" v-model="searchQuery.factoryName" placeholder="Search by Factory Name">
+          <i class="fas fa-industry search-icon"></i>
+        </div>
+
+    
+        <div class="search-input-wrapper">
+          <i class="fas fa-dollar-sign search-icon"></i>
+          <input type="number" v-model="searchQuery.priceFrom" placeholder="Price from">
+        </div>
+        <div class="search-input-wrapper">
+          <i class="fas fa-dollar-sign search-icon"></i>
+          <input type="number" v-model="searchQuery.priceTo" placeholder="Price to">
+        </div>
+  
+
+        <div class="search-input-wrapper">
+          <i class="far fa-calendar-alt search-icon"></i>
+          <input type="date" v-model="searchQuery.dateFrom" placeholder="Date from">
+        </div>
+        <div class="search-input-wrapper">
+          <i class="far fa-calendar-alt search-icon"></i>
+          <input type="date" v-model="searchQuery.dateTo" placeholder="Date to">
+        </div>
+        <button @click="search" class="search-button"><i class="bi bi-search"></i>Search</button>
+      </div>
+    </div>
+
+    <div class="sort-container">
+      <label for="sort-select">Sort by </label>
+      <select id="sort-select" @change="handleSortChange">
+        <option value="none">None</option>
+        <option value="factoryName" v-if="isCustomer">Factory Name (Ascending)</option>
+        <option value="factoryName_desc" v-if="isCustomer">Factory Name (Descending)</option>
+        <option value="price">Price (Ascending)</option>
+        <option value="price_desc">Price (Descending)</option>
+        <option value="date">Date (Ascending)</option>
+        <option value="date_desc">Date (Descending)</option>
+      </select>
+    </div>
+
     <div class="purchases">
         <div class="purchase-card"
             v-for="purchase in purchases"
@@ -89,6 +132,13 @@ const route = useRoute();
 const id = route.params.id;
 const selectedPurchase = ref(null);
 const userRole = ref(null);
+const searchQuery = ref({
+  factoryName: '',
+  priceFrom: null,
+  priceTo: null,
+  dateFrom: null,
+  dateTo: null
+});
 
 const getPurchases = async (id) => {
   try {
@@ -180,6 +230,39 @@ const rejectPurchase = (purchase) => {
 const cancelPurchase = (purchase) => {
   console.log("Purchase cancelled:", purchase);
 };
+
+const handleSortChange = async (event) => {
+  const sortBy = event.target.value;
+  if (sortBy !== 'none') {
+    const [attribute, order] = sortBy.split('_');
+    sortPurchases(attribute, order || 'asc');
+  } else {
+    getPurchases(id);
+  }
+};
+
+const sortPurchases = async (attribute, order) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/purchases/sortBy/${attribute}/${order}`);
+    if (response && response.data) {
+      purchases.value = response.data;
+
+      purchases.value.forEach(purchase => {
+        const date = purchase.purchaseDateAndTime;
+        if (date) {
+          const dateParts = date.split('T')[0].split('-'); 
+          const formattedDate = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
+          purchase.purchaseDateAndTime = formattedDate;
+        } else {
+          console.error('Empty or null value received for date field');
+        }
+      });
+    }
+  } catch (error) {
+    console.error(`Error sorting purchases by ${attribute}:`, error);
+  }
+};
+
 
 
 onMounted(async () => {
@@ -394,5 +477,106 @@ const isCustomer = computed(() => {
 .reject-button:hover i {
   color: black;
 }
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 10px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 50%;
+  margin-top: 30px;
+  margin-right: 10px;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  padding: 10px 20px 10px 40px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+.search-input-wrapper input:focus {
+  outline: none;
+  border-color: #8f0710; 
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  pointer-events: none; 
+}
+
+.search-input-wrapper input {
+  padding-left: 40px;
+}
+
+.search-button {
+    background-color: #201d0e;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+    width: 20%;
+    height: 35px;
+    margin-top: 32px;
+  }
+  
+  .search-button i {
+    margin-right: 10px;
+  }
+
+  .search-button:hover {
+    background-color: white;
+    color: black;
+    border: 1px solid #201d0e;
+  }
+
+  .sort-container {
+    margin-top: 20px;
+    display: inline-block;
+    margin-bottom: 10px;
+    transform: translateX(-152%);
+  }
+  
+  .sort-container label {
+    font-size: 14px;
+    margin-right: 10px;
+  }
+  
+  .sort-container select {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .sort-container select:hover,
+  .sort-container select:focus {
+    border-color: #8f0710;
+    box-shadow: 0 0 6px rgba(1, 10, 19, 0.5);
+  }
+  
+  .sort-container select option {
+    padding: 8px;
+  }
+
 
 </style>
