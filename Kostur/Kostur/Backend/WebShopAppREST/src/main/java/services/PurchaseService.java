@@ -43,7 +43,7 @@ public class PurchaseService {
 	}
 	
 	@GET
-	@Path("/{userId}")
+	@Path("/user/{userId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<Purchase> findAllByUserId(@PathParam("userId") Long userId) {
 		PurchaseDAO dao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
@@ -64,5 +64,13 @@ public class PurchaseService {
         
         return PurchaseDTO.convertToDTO(createdPurchase);
     }
+	
+	@GET
+	@Path("/factory/{factoryId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Purchase> findAllByFactoryId(@PathParam("factoryId") Long factoryId) {
+		PurchaseDAO dao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
+		return dao.findAllByFactoryId(factoryId);
+	}
 	
 }

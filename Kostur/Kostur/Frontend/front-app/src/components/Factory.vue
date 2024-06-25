@@ -22,7 +22,7 @@
       <p>{{ factory.location.longitude }}</p>
       <p>{{ factory.location.latitude }}</p>
     </div>
-    
+    <button v-if="isManager" @click="navigateToPurchases(factory.id)" class="purchases-button"><i class="fas fa-shopping-cart search-icon"></i>Purchases</button>
     
   </div>
   <h3>Chocolates</h3>
@@ -309,7 +309,9 @@ function addToBasket(chocolate, quantity) {
   }
 }
 
-
+function navigateToPurchases(factoryId) {
+  router.push( { name: 'factoryPurchases', paramas: { id: factoryId}});
+}
 
 </script>
 
@@ -664,5 +666,32 @@ input[type="number"]::-webkit-inner-spin-button {
     margin: 0;
 }
 
+.purchases-button {
+    background-color: #8f0710; 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+    width: 25%;
+    margin-top: 15px;
+  }
+  
+  .purchases-button:hover{
+    background-color: white; 
+    color: #503216;
+    border: 1px solid #8f0710;
+  }
 
+  .purchases-button .fas{
+    color: white;
+    margin-right: 5px
+  }
+
+  .purchases-button:hover .fas{
+    color:#503216
+  }
+  
 </style>

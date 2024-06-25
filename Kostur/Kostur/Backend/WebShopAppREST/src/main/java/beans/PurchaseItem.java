@@ -40,5 +40,7 @@ public class PurchaseItem {
 	public void setPurchaseId(Long purchaseId) {
 		this.purchaseId = purchaseId;
 	}
+	
+	
     
 }

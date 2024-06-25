@@ -8,6 +8,8 @@
             <ul v-if="showDropdown" class="dropdown-menu">
                 <li><button class="edit-profile-button" @click="navigateToEditProfile"> <i class="fas fa-pencil-alt"></i>Edit</button></li>
                 <li><button class="edit-profile-button" v-if="userRole == 'Admin'" @click="navigateToAllUsers"> <i class="fas fa-user"></i>Users</button></li>
+                <li><button class="factory-profile-button" v-if="userRole == 'Manager' " @click="navigateToFactory"> <i class="fas fa-industry search-icon"></i>Factory</button></li>
+                <li><button class="purchases-button" v-if="userRole == 'Customer' " @click="navigateToPurchases"> <i class="fas fa-shopping-cart search-icon"></i>Purchases</button></li>
             </ul>
           </div>
         <div class="profile-pic">
@@ -111,6 +113,14 @@ const navigateToAllUsers = () => {
   }
 };
 
+
+const navigateToFactory = () => {
+  if (user.value && user.value.factory && user.value.factory.id) {
+    router.push({ name: 'factory', params: { id: user.value.factory.id } });
+  } else {
+    console.error('Factory ID not found or user is not a manager');
+  }
+};
 </script>
   
 <style scoped>
@@ -166,7 +176,7 @@ const navigateToAllUsers = () => {
     background: none;
     border: none;
     cursor: pointer;
-    width: 100px;
+    width: 120px;
   }
   
   .edit-button img {
@@ -222,6 +232,8 @@ const navigateToAllUsers = () => {
     padding: 5px 0;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000; 
+    display: inline-block;
+    white-space: nowrap;
   }
   
   .dropdown-menu li {
@@ -238,12 +250,14 @@ const navigateToAllUsers = () => {
     cursor: pointer;
   }
   
+  .purchases-button .fas,
+  .factory-profile-button .fas,
   .edit-profile-button .fas{
     color: white;
     margin-right: 10px
   }
   
-  .edit-profile-button{
+  .edit-profile-button {
     background-color: #8f0710; 
     color: white;
     border: none;
@@ -253,6 +267,7 @@ const navigateToAllUsers = () => {
     font-size: 0.9em;
     transition: background-color 0.3s;
     width: 90%;
+    margin-bottom: 3px;
   }
   
   .edit-profile-button:hover{
@@ -261,11 +276,49 @@ const navigateToAllUsers = () => {
     border: 1px solid #8f0710;
   }
   
+  .purchases-button:hover .fas,
+  .factory-profile-button:hover .fas,
   .edit-profile-button:hover .fas{
     color:#503216
   }
   
+  .factory-profile-button{
+    background-color: #8f0710; 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+    width: 90%;
+    margin-bottom: 3px;
+  }
   
+  .factory-profile-button:hover{
+    background-color: white; 
+    color: #503216;
+    border: 1px solid #8f0710;
+  }
+
+  .purchases-button {
+    background-color: #8f0710; 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+    width: 90%;
+    margin-bottom: 3px;
+  }
+  
+  .purchases-button:hover{
+    background-color: white; 
+    color: #503216;
+    border: 1px solid #8f0710;
+  }
   
   </style>
   
