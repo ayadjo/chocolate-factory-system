@@ -23,6 +23,7 @@ import beans.PurchaseItem;
 import beans.User;
 import dto.ChocolateDTO;
 import dto.PurchaseDTO;
+import dto.RejectPurchaseDTO;
 import enums.ChocolateKind;
 import enums.ChocolateStatus;
 import enums.ChocolateType;
@@ -72,6 +73,7 @@ public class PurchaseDAO {
 	            String userId = st.nextToken().trim();
 	            String status = st.nextToken().trim();
 	            String factoryId = st.nextToken().trim();
+	            String rejectionNote = st.nextToken().trim();
 
 	            long purchaseId = Long.parseLong(id);
 	            double priceDouble = Double.parseDouble(price);
@@ -83,7 +85,7 @@ public class PurchaseDAO {
 
 	            
 	            User user = new User(userIdLong);
-	            Purchase purchase = new Purchase(purchaseId, parsedPurchaseDate, priceDouble, user, purchaseStatus,  new Factory(Long.parseLong(factoryId)));
+	            Purchase purchase = new Purchase(purchaseId, parsedPurchaseDate, priceDouble, user, purchaseStatus,  new Factory(Long.parseLong(factoryId)), rejectionNote);
 	            
 	            purchases.put(purchaseId, purchase);
 	        }
@@ -162,9 +164,11 @@ public class PurchaseDAO {
 	public Collection<Purchase> findAllByFactoryId(Long factoryId) {
 		List<Purchase> factoryPurchases = new ArrayList<>();
 		boolean factoryItem = false;
+		PurchaseItemDAO purchaseItemDAO = new PurchaseItemDAO(contextPath);
+		Collection<PurchaseItem> items = purchaseItemDAO.findAll();
         for (Purchase purchase : purchases.values()) {		
-        	for (PurchaseItem item : purchase.getItems()) {  
-        		if (item.getChocolate().getFactory().getId().equals(factoryId)) { 
+        	for (PurchaseItem item : items) {  
+        		if (item.getChocolate().getFactory().getId().equals(factoryId) && item.getPurchaseId().equals(purchase.getId())) { 
         			factoryItem = true;
         		}
         	}
@@ -177,7 +181,7 @@ public class PurchaseDAO {
         for (Purchase purchase : factoryPurchases) {		
         	purchase.setPrice(0);
         	ArrayList<PurchaseItem> updatedItems = new ArrayList<>();
-        	for (PurchaseItem item : purchase.getItems()){
+        	for (PurchaseItem item : items){
         		if (item.getChocolate().getFactory().getId().equals(factoryId)) {
         			purchase.setPrice(purchase.getPrice() + item.getChocolate().getPrice()*item.getQuantity());
         			updatedItems.add(item);
@@ -211,6 +215,31 @@ public class PurchaseDAO {
 	            } catch (Exception e) {}
 	        }
 	    }
+	}
+	
+	public Purchase findById(Long id) {
+        return purchases.get(id);
+    }
+	
+	public Purchase rejectPurchase(RejectPurchaseDTO dto) {
+		ChocolateDAO chocolateDAO = new ChocolateDAO(contextPath);
+		
+		PurchaseItemDAO purchaseItemDAO = new PurchaseItemDAO(contextPath);
+		Collection<PurchaseItem> items = purchaseItemDAO.findAll();
+		
+		for(PurchaseItem item : items) {
+			if(item.getPurchaseId().equals(dto.getPurchaseId())) {
+				chocolateDAO.incrementOnStock(item.getChocolate().getId(), item.getQuantity());
+			}
+		}
+		
+		
+		Purchase purchase = findById(dto.getPurchaseId());
+		purchase.setStatus(PurchaseStatus.Rejected);
+		purchase.setRejectionNote(dto.getRejectionNote());
+		writeToFile();
+		
+		return purchase;
 	}
 	
 }

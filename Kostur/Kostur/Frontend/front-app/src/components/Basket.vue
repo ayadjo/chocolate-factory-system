@@ -128,7 +128,7 @@ function checkout(items){
 
  axios.post(`http://localhost:8080/WebShopAppREST/rest/purchases/${userId}/${basketId.value}`)
     .then(() => {
-      alert("Successful purchases!");
+      alert("Successful purchase!");
 
       axios.put(`http://localhost:8080/WebShopAppREST/rest/users/points/${userId}?price=${this.totalPrice}`)
         .then(() => {

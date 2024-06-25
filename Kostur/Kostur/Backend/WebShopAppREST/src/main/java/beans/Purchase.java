@@ -13,6 +13,7 @@ public class Purchase {
 	private User user;
 	private PurchaseStatus status;
 	private Factory factory;
+	private String rejectionNote;
 	
 	public Purchase() {
 		super();
@@ -20,7 +21,7 @@ public class Purchase {
 	}
 
 	public Purchase(Long id, Date purchaseDateAndTime, double price,
-			User user, PurchaseStatus status, Factory factory) {
+			User user, PurchaseStatus status, Factory factory, String rejectionNote) {
 		super();
 		this.id = id;
 		this.purchaseDateAndTime = purchaseDateAndTime;
@@ -29,12 +30,13 @@ public class Purchase {
 		this.status = status;
 		this.items = new ArrayList<>();
 		this.factory = factory;
+		this.rejectionNote = rejectionNote;
 	}
 	
 	public String toStringForFile() {
         return id + ";" + purchaseDateAndTime + ";" + price + ";" + 
                (user != null ? user.getId() : "-1") + ";" + status + ";" +
-               (factory != null ? factory.getId() : "-1");
+               (factory != null ? factory.getId() : "-1") + ";" + rejectionNote;
     }
 
 
@@ -93,5 +95,15 @@ public class Purchase {
 	public void setFactory(Factory factory) {
 		this.factory = factory;
 	}
+
+	public String getRejectionNote() {
+		return rejectionNote;
+	}
+
+	public void setRejectionNote(String rejectionNote) {
+		this.rejectionNote = rejectionNote;
+	}
+	
+	
 	
 }

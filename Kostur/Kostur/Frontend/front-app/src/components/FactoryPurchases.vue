@@ -64,15 +64,24 @@
       </table>
 
       <div class="status-buttons">
-        <button class="approve-button" @click="approvePurchase(purchase)">
+        <button v-if="selectedPurchase.status == 'Processing'" class="approve-button" @click="approvePurchase(purchase)">
           <i class="fas fa-check"></i> Approve
         </button>
-        <button class="reject-button" @click="rejectPurchase(purchase)">
+        <button v-if="selectedPurchase.status == 'Processing'" class="reject-button" @click="openRejectModal(selectedPurchase)">
           <i class="fas fa-times"></i> Reject
         </button>
       </div>
       
     </div>
+
+    <div v-if="showRejectModal" class="small-modal" @click.self="closeRejectModal">
+      <div class="modal-content">
+          <span class="close-button" @click="closeRejectModal">&times;</span>
+          <h4>Reject Purchase</h4>
+          <textarea v-model="rejectionNote" placeholder="Enter reason for rejection" class="rejection-note"></textarea>
+          <button class="reject-button" @click="submitRejection">Submit Rejection</button>
+      </div>
+  </div>
   </div>
 </template>
 
@@ -85,13 +94,14 @@ const purchases = ref([])
 const route = useRoute();
 const factoryId = route.params.id;
 const selectedPurchase = ref(null);
+const showRejectModal = ref(false);
+const rejectionNote = ref('');
 
 const getPurchases = async (factoryId) => {
   try {
     const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/purchases/factory/${factoryId}`);
     purchases.value = response.data;
 
-    // Loop through each purchase item in the response data
     purchases.value.forEach(purchase => {
       const date = purchase.purchaseDateAndTime;
       if (date) {
@@ -122,6 +132,42 @@ const getPurchases = async (factoryId) => {
   return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
 };
 
+const openRejectModal = (purchase) => {
+  selectedPurchase.value = purchase;
+  showRejectModal.value = true;
+};
+
+const closeRejectModal = () => {
+  showRejectModal.value = false;
+  rejectionNote.value = '';
+};
+
+const rejectPurchase = async (purchaseId, rejectionNote) => {
+  try {
+    await axios.put(`http://localhost:8080/WebShopAppREST/rest/purchases/rejectPurchase`, {
+      purchaseId,
+      rejectionNote
+    });
+    alert("Purchase rejected successfully.");
+    closeRejectModal();
+    closeModal();
+    getPurchases(factoryId); 
+  } catch (error) {
+    console.error('Error rejecting purchase:', error);
+    alert('Failed to reject purchase. Please try again.');
+  }
+};
+
+const submitRejection = () => {
+  if (!rejectionNote.value) {
+    alert('Please enter a reason for rejection.');
+    return;
+  }
+  rejectPurchase(selectedPurchase.value.id, rejectionNote.value);
+};
+
+
+
 const showDetails = (purchase) => {
   selectedPurchase.value = purchase;
 };
@@ -138,9 +184,6 @@ const approvePurchase = (purchase) => {
   console.log("Purchase approved:", purchase);
 };
 
-const rejectPurchase = (purchase) => {
-  console.log("Purchase rejected:", purchase);
-};
 
 
 onMounted(() => {
@@ -229,6 +272,18 @@ onMounted(() => {
 }
 
 .modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.small-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -340,6 +395,16 @@ onMounted(() => {
 
 .reject-button:hover i {
   color: black;
+}
+
+.rejection-note {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin-bottom: 16px;
+  resize: none;
+  height: 80px;
 }
 
 </style>

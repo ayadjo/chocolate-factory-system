@@ -7,6 +7,7 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -23,6 +24,7 @@ import dao.FactoryDAO;
 import dao.PurchaseDAO;
 import dto.ChocolateDTO;
 import dto.PurchaseDTO;
+import dto.RejectPurchaseDTO;
 
 @Path("/purchases")
 public class PurchaseService {
@@ -73,4 +75,11 @@ public class PurchaseService {
 		return dao.findAllByFactoryId(factoryId);
 	}
 	
+	@PUT
+	@Path("/rejectPurchase")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Purchase rejectPurchase(RejectPurchaseDTO dto) {
+		PurchaseDAO dao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
+		return dao.rejectPurchase(dto);
+	}
 }
