@@ -40,6 +40,8 @@
   const cartItemCount = ref(0);
   const userRole = ref(null);
   const isAdmin = ref(false);
+  const basketId = ref("");
+  const items = ref([]);
 
   const checkLoggedIn = () => {
     const userId = localStorage.getItem('loggedUserId');
@@ -87,12 +89,25 @@
       if (userId.value !== null) {
         const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/baskets/${userId}`);
         const basket = response.data;
-        cartItemCount.value = basket.items.length;
+        basketId.value = basket.id;
+        await loadItems(basketId.value);
+        
       }
     } catch (error) {
       console.error('Error fetching basket data:', error);
     }
   };
+
+  const loadItems = async (basketId) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/basketItems/byBasket/${basketId}`);
+    items.value = response.data;
+    console.log("items: ", items.value.length);
+    cartItemCount.value = items.value.length;
+  } catch (error) {
+    console.error('Error loading items:', error);
+  }
+};
 
   onMounted(() => {
     checkLoggedIn();
