@@ -309,8 +309,8 @@ function addToBasket(chocolate, quantity) {
   }
 }
 
-function navigateToPurchases(factoryId) {
-  router.push( { name: 'factoryPurchases', paramas: { id: factoryId}});
+function navigateToPurchases(id) {
+  router.push( { name: 'purchases', paramas: { id: id}});
 }
 
 </script>

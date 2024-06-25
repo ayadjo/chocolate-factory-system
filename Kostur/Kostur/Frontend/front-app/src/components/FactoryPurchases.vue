@@ -31,7 +31,7 @@
                 />
             </div>
 
-            <p class="user-name"><strong>{{ purchase.user.firstName }} {{ purchase.user.lastName }}</strong></p>
+            <p class="user-name" v-if="isManager"><strong>{{ purchase.user.firstName }} {{ purchase.user.lastName }}</strong></p>
             <p class="purchase-date">Date: {{ purchase.purchaseDateAndTime }}</p>
             <p class="purchase-price">Price: ${{ formatPrice(purchase.price) }}</p>
             <button class="details-button" @click="showDetails(purchase)">Show Details</button>
@@ -64,11 +64,14 @@
       </table>
 
       <div class="status-buttons">
-        <button class="approve-button" @click="approvePurchase(purchase)">
+        <button v-if="isManager" class="approve-button" @click="approvePurchase(purchase)">
           <i class="fas fa-check"></i> Approve
         </button>
-        <button class="reject-button" @click="rejectPurchase(purchase)">
+        <button v-if="isManger" class="reject-button" @click="rejectPurchase(purchase)">
           <i class="fas fa-times"></i> Reject
+        </button>
+        <button v-if="isCustomer" class="cancel-button" @click="cancelPurchase(purchase)">
+          <i class="fas fa-times"></i> Cancel
         </button>
       </div>
       
@@ -77,34 +80,43 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 
 const purchases = ref([])
 const route = useRoute();
-const factoryId = route.params.id;
+const id = route.params.id;
 const selectedPurchase = ref(null);
+const userRole = ref(null);
 
-const getPurchases = async (factoryId) => {
+const getPurchases = async (id) => {
   try {
-    const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/purchases/factory/${factoryId}`);
-    purchases.value = response.data;
+    let response;
+    console.log(isManager.value);
+    console.log(userRole.value === 'Customer');
+    if (isManager.value){
+      response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/purchases/factory/${id}`);
+    } else if(isCustomer.value) {
+      response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/purchases/user/${id}`);
+    }
+    
+    if (response && response.data) {
+      purchases.value = response.data;
 
-    // Loop through each purchase item in the response data
-    purchases.value.forEach(purchase => {
-      const date = purchase.purchaseDateAndTime;
-      if (date) {
-        const dateParts = date.split('T')[0].split('-'); 
-        const formattedDate = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
-        purchase.purchaseDateAndTime = formattedDate;
-        
-      } else {
-        console.error('Empty or null value received for date field');
-      }
-    });
-
-    console.log("Retrieved all purchases from the factory with id", factoryId);
+      purchases.value.forEach(purchase => {
+        const date = purchase.purchaseDateAndTime;
+        if (date) {
+          const dateParts = date.split('T')[0].split('-'); 
+          const formattedDate = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
+          purchase.purchaseDateAndTime = formattedDate;
+        } else {
+          console.error('Empty or null value received for date field');
+        }
+      });
+      console.log("Retrieved all purchases", id);
+    }
+    
   } catch (error) {
     console.error("There was an error retrieving purchases.", error);
   }
@@ -121,6 +133,29 @@ const getPurchases = async (factoryId) => {
   }
   return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
 };
+
+const checkLoggedIn = () => {
+  return new Promise((resolve, reject) => {
+    const userId = localStorage.getItem('loggedUserId');
+    if (userId) {
+      axios.get(`http://localhost:8080/WebShopAppREST/rest/users/${userId}`)
+        .then(response => {
+          const user = response.data;
+          userRole.value = user.role;
+          resolve();
+        })
+        .catch(error => {
+          console.error('Error fetching user data:', error);
+          userRole.value = null;
+          reject();
+        });
+    } else {
+      userRole.value = null;
+      reject();
+    }
+  });
+};
+
 
 const showDetails = (purchase) => {
   selectedPurchase.value = purchase;
@@ -142,9 +177,26 @@ const rejectPurchase = (purchase) => {
   console.log("Purchase rejected:", purchase);
 };
 
+const cancelPurchase = (purchase) => {
+  console.log("Purchase cancelled:", purchase);
+};
 
-onMounted(() => {
-    getPurchases(factoryId);
+
+onMounted(async () => {
+    await checkLoggedIn();
+    getPurchases(id);
+});
+
+const isManager = computed(() => {
+    return userRole.value === 'Manager';
+  });
+
+const isEmployee = computed(() => {
+    return userRole.value === 'Employee';
+  });
+
+const isCustomer = computed(() => {
+  return userRole.value === 'Customer';
 });
 
 </script>
@@ -305,7 +357,7 @@ onMounted(() => {
   margin-bottom: 10px;
 }
 
-.approve-button, .reject-button {
+.approve-button, .reject-button, .cancel-button{
   background-color: #8f0710; 
   color: white;
   border: none;
@@ -318,7 +370,8 @@ onMounted(() => {
 }
 
 .reject-button:hover,
-.approve-button:hover {
+.approve-button:hover,
+.cancel-button:hover {
   background-color: white; 
   color: black;
   border: 1px solid #8f0710;

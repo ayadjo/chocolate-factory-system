@@ -9,7 +9,7 @@
                 <li><button class="edit-profile-button" @click="navigateToEditProfile"> <i class="fas fa-pencil-alt"></i>Edit</button></li>
                 <li><button class="edit-profile-button" v-if="userRole == 'Admin'" @click="navigateToAllUsers"> <i class="fas fa-user"></i>Users</button></li>
                 <li><button class="factory-profile-button" v-if="userRole == 'Manager' " @click="navigateToFactory"> <i class="fas fa-industry search-icon"></i>Factory</button></li>
-                <li><button class="purchases-button" v-if="userRole == 'Customer' " @click="navigateToPurchases"> <i class="fas fa-shopping-cart search-icon"></i>Purchases</button></li>
+                <li><button class="purchases-button" v-if="userRole == 'Customer' " @click="navigateToPurchases(userId)"> <i class="fas fa-shopping-cart search-icon"></i>Purchases</button></li>
             </ul>
           </div>
         <div class="profile-pic">
@@ -121,6 +121,10 @@ const navigateToFactory = () => {
     console.error('Factory ID not found or user is not a manager');
   }
 };
+
+const navigateToPurchases = (userId) => {  
+  router.push({ name: 'purchases', params: { id: userId }})
+}
 </script>
   
 <style scoped>
