@@ -7,6 +7,7 @@
             </button>
             <ul v-if="showDropdown" class="dropdown-menu">
               <li><button class="edit-profile-button" v-if="userFactory == factoryId && isManager" @click="navigateToEmployees"><i class="fas fa-user"></i>Employees</button></li>
+              <li><button v-if="userFactory == factoryId && isManager" @click="navigateToPurchases(factory.id)" class="edit-profile-button"><i class="fas fa-shopping-cart search-icon"></i>Purchases</button></li>
             </ul>
           </div>
           <h2>{{ factory.name }}</h2>
@@ -22,7 +23,7 @@
       <p>{{ factory.location.longitude }}</p>
       <p>{{ factory.location.latitude }}</p>
     </div>
-    <button v-if="isManager" @click="navigateToPurchases(factory.id)" class="purchases-button"><i class="fas fa-shopping-cart search-icon"></i>Purchases</button>
+    <!-- <button v-if="userFactory == factoryId && isManager" @click="navigateToPurchases(factory.id)" class="purchases-button"><i class="fas fa-shopping-cart search-icon"></i>Purchases</button> -->
     
   </div>
   <h3>Chocolates</h3>
