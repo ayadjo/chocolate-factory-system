@@ -26,7 +26,7 @@
     
   </div>
   <h3>Chocolates</h3>
-  <button @click="addChocolate(factory.id)" class="add-button">
+  <button @click="addChocolate(factory.id)" class="add-button" v-if="userFactory == factoryId && isManager">
     <i class="fas fa-plus"></i> Add Chocolate
   </button>
     <div class="chocolates">
@@ -43,13 +43,13 @@
           <p><strong>Price:</strong> ${{ chocolate.price }}</p>
           <p><strong>Weight:</strong> {{ chocolate.weight }}g</p> 
           <div class="card-actions">
-            <button @click="updateChocolate(chocolate.id)" v-if="isManager" class="action-button">
+            <button @click="updateChocolate(chocolate.id)" v-if="userFactory == factoryId && isManager" class="action-button">
               <i class="fas fa-pencil-alt"></i>
             </button>
-            <button @click="openQuantityModal(chocolate)" v-if="isEmployee"  class="action-button">
+            <button @click="openQuantityModal(chocolate)" v-if="userFactory == factoryId && isEmployee"  class="action-button">
               <i class="fas fa-box"></i>
             </button>
-            <button @click="deleteChocolate(chocolate.id)" v-if="isManager" class="action-button">
+            <button @click="deleteChocolate(chocolate.id)" v-if="userFactory == factoryId && isManager" class="action-button">
               <i class="fas fa-trash-alt"></i>
             </button>
             <div v-if="isCustomer">
