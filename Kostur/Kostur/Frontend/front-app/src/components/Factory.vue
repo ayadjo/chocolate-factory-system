@@ -42,6 +42,7 @@
           <p><strong>Kind:</strong> {{ chocolate.kind }}</p>
           <p><strong>Price:</strong> ${{ chocolate.price }}</p>
           <p><strong>Weight:</strong> {{ chocolate.weight }}g</p> 
+          <p><strong>On Stock:</strong> {{ chocolate.onStock }}</p> 
           <div class="card-actions">
             <button @click="updateChocolate(chocolate.id)" v-if="userFactory == factoryId && isManager" class="action-button">
               <i class="fas fa-pencil-alt"></i>
@@ -54,7 +55,7 @@
             </button>
             <div v-if="isCustomer">
               <button @click="decrementQuantity(chocolate.id)" class="quantity-button">-</button>
-              <input type="number" v-model="quantities[chocolate.id]" class="quantity-input" min="1">
+              <input type="number" v-model="quantities[chocolate.id]" class="quantity-input" min="1" disabled>
               <button @click="incrementQuantity(chocolate)" class="quantity-button">+</button>
               <button @click="addToBasket(chocolate, quantities[chocolate.id])" class="action-button">
                 <i class="fas fa-cart-plus"></i> 
@@ -180,6 +181,11 @@ const checkLoggedIn = () => {
           const user = response.data;
           isLoggedIn.value = true;
           userRole.value = user.role;
+          if(userRole.value == 'Customer'){
+              loadChocolatesForCustomer(route.params.id);
+            }else {
+              loadChocolates(route.params.id);
+            }
         })
         .catch(error => {
           console.error('Error fetching user data:', error);
@@ -212,9 +218,7 @@ const isCustomer = computed(() => {
 onMounted(() => {
   loadFactory(route.params.id);
   fetchUser();
-  loadChocolates(route.params.id);
   checkLoggedIn();
-  
 });
 
 function loadFactory(id) {
@@ -227,6 +231,16 @@ function loadFactory(id) {
 
 function loadChocolates(factoryId) {
   axios.get(`http://localhost:8080/WebShopAppREST/rest/chocolates/byFactory/${factoryId}`)
+    .then(response => {
+      chocolates.value = response.data;
+      chocolates.value.forEach(chocolate => {
+        quantities.value[chocolate.id] = 1; 
+      });
+    });
+}
+
+function loadChocolatesForCustomer(factoryId) {
+  axios.get(`http://localhost:8080/WebShopAppREST/rest/chocolates/byFactory/forCustomer/${factoryId}`)
     .then(response => {
       chocolates.value = response.data;
       chocolates.value.forEach(chocolate => {
@@ -293,7 +307,24 @@ function decrementQuantity(chocolateId) {
   }
 }
 
-function addToBasket(chocolate, quantity) {
+// function addToBasket(chocolate, quantity) {
+//   const userId = localStorage.getItem('loggedUserId'); 
+//   if (!userId) {
+//     alert("Please log in to add chocolates to the basket.");
+//     return;
+//   }
+
+//   try {
+//     const response = axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/addChocolateToBasket/${userId}/${chocolate.id}/${quantity}`);
+//     chocolate.value = response.data;
+//     alert(`Added ${quantity} of ${chocolate.name} to the basket.`);
+//   } catch (error) {
+//     console.error('Error adding chocolate to basket:', error);
+//     alert('Failed to add chocolate to the basket. Please try again.');
+//   }
+// }
+
+async function addToBasket(chocolate, quantity) {
   const userId = localStorage.getItem('loggedUserId'); 
   if (!userId) {
     alert("Please log in to add chocolates to the basket.");
@@ -301,13 +332,23 @@ function addToBasket(chocolate, quantity) {
   }
 
   try {
-    axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/addChocolateToBasket/${userId}/${chocolate.id}/${quantity}`);
+    const response = await axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/addChocolateToBasket/${userId}/${chocolate.id}/${quantity}`);
+    const updatedChocolate = response.data; 
+
+    const chocolateIndex = chocolates.value.findIndex(choc => choc.id === updatedChocolate.id);
+    if (chocolateIndex !== -1) {
+      chocolates.value[chocolateIndex].onStock = updatedChocolate.onStock;
+      chocolates.value[chocolateIndex].status = updatedChocolate.status;
+    }
+
+
     alert(`Added ${quantity} of ${chocolate.name} to the basket.`);
   } catch (error) {
     console.error('Error adding chocolate to basket:', error);
     alert('Failed to add chocolate to the basket. Please try again.');
   }
 }
+
 
 function navigateToPurchases(factoryId) {
   router.push( { name: 'factoryPurchases', paramas: { id: factoryId}});

@@ -137,4 +137,12 @@ public class ChocolateService {
 		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
 		dao.updateQuantityAfterPurchase(purchaseDto);
 	}
+	
+	@GET
+	@Path("/byFactory/forCustomer/{factoryId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Chocolate> findAllByFactoryIdForCustomer(@PathParam("factoryId") Long factoryId){
+		ChocolateDAO dao = (ChocolateDAO) ctx.getAttribute("chocolateDAO");
+		return dao.findByFactoryIdForCustomers(factoryId);
+	}
 }

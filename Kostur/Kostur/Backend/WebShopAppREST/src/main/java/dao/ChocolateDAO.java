@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import beans.BasketItem;
 import beans.Chocolate;
 import beans.Factory;
 import beans.Purchase;
@@ -159,7 +160,6 @@ public class ChocolateDAO {
 	        out = new BufferedWriter(new FileWriter(file));
 	        for (Chocolate chocolate : chocolates.values()) {
 	            String chocolateData = chocolate.toStringForFile();
-	            System.out.println("Writing chocolate data: " + chocolateData); 
 	            out.write(chocolateData + "\n");
 	        }
 	    } catch (Exception e) {
@@ -171,6 +171,7 @@ public class ChocolateDAO {
 	            } catch (Exception e) {}
 	        }
 	    }
+	    //loadChocolates(contextPath);
 	}
 
 	
@@ -232,6 +233,52 @@ public class ChocolateDAO {
 	        }
 	    }
 		
+	}
+	
+	public Chocolate decrementOnStock(Long id, int quantity){
+		Chocolate chocolate = chocolates.containsKey(id) ? chocolates.get(id) : null;
+		if (chocolate == null) {
+			return null;
+		} else {
+			int oldOnStock = chocolate.getOnStock();
+	        chocolate.setOnStock(chocolate.getOnStock() - quantity);
+	        if((oldOnStock - quantity)==0) {
+	        	chocolate.setStatus(ChocolateStatus.outOfStock);
+	        }
+		}
+		writeToFile();
+		
+		return chocolate;
+	}
+	
+	public Chocolate incrementOnStock(Long id, int quantity){
+		Chocolate chocolate = chocolates.containsKey(id) ? chocolates.get(id) : null;
+		if (chocolate == null) {
+			return null;
+		} else {
+			int oldOnStock = chocolate.getOnStock();
+	        chocolate.setOnStock(chocolate.getOnStock() + quantity);
+	        if((oldOnStock + quantity)>0) {
+	        	chocolate.setStatus(ChocolateStatus.onStock);
+	        }
+		}
+		writeToFile();
+		
+		return chocolate;
+	}
+	
+	public Collection<Chocolate> findByFactoryIdForCustomers(Long factoryId) {
+		loadChocolates(contextPath);
+	    List<Chocolate> foundChocolates = new ArrayList<>();
+	    Collection<Chocolate> allChocolates = chocolates.values();
+	    
+	    for (Chocolate c : allChocolates) {
+	        if (c.getStatus().equals(ChocolateStatus.onStock) && c.getFactory().getId().equals(factoryId) && !c.isDeleted()) {
+	            foundChocolates.add(c);
+	        }
+	    }
+
+	    return foundChocolates;
 	}
 	
 	

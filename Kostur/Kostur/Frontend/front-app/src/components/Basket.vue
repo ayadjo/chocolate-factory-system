@@ -1,12 +1,13 @@
 <template>
   <div class="basket-container">
-    <label v-if="items.length != 0" class="title"><i class="fas fa-shopping-cart fa-1x"></i>Shopping Cart</label>
+    <label v-if="items.length != 0" class="title"><img class="title-image" src="../assets/carts.png"></img>Shopping Cart</label>
 
 
     <div class="items">
       <div v-if="items.length === 0" class="no-items">
-        <i class="fas fa-shopping-cart fa-5x"></i>
-        <p>Your shopping cart is empty.</p>   
+        <!-- <i class="fas fa-shopping-cart fa-5x"></i> -->
+         <img class="no-items-image" src="../assets/Discount-pana.png"></img>
+        <p class="no-items-message">Ups!... your shopping bag is currently empty, visit our shop and check discounts</p>   
       </div>
       
       <div v-else v-for="item in items" :key="item.id" class="item-card">
@@ -15,11 +16,12 @@
             <h4 class="item-name">{{ item.chocolate.name }}</h4>
             <p class="p"> {{ item.chocolate.weight }}g</p>
             <p class="p"> {{ item.chocolate.type }}</p>
-            <p class="p">{{ item.chocolate.kind }}</p>         
+            <p class="p">{{ item.chocolate.kind }}</p>     
+            <p class="p">{{ item.chocolate.onStock }}</p>     
           </div>
           <div class="item-quantity">
             <button @click="decrementQuantity(item)" class="quantity-button">-</button>
-            <input type="number" v-model="item.quantity" class="quantity-input" min="1">
+            <input type="number" v-model="item.quantity" class="quantity-input" min="1" >
             <button @click="incrementQuantity(item)" class="quantity-button">+</button>
           </div>
           <div class="item-price">
@@ -61,13 +63,7 @@
         totalPrice = basket.price.toFixed(2);
         basketId.value = basket.id;
         console.log(basketId.value)
-        // loadItems(basketId.value);
-        try {
-            const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/basketItems/byBasket/${basketId.value}`);
-            items.value = response.data;
-          } catch (error) {
-            console.error('Error loading items:', error);
-          }
+        await loadItems(basketId.value);
       }
     } catch (error) {
       console.error('Error fetching basket data:', error);
@@ -89,7 +85,7 @@
     if (item.quantity > 1) {
       const userId = localStorage.getItem('loggedUserId');
       const response = await axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/decrementQuantity/${userId}/${item.chocolate.id}`);
-      fetchBasketData();
+      await fetchBasketData();
     }
   } catch (error) {
     console.error('Error updating basket:', error);
@@ -99,11 +95,11 @@
   async function incrementQuantity(item) {
     try {
       const userId = localStorage.getItem('loggedUserId');
-      if (item.quantity < item.chocolate.onStock) {
+      if (item.chocolate.status === 'onStock') {
         await axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/incrementQuantity/${userId}/${item.chocolate.id}`);
-        fetchBasketData();
+        await fetchBasketData();
       } else {
-        alert(`Cannot add more than ${item.chocolate.onStock} of ${item.chocolate.name} to the basket.`);
+        alert(`${item.chocolate.name} is currently out of stock.`);
       }
     } catch (error) {
       console.error('Error updating basket:', error);
@@ -170,6 +166,25 @@ function checkout(items){
 </script>
 
 <style>
+
+.no-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0px;
+}
+
+.no-items-image {
+  width: 60%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.no-items-message {
+  font-size: 20px;
+  color: #666;
+  text-align: center;
+}
 
   .basket-container {
     width: 750px;
@@ -258,9 +273,11 @@ function checkout(items){
   margin-bottom: 20px;
 }
 
-.title i {
+.title-image {
   margin-right: 10px; 
+  width: 4%;
 }
+
 
 .quantity-selector {
     display: flex;

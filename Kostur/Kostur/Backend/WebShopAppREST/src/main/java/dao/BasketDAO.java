@@ -131,7 +131,7 @@ public class BasketDAO {
         return null; 
     }
 	
-	public Basket addChocolateToBasket(Long userId, Long chocolateId, int quantity) {
+	public Chocolate addChocolateToBasket(Long userId, Long chocolateId, int quantity) {
         Basket basket = findByUserId(userId);
         if (basket == null) {
             throw new IllegalArgumentException("Basket not found for user: " + userId);
@@ -141,6 +141,10 @@ public class BasketDAO {
         Chocolate chocolate = chocolateDAO.findById(chocolateId);
         if (chocolate == null) {
             throw new IllegalArgumentException("Chocolate not found: " + chocolateId);
+        } else if(chocolate.getOnStock() < quantity) {
+        	throw new IllegalArgumentException("Not enough chocolate on stock!");
+        } else if(chocolate.getOnStock() == 0) {
+        	throw new IllegalArgumentException("Chocolate is out of stock!");
         }
         
         BasketItemDAO itemDAO = new BasketItemDAO(contextPath);
@@ -151,6 +155,7 @@ public class BasketDAO {
             if (item.getChocolate().getId().equals(chocolateId) && item.getBasket().getId().equals(basket.getId()) && item.getIsDeleted() == false) {
                 int newQuantity = item.getQuantity() + quantity;
                 item = itemDAO.updateQuantity(item.getId(), newQuantity);
+                chocolateDAO.decrementOnStock(chocolateId, quantity);
                 itemFound = true;
                 break;
             }
@@ -159,6 +164,7 @@ public class BasketDAO {
         if (!itemFound) {
             BasketItem newItem = new BasketItem();
             newItem.setQuantity(quantity);
+            chocolateDAO.decrementOnStock(chocolateId, quantity);
             itemDAO.save(newItem, chocolate, basket);
         }
 
@@ -167,7 +173,7 @@ public class BasketDAO {
 
         writeToFile();
         
-        return basket;
+        return chocolate;
         
     }
 
@@ -181,6 +187,8 @@ public class BasketDAO {
         Chocolate chocolate = chocolateDAO.findById(chocolateId);
         if (chocolate == null) {
             throw new IllegalArgumentException("Chocolate not found: " + chocolateId);
+        } else if(chocolate.getOnStock() == 0) {
+        	throw new IllegalArgumentException("Chocolate is out of stock!");
         }
 
         BasketItemDAO itemDAO = new BasketItemDAO(contextPath);
@@ -189,6 +197,7 @@ public class BasketDAO {
             if (item.getChocolate().getId().equals(chocolateId) && item.getBasket().getId().equals(basket.getId()) && item.getIsDeleted() == false) {
             	int newQuantity = item.getQuantity() + 1;
             	item = itemDAO.updateQuantity(item.getId(), newQuantity);
+            	chocolateDAO.decrementOnStock(chocolateId, 1);
                 basket.setPrice(basket.getPrice() + item.getChocolate().getPrice());
                 break;
             }
@@ -218,6 +227,7 @@ public class BasketDAO {
             if (item.getChocolate().getId().equals(chocolateId) && item.getBasket().getId().equals(basket.getId()) && item.getIsDeleted() == false) {
                 int newQuantity = item.getQuantity() - 1;
                 item = itemDAO.updateQuantity(item.getId(), newQuantity);
+                chocolateDAO.incrementOnStock(chocolateId, 1);
                 basket.setPrice(basket.getPrice() - item.getChocolate().getPrice());
                 break;
             }
@@ -245,6 +255,7 @@ public class BasketDAO {
         for (BasketItem item : items) {
             if (item.getChocolate().getId().equals(chocolateId) && item.getBasket().getId().equals(basket.getId()) && item.getIsDeleted() == false) {            	
                 basket.setPrice(basket.getPrice() - item.getChocolate().getPrice()*item.getQuantity());
+                chocolateDAO.incrementOnStock(chocolateId, item.getQuantity());
                 itemDAO.removeItem(item.getId());
                 break;
             }

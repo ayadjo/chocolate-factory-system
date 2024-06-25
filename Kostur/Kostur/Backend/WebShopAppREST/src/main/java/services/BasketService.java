@@ -1,5 +1,7 @@
 package services;
 
+import java.util.Collection;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
@@ -47,7 +49,7 @@ public class BasketService {
 	@PUT
     @Path("addChocolateToBasket/{userId}/{chocolateId}/{quantity}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Basket addChocolateToBasket(@PathParam("userId") Long userId, @PathParam("chocolateId") Long chocolateId, @PathParam("quantity") int quantity) {
+    public Chocolate addChocolateToBasket(@PathParam("userId") Long userId, @PathParam("chocolateId") Long chocolateId, @PathParam("quantity") int quantity) {
         BasketDAO dao = (BasketDAO) ctx.getAttribute("basketDAO");
         return dao.addChocolateToBasket(userId, chocolateId, quantity);
     }

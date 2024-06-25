@@ -17,10 +17,10 @@ public class PurchaseDTO {
 		super();
 	}
 	
-	public PurchaseDTO(Long id, ArrayList<PurchaseItem> items, double price) {
+	public PurchaseDTO(Long id, double price) {
 		super();
 		this.id = id;
-		this.items = items;
+		this.items = new ArrayList<>();
 		this.price = price;
 	}
 	

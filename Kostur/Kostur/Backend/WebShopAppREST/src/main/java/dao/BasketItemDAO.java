@@ -173,6 +173,7 @@ public class BasketItemDAO {
 	}
 	
 	public Collection<BasketItem> findByBasketId(Long basketId) {
+		loadItems(contextPath);
 	    List<BasketItem> foundItems = new ArrayList<>();
 	    Collection<BasketItem> allItems = items.values();
 
