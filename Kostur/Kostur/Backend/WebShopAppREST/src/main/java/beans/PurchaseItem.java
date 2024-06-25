@@ -1,6 +1,7 @@
 package beans;
 
 public class PurchaseItem {
+	private Long id;
     private Chocolate chocolate;
     private int quantity;
     private Long purchaseId;
@@ -10,13 +11,29 @@ public class PurchaseItem {
 		super();
 	}
 	
-	public PurchaseItem(Chocolate chocolate, int quantity, Long purchaseId) {
+	public PurchaseItem(Long id, Chocolate chocolate, int quantity, Long purchaseId) {
 		super();
+		this.id = id;
 		this.chocolate = chocolate;
 		this.quantity = quantity;
 		this.purchaseId = purchaseId;
 	}
 	
+	public String toStringForFile() {
+        return id + ";" + (chocolate != null ? chocolate.getId() : "-1") + ";" + quantity + ";" + 
+        	   purchaseId;
+    }
+	
+
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public Chocolate getChocolate() {
 		return chocolate;
 	}

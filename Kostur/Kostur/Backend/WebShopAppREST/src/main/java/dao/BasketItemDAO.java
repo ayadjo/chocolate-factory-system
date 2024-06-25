@@ -185,4 +185,12 @@ public class BasketItemDAO {
 
 	    return foundItems;
 	}
+	
+	public BasketItem delete(BasketItem item) {
+		item.setDeleted(true);
+		
+		writeToFile();
+
+		return item;
+	}
 }

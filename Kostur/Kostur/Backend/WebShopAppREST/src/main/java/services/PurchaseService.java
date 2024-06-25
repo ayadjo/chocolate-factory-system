@@ -51,12 +51,12 @@ public class PurchaseService {
 	}
 	
 	@POST
-	@Path("/{userId}")
+	@Path("/{userId}/{basketId}")
 	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public PurchaseDTO createPurchase(PurchaseDTO dto, @PathParam("userId") Long userId) {  
+    public PurchaseDTO createPurchase(@PathParam("userId") Long userId, @PathParam("basketId") Long basketId) {  
 		PurchaseDAO dao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
-		Purchase createdPurchase = dao.save(dto, userId);
+		Purchase createdPurchase = dao.save(userId, basketId);
 		
 		if (createdPurchase == null) {
 			return null;

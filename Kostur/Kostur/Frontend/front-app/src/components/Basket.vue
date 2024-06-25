@@ -120,13 +120,13 @@ function removeChocolate(item) {
 }
 
 function checkout(items){
-  const purchase = {
-        items: items,
-        price: this.totalPrice
-      };
+  // const purchase = {
+  //       items: items,
+  //       price: this.totalPrice
+  //     };
   const userId = localStorage.getItem('loggedUserId');
 
- axios.post(`http://localhost:8080/WebShopAppREST/rest/purchases/${userId}`, purchase)
+ axios.post(`http://localhost:8080/WebShopAppREST/rest/purchases/${userId}/${basketId.value}`)
     .then(() => {
       alert("Successful purchases!");
 
@@ -146,13 +146,13 @@ function checkout(items){
           console.error('Spmething went wrong with the basket!', error);
         });
 
-        axios.put(`http://localhost:8080/WebShopAppREST/rest/chocolates/purchase`, purchase)
-        .then(() => {
-          console.log('Chocolates updated successfully!');
-        })
-        .catch(error => {
-          console.error('Spmething went wrong with the basket!', error);
-        });
+        // axios.put(`http://localhost:8080/WebShopAppREST/rest/chocolates/purchase`, purchase)
+        // .then(() => {
+        //   console.log('Chocolates updated successfully!');
+        // })
+        // .catch(error => {
+        //   console.error('Spmething went wrong with the basket!', error);
+        // });
     })
     .catch(error => {
       console.error('Spmething went wrong!', error);

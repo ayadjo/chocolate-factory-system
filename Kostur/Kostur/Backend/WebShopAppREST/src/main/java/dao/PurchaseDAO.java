@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 
 import beans.Basket;
+import beans.BasketItem;
 import beans.Chocolate;
 import beans.Factory;
 import beans.Purchase;
@@ -99,8 +100,8 @@ public class PurchaseDAO {
 	    }
 	}
 
-	public Purchase save(PurchaseDTO dto, Long userId) {
-		Purchase purchase = dto.ConvertToPurchase();
+	public Purchase save(Long userId, Long basketId) {
+		Purchase purchase = new Purchase();
 		Long maxId = -1L;
 		for (Long id : purchases.keySet()) {
 			if (id > maxId) { 
@@ -110,10 +111,34 @@ public class PurchaseDAO {
 		maxId++;
 		purchase.setId(maxId);
 		
+		PurchaseItemDAO purchaseItemDAO = new PurchaseItemDAO(contextPath);
+		
 		UserDAO userDAO = new UserDAO(contextPath);
 		User user = userDAO.findById(userId);
 		
+		BasketDAO basketDAO = new BasketDAO(contextPath);
+		Basket basket = basketDAO.findByUserId(userId);
 		
+		Long factoryId = -1L;
+		
+		BasketItemDAO basketItemDAO = new BasketItemDAO(contextPath);
+		Collection<BasketItem> items = basketItemDAO.findAll();
+		for(BasketItem basketItem : items) {
+			if(basketItem.getIsDeleted() == false && basketItem.getBasket().getId().equals(basketId)) {
+				PurchaseItem purchaseItem = new PurchaseItem();
+				purchaseItem.setPurchaseId(purchase.getId());
+				purchaseItem.setQuantity(basketItem.getQuantity());
+				purchaseItemDAO.save(purchaseItem, basketItem.getChocolate());
+				purchase.getItems().add(purchaseItem);
+				factoryId = basketItem.getChocolate().getFactory().getId();
+			}
+		}
+		
+		FactoryDAO factoryDAO = new FactoryDAO(contextPath);
+		Factory factory = factoryDAO.findById(factoryId);
+		
+		purchase.setFactory(factory);
+		purchase.setPrice(basket.getPrice());
 		purchase.setPurchaseDateAndTime(new Date());
 		purchase.setStatus(PurchaseStatus.Processing);
 		purchase.setUser(user);

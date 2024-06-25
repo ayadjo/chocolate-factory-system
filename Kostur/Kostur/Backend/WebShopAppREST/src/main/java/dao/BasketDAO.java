@@ -278,7 +278,7 @@ public class BasketDAO {
         Collection<BasketItem> items = itemDAO.findAll();
         for (BasketItem item : items) {
             if (item.getBasket().getId().equals(basket.getId()) && item.getIsDeleted() == false) {
-                itemDAO.removeItem(item.getId());
+                itemDAO.delete(item);
             }
         }
         writeToFile();
