@@ -166,18 +166,21 @@ public class PurchaseDAO {
 		boolean factoryItem = false;
 		PurchaseItemDAO purchaseItemDAO = new PurchaseItemDAO(contextPath);
 		Collection<PurchaseItem> items = purchaseItemDAO.findAll();
-        for (Purchase purchase : purchases.values()) {		
-        	for (PurchaseItem item : items) {  
+        for (Purchase purchase : purchases.values()) {	
+        	if(purchase.getFactory().getId().equals(factoryId)) {
+        		factoryPurchases.add(purchase);
+        	}
+        	/*for (PurchaseItem item : items) {  
         		if (item.getChocolate().getFactory().getId().equals(factoryId) && item.getPurchaseId().equals(purchase.getId())) { 
         			factoryItem = true;
         		}
         	}
         	if(factoryItem) {
         		factoryPurchases.add(purchase);  
-        	}
+        	}*/
         }
         
-        List<Purchase> updatedFactoryPurchases = new ArrayList<>();
+        /*List<Purchase> updatedFactoryPurchases = new ArrayList<>();
         for (Purchase purchase : factoryPurchases) {		
         	purchase.setPrice(0);
         	ArrayList<PurchaseItem> updatedItems = new ArrayList<>();
@@ -190,9 +193,9 @@ public class PurchaseDAO {
         	purchase.setItems(null);
         	purchase.setItems(updatedItems);
         	updatedFactoryPurchases.add(purchase);
-        }
+        }*/
         
-        return updatedFactoryPurchases; 
+        return factoryPurchases; //updatedFactoryPurchases; 
     }
 	
 	private void writeToFile() {
