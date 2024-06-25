@@ -9,7 +9,7 @@ public class Basket {
 	private Double price;
 	
 	public Basket() {
-		items = new ArrayList<BasketItem>();
+		this.items = new ArrayList<>();
 	}
 
 	public Basket(Long id, User user, Double price) {

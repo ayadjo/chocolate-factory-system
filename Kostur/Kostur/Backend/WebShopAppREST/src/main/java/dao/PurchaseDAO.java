@@ -70,6 +70,7 @@ public class PurchaseDAO {
 	            String price = st.nextToken().trim();
 	            String userId = st.nextToken().trim();
 	            String status = st.nextToken().trim();
+	            String factoryId = st.nextToken().trim();
 
 	            long purchaseId = Long.parseLong(id);
 	            double priceDouble = Double.parseDouble(price);
@@ -81,7 +82,7 @@ public class PurchaseDAO {
 
 	            
 	            User user = new User(userIdLong);
-	            Purchase purchase = new Purchase(purchaseId, new ArrayList<>(), parsedPurchaseDate, priceDouble, user, purchaseStatus);
+	            Purchase purchase = new Purchase(purchaseId, parsedPurchaseDate, priceDouble, user, purchaseStatus,  new Factory(Long.parseLong(factoryId)));
 	            
 	            purchases.put(purchaseId, purchase);
 	        }
@@ -117,7 +118,8 @@ public class PurchaseDAO {
 		purchase.setStatus(PurchaseStatus.Processing);
 		purchase.setUser(user);
 		purchases.put(purchase.getId(), purchase);
-			
+		writeToFile();
+		
 		return purchase;
 	}
 
@@ -147,7 +149,7 @@ public class PurchaseDAO {
         }
         
         List<Purchase> updatedFactoryPurchases = new ArrayList<>();
-        for (Purchase purchase : factoryPurchases) {		//prodji kroz sve kupovine fabrike
+        for (Purchase purchase : factoryPurchases) {		
         	purchase.setPrice(0);
         	ArrayList<PurchaseItem> updatedItems = new ArrayList<>();
         	for (PurchaseItem item : purchase.getItems()){
@@ -163,5 +165,27 @@ public class PurchaseDAO {
         
         return updatedFactoryPurchases; 
     }
+	
+	private void writeToFile() {
+	    BufferedWriter out = null;
+	    try {
+	        String filePath = this.contextPath + "purchases.txt";
+	        File file = new File(filePath);
+	        out = new BufferedWriter(new FileWriter(file));
+	        for (Purchase purchase : purchases.values()) {
+	            String purchaseData = purchase.toStringForFile();
+	            System.out.println("Writing purchase data: " + purchaseData); 
+	            out.write(purchaseData + "\n");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        if (out != null) {
+	            try {
+	                out.close();
+	            } catch (Exception e) {}
+	        }
+	    }
+	}
 	
 }
