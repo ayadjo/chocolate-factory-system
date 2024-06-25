@@ -7,6 +7,7 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -96,5 +97,12 @@ public class PurchaseService {
 	}
 
 
+	@PATCH
+	@Path("/cancel/{purchaseId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Purchase cancelPurchase(@PathParam("purchaseId") Long purchaseId) {
+		PurchaseDAO dao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
+		return dao.cancelPurchase(purchaseId);
+	}
 	
 }

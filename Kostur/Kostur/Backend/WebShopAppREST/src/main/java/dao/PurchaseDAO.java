@@ -53,6 +53,10 @@ public class PurchaseDAO {
 		return purchases.values();
 	}
 	
+	public Purchase findById(Long id) {
+		return purchases.containsKey(id) ? purchases.get(id) : null;
+	}
+	
 
 	private void loadPurchases(String contextPath) {
 	    BufferedReader in = null;
@@ -218,7 +222,13 @@ public class PurchaseDAO {
 	            .filter(p -> dateFromParsed.isEmpty() || p.getPurchaseDateAndTime().compareTo(dateFromParsed.get(0)) >= 0)
 	            .filter(p -> dateToParsed.isEmpty() || p.getPurchaseDateAndTime().compareTo(dateToParsed.get(0)) <= 0)
 	            .collect(Collectors.toList());
-	    }
+	 }
+	 
+	 public Purchase cancelPurchase (Long id) {
+		 Purchase purchase = findById(id);
+		 purchase.setStatus(PurchaseStatus.Cancelled);
+		 return purchase;
+	 }
 
 	
 }

@@ -72,6 +72,7 @@
                     src="../assets/processingPurchase.png"  <//zameniti ikonicu
                     alt="Icon" 
                 />
+                <p>{{purchase.status}}</p>
             </div>
 
             <p class="user-name" v-if="isManager"><strong>{{ purchase.user.firstName }} {{ purchase.user.lastName }}</strong></p>
@@ -113,7 +114,7 @@
         <button v-if="isManger" class="reject-button" @click="rejectPurchase(purchase)">
           <i class="fas fa-times"></i> Reject
         </button>
-        <button v-if="isCustomer" class="cancel-button" @click="cancelPurchase(purchase)">
+        <button v-if="isCustomer && selectedPurchase.status !== 'Cancelled'" class="cancel-button" @click="cancelPurchase(selectedPurchase.id)">
           <i class="fas fa-times"></i> Cancel
         </button>
       </div>
@@ -139,6 +140,7 @@ const searchQuery = ref({
   dateFrom: null,
   dateTo: null
 });
+
 
 const getPurchases = async (id) => {
   try {
@@ -227,9 +229,18 @@ const rejectPurchase = (purchase) => {
   console.log("Purchase rejected:", purchase);
 };
 
-const cancelPurchase = (purchase) => {
-  console.log("Purchase cancelled:", purchase);
+const cancelPurchase = async (purchaseId) => {
+  try {
+    const response = await axios.patch(`http://localhost:8080/WebShopAppREST/rest/purchases/cancel/${purchaseId}`);
+    console.log("Purchase cancelled");
+    await getPurchases(id);
+  }
+  catch(error){
+    console.error(`Error cancelling the purchase.`, error);
+  }
+  
 };
+
 
 const handleSortChange = async (event) => {
   const sortBy = event.target.value;
