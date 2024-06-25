@@ -42,6 +42,11 @@ public class Chocolate {
 		this.image = image;
 		this.isDeleted = isDeleted;
 	}
+	
+	public Chocolate(Long id) {
+		super();
+		this.id = id;
+	}
 
 	public String toStringForFile() {
         return id + ";" + name + ";" + price + ";" + kind + ";" + 

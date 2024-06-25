@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -55,16 +56,6 @@ public class BasketDAO {
 	}
 	
 	
-	private Long nextId() {
-		long id = 0;
-		for (Basket basket : baskets.values()) {
-			if (basket.getId() > id) {
-				id = basket.getId();
-			}
-		}
-		return id + 1;
-	}
-	
 	private void writeToFile() {
 	    BufferedWriter out = null;
 	    try {
@@ -73,7 +64,6 @@ public class BasketDAO {
 	        out = new BufferedWriter(new FileWriter(file));
 	        for (Basket basket : baskets.values()) {
 	            String basketData = basket.toStringForFile();
-	            System.out.println("Writing basket data: " + basketData); 
 	            out.write(basketData + "\n");
 	        }
 	    } catch (Exception e) {
@@ -152,11 +142,15 @@ public class BasketDAO {
         if (chocolate == null) {
             throw new IllegalArgumentException("Chocolate not found: " + chocolateId);
         }
+        
+        BasketItemDAO itemDAO = new BasketItemDAO(contextPath);
+        Collection<BasketItem> items = itemDAO.findAll();
 
         boolean itemFound = false;
-        for (BasketItem item : basket.getItems()) {
-            if (item.getChocolate().getId().equals(chocolateId) && item.getBasketId().equals(basket.getId())) {
-                item.setQuantity(item.getQuantity() + quantity);
+        for (BasketItem item : items) {
+            if (item.getChocolate().getId().equals(chocolateId) && item.getBasket().getId().equals(basket.getId()) && item.getIsDeleted() == false) {
+                int newQuantity = item.getQuantity() + quantity;
+                item = itemDAO.updateQuantity(item.getId(), newQuantity);
                 itemFound = true;
                 break;
             }
@@ -164,10 +158,8 @@ public class BasketDAO {
 
         if (!itemFound) {
             BasketItem newItem = new BasketItem();
-            newItem.setChocolate(chocolate);
             newItem.setQuantity(quantity);
-            newItem.setBasketId(basket.getId());
-            basket.getItems().add(newItem);
+            itemDAO.save(newItem, chocolate, basket);
         }
 
 
@@ -179,7 +171,7 @@ public class BasketDAO {
         
     }
 
-	public Basket incrementQuantity(Long userId, Long chocolateId) {
+	public Basket incrementQuantity(Long userId, Long chocolateId){
         Basket basket = findByUserId(userId);
         if (basket == null) {
             throw new IllegalArgumentException("Basket not found for user: " + userId);
@@ -191,10 +183,12 @@ public class BasketDAO {
             throw new IllegalArgumentException("Chocolate not found: " + chocolateId);
         }
 
-
-        for (BasketItem item : basket.getItems()) {
-            if (item.getChocolate().getId().equals(chocolateId) && item.getBasketId().equals(basket.getId())) {
-                item.setQuantity(item.getQuantity() + 1);
+        BasketItemDAO itemDAO = new BasketItemDAO(contextPath);
+        Collection<BasketItem> items = itemDAO.findAll();
+        for (BasketItem item : items) {
+            if (item.getChocolate().getId().equals(chocolateId) && item.getBasket().getId().equals(basket.getId()) && item.getIsDeleted() == false) {
+            	int newQuantity = item.getQuantity() + 1;
+            	item = itemDAO.updateQuantity(item.getId(), newQuantity);
                 basket.setPrice(basket.getPrice() + item.getChocolate().getPrice());
                 break;
             }
@@ -206,7 +200,7 @@ public class BasketDAO {
     }
 
 	
-	public Basket decrementQuantity(Long userId, Long chocolateId) {
+	public Basket decrementQuantity(Long userId, Long chocolateId){
         Basket basket = findByUserId(userId);
         if (basket == null) {
             throw new IllegalArgumentException("Basket not found for user: " + userId);
@@ -218,10 +212,12 @@ public class BasketDAO {
             throw new IllegalArgumentException("Chocolate not found: " + chocolateId);
         }
 
-
-        for (BasketItem item : basket.getItems()) {
-            if (item.getChocolate().getId().equals(chocolateId) && item.getBasketId().equals(basket.getId())) {
-                item.setQuantity(item.getQuantity() - 1);
+        BasketItemDAO itemDAO = new BasketItemDAO(contextPath);
+        Collection<BasketItem> items = itemDAO.findAll();
+        for (BasketItem item : items) {
+            if (item.getChocolate().getId().equals(chocolateId) && item.getBasket().getId().equals(basket.getId()) && item.getIsDeleted() == false) {
+                int newQuantity = item.getQuantity() - 1;
+                item = itemDAO.updateQuantity(item.getId(), newQuantity);
                 basket.setPrice(basket.getPrice() - item.getChocolate().getPrice());
                 break;
             }
@@ -244,10 +240,12 @@ public class BasketDAO {
             throw new IllegalArgumentException("Chocolate not found: " + chocolateId);
         }
 
-        for (BasketItem item : basket.getItems()) {
-            if (item.getChocolate().getId().equals(chocolateId) && item.getBasketId().equals(basket.getId())) {            	
+        BasketItemDAO itemDAO = new BasketItemDAO(contextPath);
+        Collection<BasketItem> items = itemDAO.findAll();
+        for (BasketItem item : items) {
+            if (item.getChocolate().getId().equals(chocolateId) && item.getBasket().getId().equals(basket.getId()) && item.getIsDeleted() == false) {            	
                 basket.setPrice(basket.getPrice() - item.getChocolate().getPrice()*item.getQuantity());
-                basket.getItems().remove(item);
+                itemDAO.removeItem(item.getId());
                 break;
             }
         }
@@ -264,7 +262,15 @@ public class BasketDAO {
         }
         
         basket.setPrice(0.0);
-        basket.getItems().clear();
+        
+        BasketItemDAO itemDAO = new BasketItemDAO(contextPath);
+        Collection<BasketItem> items = itemDAO.findAll();
+        for (BasketItem item : items) {
+            if (item.getBasket().getId().equals(basket.getId()) && item.getIsDeleted() == false) {
+                itemDAO.removeItem(item.getId());
+            }
+        }
+        writeToFile();
 
         return basket;
 	        

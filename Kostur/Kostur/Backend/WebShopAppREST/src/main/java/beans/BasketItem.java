@@ -1,29 +1,41 @@
 package beans;
 
-import java.util.ArrayList;
 
 public class BasketItem {
+	private Long id;
     private Chocolate chocolate;
     private int quantity;
-    private Long basketId;
+    private Basket basket;
+    private boolean isDeleted;
     
-    public BasketItem() {
-	}
-    
-	public BasketItem(Chocolate chocolate, int quantity, Long basketId) {
+	
+	public BasketItem() {
 		super();
-		this.chocolate = chocolate;
-		this.quantity = quantity;
-		this.basketId = basketId;
-	}
-	
-	
-	public Long getBasketId() {
-		return basketId;
 	}
 
-	public void setBasketId(Long basketId) {
-		this.basketId = basketId;
+
+	public BasketItem(Long id, Chocolate chocolate, int quantity, Basket basket, boolean isDeleted) {
+		super();
+		this.id = id;
+		this.chocolate = chocolate;
+		this.quantity = quantity;
+		this.basket = basket;
+		this.isDeleted = isDeleted;
+	}
+
+	public String toStringForFile() {
+        return id + ";" + (chocolate != null ? chocolate.getId() : "-1") + ";" + quantity + ";" + 
+        		(basket != null ? basket.getId() : "-1") + ";" + isDeleted;
+    }
+
+	
+	public Long getId() {
+		return id;
+	}
+
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public Chocolate getChocolate() {
@@ -41,6 +53,28 @@ public class BasketItem {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
+
+
+	public Basket getBasket() {
+		return basket;
+	}
+
+
+	public void setBasket(Basket basket) {
+		this.basket = basket;
+	}
+
+
+	public boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+	
+	
 
     
 }

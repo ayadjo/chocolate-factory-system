@@ -49,22 +49,39 @@
   const items = ref([]);
   const quantities = ref({});
   let totalPrice = 0;
+  const basketId = ref("");
 
 
   const fetchBasketData = async () => {
     try {
       const userId = localStorage.getItem('loggedUserId');
-      if (userId.value !== null) {
+      if (userId) {
         const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/baskets/${userId}`);
         const basket = response.data;
-        items.value = basket.items;
         totalPrice = basket.price.toFixed(2);
-
+        basketId.value = basket.id;
+        console.log(basketId.value)
+        // loadItems(basketId.value);
+        try {
+            const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/basketItems/byBasket/${basketId.value}`);
+            items.value = response.data;
+          } catch (error) {
+            console.error('Error loading items:', error);
+          }
       }
     } catch (error) {
       console.error('Error fetching basket data:', error);
     }
   };
+
+  const loadItems = async (basketId) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/basketItems/byBasket/${basketId}`);
+    items.value = response.data;
+  } catch (error) {
+    console.error('Error loading items:', error);
+  }
+};
 
 
   async function decrementQuantity(item) {
@@ -72,7 +89,7 @@
     if (item.quantity > 1) {
       const userId = localStorage.getItem('loggedUserId');
       const response = await axios.put(`http://localhost:8080/WebShopAppREST/rest/baskets/decrementQuantity/${userId}/${item.chocolate.id}`);
-      fetchBasketData(); 
+      fetchBasketData();
     }
   } catch (error) {
     console.error('Error updating basket:', error);

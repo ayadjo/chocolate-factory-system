@@ -41,6 +41,10 @@ public class ChocolateDAO {
 		return chocolates.values();
 	}
 	
+	public HashMap<Long, Chocolate> getChocolates() {
+        return chocolates;
+    }
+	
 	
 	public Chocolate findById(Long id) {
 		return chocolates.containsKey(id) ? chocolates.get(id) : null;

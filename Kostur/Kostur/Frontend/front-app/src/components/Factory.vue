@@ -294,7 +294,7 @@ function decrementQuantity(chocolateId) {
 }
 
 function addToBasket(chocolate, quantity) {
-  const userId = localStorage.getItem('loggedUserId'); // Assuming the user is logged in and their ID is stored in localStorage.
+  const userId = localStorage.getItem('loggedUserId'); 
   if (!userId) {
     alert("Please log in to add chocolates to the basket.");
     return;
