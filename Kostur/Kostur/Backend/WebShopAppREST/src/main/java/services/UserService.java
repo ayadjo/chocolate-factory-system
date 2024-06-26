@@ -19,6 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import beans.Chocolate;
 import beans.Factory;
@@ -81,9 +82,11 @@ public class UserService {
 	public RegisterUserDTO loginUser(LoginDTO dto, @Context HttpServletRequest request) {
 		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
 		User user = userDAO.login(dto);
+		
 		if (user == null) {
-			return null;
-		}
+	        return null;
+	    }
+		
 		request.getSession().setAttribute("user", user);
 		return RegisterUserDTO.convertToDTO(user);
 	}
@@ -311,6 +314,14 @@ public class UserService {
 		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
 		return dao.decrementPoints(id, price);
 
+	}
+	
+	@PATCH
+	@Path("/block/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public User blockUser(@PathParam("id") Long id) {
+		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
+		return dao.blockUser(id);
 	}
 	
 }

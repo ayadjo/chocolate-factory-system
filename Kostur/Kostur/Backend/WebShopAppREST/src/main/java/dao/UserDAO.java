@@ -466,5 +466,14 @@ public class UserDAO {
 	    }
 	}
 
+	public User blockUser(Long id) {
+		User user = findById(id);
+		if (user != null) {
+			user.setBlocked(true);
+		} else {
+			throw new NotFoundException("User not found.");
+		}
+		return user;
+	}
 
 }

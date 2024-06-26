@@ -98,7 +98,7 @@
             <p class="user-name">{{ user.firstName }} {{ user.lastName }}</p>
             <p class="user-role">{{ user.role }}</p>
             <p class="user-points" v-if="user.role == 'Customer'">points: {{ user.points }}</p>
-            <button class="block-button" v-if="user.role != 'Admin'">Block</button>
+            <button class="block-button" @click="blockUser(user.id)" v-if="user.role != 'Admin' && !user.blocked">Block</button>
           </div>
         </div>
       </div>
@@ -205,6 +205,16 @@ function removeSearch() {
     searchQuery.value.firstName = '';
     searchQuery.value.lastName = '';
     searchQuery.value.username = '';
+}
+
+function blockUser(id) {
+  axios.patch(`http://localhost:8080/WebShopAppREST/rest/users/block/${id}`)
+    .then(response => {
+      fetchAllUsers();
+    })
+    .catch(error => {
+      console.error("Error blocking user ", error);
+    });
 }
 
 const handleSortChange = (event) => {
