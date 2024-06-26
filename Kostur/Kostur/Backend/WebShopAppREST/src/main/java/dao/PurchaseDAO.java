@@ -5,14 +5,21 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.ws.rs.NotFoundException;
 
 import beans.Basket;
 import beans.BasketItem;
@@ -48,6 +55,10 @@ public class PurchaseDAO {
 	
 	public Collection<Purchase> findAll() {
 		return purchases.values();
+	}
+	
+	public Purchase findById(Long id) {
+		return purchases.containsKey(id) ? purchases.get(id) : null;
 	}
 	
 
@@ -219,10 +230,7 @@ public class PurchaseDAO {
 	        }
 	    }
 	}
-	
-	public Purchase findById(Long id) {
-        return purchases.get(id);
-    }
+
 	
 	public Purchase rejectPurchase(RejectPurchaseDTO dto) {
 		ChocolateDAO chocolateDAO = new ChocolateDAO(contextPath);
@@ -244,5 +252,70 @@ public class PurchaseDAO {
 		
 		return purchase;
 	}
+	public Collection<Purchase> sortByAttribute(String attribute, String order) {
+	    Stream<Purchase> stream = purchases.values().stream();
+	    Comparator<Purchase> comparator;
+
+	    switch (attribute) {
+	        case "price":
+	            comparator = Comparator.comparing(Purchase::getPrice);
+	            break;
+	        case "date":
+	            comparator = Comparator.comparing(Purchase::getPurchaseDateAndTime);
+	            break;
+	        /*case "factoryName":
+	            comparator = Comparator.comparing(p -> p.getFactory().getName());
+	            break;*/
+	        default:
+	            throw new IllegalArgumentException("Unknown attribute: " + attribute);
+	    }
+
+	    if ("desc".equals(order)) {
+	        comparator = comparator.reversed();
+	    }
+
+	    return stream.sorted(comparator).collect(Collectors.toList());
+	}
+
+	 public Collection<Purchase> searchPurchases(String factoryName, Double priceFrom, Double priceTo, String dateFrom, String dateTo) {
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+	        List<Date> dateFromParsed = new ArrayList<>();
+	        List<Date> dateToParsed = new ArrayList<>();
+	        
+	        try {
+	            if (dateFrom != null) {
+	                dateFromParsed.add(sdf.parse(dateFrom));
+	            }
+	            if (dateTo != null) {
+	                dateToParsed.add(sdf.parse(dateTo));
+	            }
+	        } catch (ParseException e) {
+	            e.printStackTrace();
+	        }
+	        
+	        return purchases.values().stream()
+	            //.filter(p -> factoryName == null || p.getFactory().getName().toLowerCase().contains(factoryName.toLowerCase()))
+	            .filter(p -> priceFrom == null || p.getPrice() >= priceFrom)
+	            .filter(p -> priceTo == null || p.getPrice() <= priceTo)
+	            .filter(p -> dateFromParsed.isEmpty() || p.getPurchaseDateAndTime().compareTo(dateFromParsed.get(0)) >= 0)
+	            .filter(p -> dateToParsed.isEmpty() || p.getPurchaseDateAndTime().compareTo(dateToParsed.get(0)) <= 0)
+	            .collect(Collectors.toList());
+	 }
+	 
+	 public Purchase cancelPurchase (Long id) {
+		 ChocolateDAO chocolateDAO = new ChocolateDAO(contextPath);
+		 Purchase purchase = findById(id);
+		 if (purchase != null) {
+	            purchase.setStatus(PurchaseStatus.Cancelled);
+
+	            //writeToFile();
+	        } else {
+	            // Handle case where purchase is not found
+	            throw new NotFoundException("Purchase not found. ");
+	        }
+		 return purchase;
+	 }
+
 	
 }

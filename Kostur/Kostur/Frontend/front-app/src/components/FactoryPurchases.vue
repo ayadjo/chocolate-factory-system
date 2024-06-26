@@ -1,4 +1,47 @@
 <template>
+    <div class="search-filter-container">
+      <div class="search-container">     
+        <div v-if="isCustomer" class="search-input-wrapper">
+          <input type="text" v-model="searchQuery.factoryName" placeholder="Search by Factory Name">
+          <i class="fas fa-industry search-icon"></i>
+        </div>
+
+    
+        <div class="search-input-wrapper">
+          <i class="fas fa-dollar-sign search-icon"></i>
+          <input type="number" v-model="searchQuery.priceFrom" placeholder="Price from">
+        </div>
+        <div class="search-input-wrapper">
+          <i class="fas fa-dollar-sign search-icon"></i>
+          <input type="number" v-model="searchQuery.priceTo" placeholder="Price to">
+        </div>
+  
+
+        <div class="search-input-wrapper">
+          <i class="far fa-calendar-alt search-icon"></i>
+          <input type="date" v-model="searchQuery.dateFrom" placeholder="Date from">
+        </div>
+        <div class="search-input-wrapper">
+          <i class="far fa-calendar-alt search-icon"></i>
+          <input type="date" v-model="searchQuery.dateTo" placeholder="Date to">
+        </div>
+        <button @click="search" class="search-button"><i class="bi bi-search"></i>Search</button>
+      </div>
+    </div>
+
+    <div class="sort-container">
+      <label for="sort-select">Sort by </label>
+      <select id="sort-select" @change="handleSortChange">
+        <option value="none">None</option>
+        <option value="factoryName" v-if="isCustomer">Factory Name (Ascending)</option>
+        <option value="factoryName_desc" v-if="isCustomer">Factory Name (Descending)</option>
+        <option value="price">Price (Ascending)</option>
+        <option value="price_desc">Price (Descending)</option>
+        <option value="date">Date (Ascending)</option>
+        <option value="date_desc">Date (Descending)</option>
+      </select>
+    </div>
+
     <div class="purchases">
         <div class="purchase-card"
             v-for="purchase in purchases"
@@ -29,9 +72,10 @@
                     src="../assets/processingPurchase.png"  <//zameniti ikonicu
                     alt="Icon" 
                 />
+                <p>{{purchase.status}}</p>
             </div>
 
-            <p class="user-name"><strong>{{ purchase.user.firstName }} {{ purchase.user.lastName }}</strong></p>
+            <p class="user-name" v-if="isManager"><strong>{{ purchase.user.firstName }} {{ purchase.user.lastName }}</strong></p>
             <p class="purchase-date">Date: {{ purchase.purchaseDateAndTime }}</p>
             <p class="purchase-price">Price: ${{ formatPrice(purchase.price) }}</p>
             <button class="details-button" @click="showDetails(purchase)">Show Details</button>
@@ -67,8 +111,9 @@
         <button v-if="selectedPurchase.status == 'Processing'" class="approve-button" @click="approvePurchase(purchase)">
           <i class="fas fa-check"></i> Approve
         </button>
-        <button v-if="selectedPurchase.status == 'Processing'" class="reject-button" @click="openRejectModal(selectedPurchase)">
-          <i class="fas fa-times"></i> Reject
+        <button v-if="selectedPurchase.status == 'Processing'" class="reject-button" @click="openRejectModal(selectedPurchase)"> 
+        <button v-if="isCustomer && selectedPurchase.status !== 'Cancelled'" class="cancel-button" @click="cancelPurchase(selectedPurchase.id)">
+          <i class="fas fa-times"></i> Cancel
         </button>
       </div>
       
@@ -86,35 +131,53 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 
 const purchases = ref([])
 const route = useRoute();
-const factoryId = route.params.id;
+const id = route.params.id;
 const selectedPurchase = ref(null);
 const showRejectModal = ref(false);
 const rejectionNote = ref('');
+const userRole = ref(null);
+const searchQuery = ref({
+  factoryName: '',
+  priceFrom: null,
+  priceTo: null,
+  dateFrom: null,
+  dateTo: null
+});
 
-const getPurchases = async (factoryId) => {
+
+const getPurchases = async (id) => {
   try {
-    const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/purchases/factory/${factoryId}`);
-    purchases.value = response.data;
+    let response;
+    console.log(isManager.value);
+    console.log(userRole.value === 'Customer');
+    if (isManager.value){
+      response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/purchases/factory/${id}`);
+    } else if(isCustomer.value) {
+      response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/purchases/user/${id}`);
+    }
+    
+    if (response && response.data) {
+      purchases.value = response.data;
 
-    purchases.value.forEach(purchase => {
-      const date = purchase.purchaseDateAndTime;
-      if (date) {
-        const dateParts = date.split('T')[0].split('-'); 
-        const formattedDate = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
-        purchase.purchaseDateAndTime = formattedDate;
-        
-      } else {
-        console.error('Empty or null value received for date field');
-      }
-    });
-
-    console.log("Retrieved all purchases from the factory with id", factoryId);
+      purchases.value.forEach(purchase => {
+        const date = purchase.purchaseDateAndTime;
+        if (date) {
+          const dateParts = date.split('T')[0].split('-'); 
+          const formattedDate = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
+          purchase.purchaseDateAndTime = formattedDate;
+        } else {
+          console.error('Empty or null value received for date field');
+        }
+      });
+      console.log("Retrieved all purchases", id);
+    }
+    
   } catch (error) {
     console.error("There was an error retrieving purchases.", error);
   }
@@ -168,6 +231,29 @@ const submitRejection = () => {
 
 
 
+const checkLoggedIn = () => {
+  return new Promise((resolve, reject) => {
+    const userId = localStorage.getItem('loggedUserId');
+    if (userId) {
+      axios.get(`http://localhost:8080/WebShopAppREST/rest/users/${userId}`)
+        .then(response => {
+          const user = response.data;
+          userRole.value = user.role;
+          resolve();
+        })
+        .catch(error => {
+          console.error('Error fetching user data:', error);
+          userRole.value = null;
+          reject();
+        });
+    } else {
+      userRole.value = null;
+      reject();
+    }
+  });
+};
+
+
 const showDetails = (purchase) => {
   selectedPurchase.value = purchase;
 };
@@ -185,9 +271,106 @@ const approvePurchase = (purchase) => {
 };
 
 
+const cancelPurchase = async (purchaseId) => {
+  try {
+    const response = await axios.patch(`http://localhost:8080/WebShopAppREST/rest/purchases/cancel/${purchaseId}`);
+    console.log("Purchase cancelled");
+    await getPurchases(id);
+  }
+  catch(error){
+    console.error(`Error cancelling the purchase.`, error);
+  }
+  
+};
 
-onMounted(() => {
-    getPurchases(factoryId);
+
+const handleSortChange = async (event) => {
+  const sortBy = event.target.value;
+  if (sortBy !== 'none') {
+    const [attribute, order] = sortBy.split('_');
+    sortPurchases(attribute, order || 'asc');
+  } else {
+    getPurchases(id);
+  }
+};
+
+const sortPurchases = async (attribute, order) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/purchases/sortBy/${attribute}/${order}`);
+    if (response && response.data) {
+      purchases.value = response.data;
+
+      purchases.value.forEach(purchase => {
+        const date = purchase.purchaseDateAndTime;
+        if (date) {
+          const dateParts = date.split('T')[0].split('-'); 
+          const formattedDate = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
+          purchase.purchaseDateAndTime = formattedDate;
+        } else {
+          console.error('Empty or null value received for date field');
+        }
+      });
+    }
+  } catch (error) {
+    console.error(`Error sorting purchases by ${attribute}:`, error);
+  }
+};
+
+const search = async () => {
+  try {
+    const params = {};
+    if (searchQuery.value.factoryName) {
+      params.factoryName = searchQuery.value.factoryName;
+    }
+    if (searchQuery.value.priceFrom) {
+      params.priceFrom = searchQuery.value.priceFrom;
+    }
+    if (searchQuery.value.priceTo) {
+      params.priceTo = searchQuery.value.priceTo;
+    }
+    if (searchQuery.value.dateFrom) {
+      params.dateFrom = searchQuery.value.dateFrom;
+    }
+    if (searchQuery.value.dateTo) {
+      params.dateTo = searchQuery.value.dateTo;
+    }
+
+    const response = await axios.get('http://localhost:8080/WebShopAppREST/rest/purchases/search', { params });
+    if (response && response.data) {
+      purchases.value = response.data;
+
+      purchases.value.forEach(purchase => {
+        const date = purchase.purchaseDateAndTime;
+        if (date) {
+          const dateParts = date.split('T')[0].split('-');
+          const formattedDate = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
+          purchase.purchaseDateAndTime = formattedDate;
+        } else {
+          console.error('Empty or null value received for date field');
+        }
+      });
+    }
+  } catch (error) {
+    console.error("There was an error searching purchases.", error);
+  }
+};
+
+
+onMounted(async () => {
+    await checkLoggedIn();
+    getPurchases(id);
+});
+
+const isManager = computed(() => {
+    return userRole.value === 'Manager';
+  });
+
+const isEmployee = computed(() => {
+    return userRole.value === 'Employee';
+  });
+
+const isCustomer = computed(() => {
+  return userRole.value === 'Customer';
 });
 
 </script>
@@ -360,7 +543,7 @@ onMounted(() => {
   margin-bottom: 10px;
 }
 
-.approve-button, .reject-button {
+.approve-button, .reject-button, .cancel-button{
   background-color: #8f0710; 
   color: white;
   border: none;
@@ -373,7 +556,8 @@ onMounted(() => {
 }
 
 .reject-button:hover,
-.approve-button:hover {
+.approve-button:hover,
+.cancel-button:hover {
   background-color: white; 
   color: black;
   border: 1px solid #8f0710;
@@ -406,5 +590,106 @@ onMounted(() => {
   resize: none;
   height: 80px;
 }
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 10px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 50%;
+  margin-top: 30px;
+  margin-right: 10px;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  padding: 10px 20px 10px 40px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+.search-input-wrapper input:focus {
+  outline: none;
+  border-color: #8f0710; 
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  pointer-events: none; 
+}
+
+.search-input-wrapper input {
+  padding-left: 40px;
+}
+
+.search-button {
+    background-color: #201d0e;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+    width: 20%;
+    height: 35px;
+    margin-top: 32px;
+  }
+  
+  .search-button i {
+    margin-right: 10px;
+  }
+
+  .search-button:hover {
+    background-color: white;
+    color: black;
+    border: 1px solid #201d0e;
+  }
+
+  .sort-container {
+    margin-top: 20px;
+    display: inline-block;
+    margin-bottom: 10px;
+    transform: translateX(-152%);
+  }
+  
+  .sort-container label {
+    font-size: 14px;
+    margin-right: 10px;
+  }
+  
+  .sort-container select {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .sort-container select:hover,
+  .sort-container select:focus {
+    border-color: #8f0710;
+    box-shadow: 0 0 6px rgba(1, 10, 19, 0.5);
+  }
+  
+  .sort-container select option {
+    padding: 8px;
+  }
+
 
 </style>
