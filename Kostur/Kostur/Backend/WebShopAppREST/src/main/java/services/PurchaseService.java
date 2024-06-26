@@ -5,12 +5,15 @@ import java.util.Collection;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -82,4 +85,34 @@ public class PurchaseService {
 		PurchaseDAO dao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
 		return dao.rejectPurchase(dto);
 	}
+	
+	@GET
+	@Path("/sortBy/{attribute}/{order}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Purchase> sortByAttribute(@PathParam("attribute") String attribute, @PathParam("order") String order) {
+	    PurchaseDAO dao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
+	    return dao.sortByAttribute(attribute, order);
+	}
+
+	@GET
+	@Path("/search")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Purchase> search(@QueryParam("factoryName") String factoryName,
+	                                            @QueryParam("priceFrom") Double priceFrom,
+	                                            @QueryParam("priceTo") Double priceTo,
+	                                            @QueryParam("dateFrom") String dateFrom,
+	                                            @QueryParam("dateTo") String dateTo) {
+	    PurchaseDAO dao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
+	    return dao.searchPurchases(factoryName, priceFrom, priceTo, dateFrom, dateTo);
+	}
+
+
+	@PATCH
+	@Path("/cancel/{purchaseId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Purchase cancelPurchase(@PathParam("purchaseId") Long purchaseId) {
+		PurchaseDAO dao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
+		return dao.cancelPurchase(purchaseId);
+	}
+	
 }

@@ -105,8 +105,8 @@ const routes = [
     component: NewEmployee,
   },
   {
-    path: '/factory-purchases/:id',
-    name: 'factoryPurchases',
+    path: '/purchases/:id',
+    name: 'purchases',
     component: FactoryPurchases,
     props: true 
   }

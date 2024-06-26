@@ -55,7 +55,7 @@
         <input type="number" v-model="searchQuery.grade" placeholder="Search by Average Grade" min="1" max="5">
         <i class="fas fa-star search-icon"></i>
       </div>
-      <button @click="search" class="search-button">Search</button>
+      <button @click="search" class="search-button"><i class="bi bi-search"></i>Search</button>
     </div>
 
     <div>
@@ -365,22 +365,30 @@ function deleteFilters() {
 }
 
 .search-button {
-  background-color: #8f0710; 
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-size: 0.9em;
-  transition: background-color 0.3s;
-  margin-top: 30px;
-}
+    background-color: #201d0e;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+    width: 20%;
+    height: 35px;
+    margin-top: 30px;
+  }
 
-.search-button:hover {
-  background-color: white; 
-  color: black;
-  border: 1px solid #8f0710;
-}
+  .search-button i {
+    margin-right: 10px;
+  }
+  
+  .search-button:hover {
+    background-color: white;
+    color: black;
+    border: 1px solid #201d0e;
+  }
+
+
 
 .read-more-button:hover {
   background-color: white; /* Darker shade of primary color */
