@@ -19,6 +19,8 @@ import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.ws.rs.NotFoundException;
+
 import beans.Basket;
 import beans.Chocolate;
 import beans.Factory;
@@ -225,8 +227,16 @@ public class PurchaseDAO {
 	 }
 	 
 	 public Purchase cancelPurchase (Long id) {
+		 ChocolateDAO chocolateDAO = new ChocolateDAO(contextPath);
 		 Purchase purchase = findById(id);
-		 purchase.setStatus(PurchaseStatus.Cancelled);
+		 if (purchase != null) {
+	            purchase.setStatus(PurchaseStatus.Cancelled);
+
+	            //writeToFile();
+	        } else {
+	            // Handle case where purchase is not found
+	            throw new NotFoundException("Purchase not found. ");
+	        }
 		 return purchase;
 	 }
 
