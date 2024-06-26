@@ -446,7 +446,7 @@ function deleteFilters() {
   transition: background-color 0.3s;
   margin-top: 30px;
   margin-right: 10px;
-  width: 10%;
+  width: 12%;
 }
 
 .ascending-button:hover {
@@ -466,7 +466,7 @@ function deleteFilters() {
   transition: background-color 0.3s;
   margin-top: 30px;
   margin-right: 10px;
-  width: 10%;
+  width: 12%;
 }
 
 .descending-button:hover {

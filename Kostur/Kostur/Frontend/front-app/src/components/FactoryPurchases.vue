@@ -72,7 +72,7 @@
                     src="../assets/processingPurchase.png"  <//zameniti ikonicu
                     alt="Icon" 
                 />
-                <p>{{purchase.status}}</p>
+                <p class="purchase-status">{{purchase.status}}</p>
             </div>
 
             <p class="user-name" v-if="isManager"><strong>{{ purchase.user.firstName }} {{ purchase.user.lastName }}</strong></p>
@@ -85,9 +85,17 @@
 
 
     <div v-if="selectedPurchase" class="modal" @click.self="closeModal">
+   
+    <span class="close-button3" v-if="isCustomer" @click="closeModal">&times;</span>
+    <span class="close-button2" v-if="isManager" @click="closeModal">&times;</span>
+     
     <div class="modal-content">
-      <span class="close-button" @click="closeModal">&times;</span>
+      
       <h4>Purchase Details</h4>
+      <p v-if="isCustomer">Name: {{selectedPurchase.user.firstName}} {{ selectedPurchase.user.lastName }}</p>
+      <p v-if="isManager">Factory name: {{selectedPurchase.factory.name}} </p>
+      <p >Date: {{ selectedPurchase.purchaseDateAndTime }}</p>
+      <p >Price: ${{ formatPrice(selectedPurchase.price) }}</p>
       <table class="styled-table">
         <thead>
           <tr>
@@ -114,7 +122,7 @@
         <button v-if="selectedPurchase.status == 'Processing'" class="reject-button" @click="openRejectModal(selectedPurchase)">
           <i class="fas fa-times"></i> Reject
         </button>
-        <button v-if="isCustomer && selectedPurchase.status !== 'Cancelled'" class="cancel-button" @click="cancelPurchase(selectedPurchase.id)">
+        <button v-if="isCustomer && selectedPurchase.status !== 'Cancelled'" class="cancel-button" @click="cancelPurchase(selectedPurchase)">
           <i class="fas fa-times"></i> Cancel
         </button>
       </div>
@@ -273,11 +281,18 @@ const approvePurchase = (purchase) => {
 };
 
 
-const cancelPurchase = async (purchaseId) => {
+const cancelPurchase = async (purchase) => {
   try {
-    const response = await axios.patch(`http://localhost:8080/WebShopAppREST/rest/purchases/cancel/${purchaseId}`);
-    console.log("Purchase cancelled");
-    await getPurchases(id);
+    const response = await axios.patch(`http://localhost:8080/WebShopAppREST/rest/purchases/cancel/${purchase.id}`);
+    if (response.status === 200) { // Provera da li je PATCH uspešan
+      console.log("Purchase cancelled successfully");
+
+      const responsePoints = await axios.patch(`http://localhost:8080/WebShopAppREST/rest/users/points/${purchase.user.id}?price=${purchase.price}`);
+      closeModal();
+      await getPurchases(id); 
+    } else {
+      console.error(`Failed to cancel the purchase. Status code: ${response.status}`);
+    }
   }
   catch(error){
     console.error(`Error cancelling the purchase.`, error);
@@ -415,7 +430,6 @@ const isCustomer = computed(() => {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  margin-bottom: 8px;
 }
 
 
@@ -481,12 +495,35 @@ const isCustomer = computed(() => {
 }
 
 .modal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   background-color: #fff;
-  padding: 20px;
+  padding: 5px;
   border-radius: 5px;
   width: 80%;
   max-width: 600px;
 }
+
+.close-button2 {
+    color:  #aaa;
+    position: relative;
+    top: -185px;
+    left: 595px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.close-button3 {
+    color:  #aaa;
+    position: relative;
+    top: -185px;
+    left: 595px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
 
 .close-button {
   color: #aaa;
@@ -511,6 +548,7 @@ const isCustomer = computed(() => {
   color: #333;
   border-radius: 8px;
   overflow: hidden;
+  margin: 20px 0;
 }
 
 .styled-table th, .styled-table td {
@@ -693,5 +731,8 @@ const isCustomer = computed(() => {
     padding: 8px;
   }
 
+.purchase-status {
+  margin-top: -1px;
+}
 
 </style>

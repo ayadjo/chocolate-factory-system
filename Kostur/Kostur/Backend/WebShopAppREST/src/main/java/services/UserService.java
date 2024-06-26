@@ -304,4 +304,13 @@ public class UserService {
 	       return RegisterUserDTO.convertToDTO(user);
    }
 	
+	@PATCH
+	@Path("/points/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public User decrementPoints(@PathParam("id") Long id,  @QueryParam("price") double price) {
+		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
+		return dao.decrementPoints(id, price);
+
+	}
+	
 }

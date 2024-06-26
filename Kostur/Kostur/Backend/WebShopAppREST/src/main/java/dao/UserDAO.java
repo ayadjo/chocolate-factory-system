@@ -424,5 +424,25 @@ public class UserDAO {
 	    writeToFile();
 	    return user;
 	}
+	
+	public ArrayList<User> getAllSuspiciousUsers() {
+		ArrayList<User> suspiciousUsers = new ArrayList<User>();
+		PurchaseDAO purchaseDAO = new PurchaseDAO(contextPath);
+		for(User user : users.values()) {
+			if(purchaseDAO.getCancelledPurchasesCountInLastMonth(user.getId()) >= 5) {
+				suspiciousUsers.add(user);
+			}
+		}
+		return suspiciousUsers;
+	}
+	
+	public User decrementPoints(Long id, double price) {
+		User user = findById(id);
+		
+		int points = (int) (price / 1000 * 133 * 4);
+		user.setPoints(user.getPoints() - points);
+		
+		return user;
+	}
 
 }

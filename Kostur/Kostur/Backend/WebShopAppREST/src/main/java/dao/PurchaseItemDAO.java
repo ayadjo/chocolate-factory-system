@@ -39,11 +39,13 @@ public class PurchaseItemDAO {
 	    BufferedWriter out = null;
 	    try {
 	        String filePath = this.contextPath + "purchaseItems.txt";
+	        System.out.println(this.contextPath + "purchaseItems.txt");
 	        File file = new File(filePath);
 	        out = new BufferedWriter(new FileWriter(file));
 	        for (PurchaseItem item : items.values()) {
 	            String purchaseItem = item.toStringForFile();
-	            out.write(purchaseItem + "\n");
+	            System.out.println("Writing item: " + purchaseItem);
+	            out.write(purchaseItem + "\n");    
 	        }
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -103,6 +105,7 @@ public class PurchaseItemDAO {
 	}
 	
 	public PurchaseItem save(PurchaseItem item, Chocolate chocolate) {
+		System.out.println("save method in PurchaseItem");
 	    Long maxId = -1L; 
 	    for (Long id : items.keySet()) { 
 	        if (id > maxId) { 
@@ -111,6 +114,7 @@ public class PurchaseItemDAO {
 	    }
 	    maxId++;
 	    item.setId(maxId);
+	    System.out.println("item.id = "+ maxId);
 	    
 	   
 	    if(chocolate != null) {
@@ -121,6 +125,7 @@ public class PurchaseItemDAO {
 		
 	    items.put(maxId, item); 
 	    item.toStringForFile();
+	    System.out.println("item "+ item);
 	    writeToFile();
 	    return item;
 	}
