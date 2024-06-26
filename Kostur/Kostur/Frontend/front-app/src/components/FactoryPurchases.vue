@@ -509,7 +509,7 @@ const isCustomer = computed(() => {
 .close-button2 {
     color:  #aaa;
     position: relative;
-    top: -185px;
+    top: -175px;
     left: 595px;
     font-size: 24px;
     cursor: pointer;
@@ -518,7 +518,7 @@ const isCustomer = computed(() => {
 .close-button3 {
     color:  #aaa;
     position: relative;
-    top: -185px;
+    top: -175px;
     left: 595px;
     font-size: 24px;
     cursor: pointer;

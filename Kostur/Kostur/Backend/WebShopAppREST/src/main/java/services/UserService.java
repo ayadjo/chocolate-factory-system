@@ -51,10 +51,10 @@ public class UserService {
 		}
 	}
 	
-	 @POST
-	 @Path("/createCustomer")
-	 @Produces(MediaType.APPLICATION_JSON)
-	 @Consumes(MediaType.APPLICATION_JSON)
+	@POST
+	@Path("/createCustomer")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	public RegisterUserDTO createUser(RegisterUserDTO userDTO) throws ParseException {
         LOGGER.info("Creating user with username: " + userDTO.getUsername());
 

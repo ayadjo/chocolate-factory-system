@@ -69,7 +69,8 @@
               user.role === 'Manager' ? 'manager-card' : '',
               user.role === 'Customer' && user.type.name === 'Gold' ? 'gold-customer' : '',
               user.role === 'Customer' && user.type.name === 'Silver' ? 'silver-customer' : '',
-              user.role === 'Customer' && user.type.name === 'Regular' ? 'regular-customer' : ''
+              user.role === 'Customer' && user.type.name === 'Regular' ? 'regular-customer' : '',
+              user.suspicious ? 'suspicious-user' : ''
             ]"
           >
             <div class="image-container">
@@ -122,6 +123,8 @@
   
   const selectedRole = ref(null);
   const selectedType = ref(null);
+
+  const isSus = ref(false);
 
   
   const fetchRoles = async () => {
@@ -426,6 +429,11 @@ const resetFilters = () => {
     border: 1px solid #cacaad;
     background-color: #f5f5dc;
   }
+
+  .suspicious-user {
+    background-color: #cd5c5c;
+}
+
   
   .search-button {
     background-color: #201d0e;
