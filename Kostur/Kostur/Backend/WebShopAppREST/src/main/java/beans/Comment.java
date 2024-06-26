@@ -8,7 +8,8 @@ public class Comment {
 	private Factory factory;
 	private String text;
 	double grade;
-		
+	private boolean isApproved;
+	private boolean isDeleted;
 	
 	public Comment() {
 		super();
@@ -22,6 +23,13 @@ public class Comment {
 		this.text = text;
 		this.grade = grade;
 	}
+	
+	public String toStringForFile() {
+        return id + ";" + (user != null ? user.getId() : "-1") + ";" +
+               (factory != null ? factory.getId() : "-1") + ";" + 
+               text + ";" + grade + ";" + isApproved + ";" + isDeleted;
+    }
+
 
 	public Long getId() {
 		return id;
@@ -62,5 +70,23 @@ public class Comment {
 	public void setGrade(double grade) {
 		this.grade = grade;
 	}
+
+	public boolean isApproved() {
+		return isApproved;
+	}
+
+	public void setApproved(boolean isApproved) {
+		this.isApproved = isApproved;
+	}
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+	
+	
 	
 }

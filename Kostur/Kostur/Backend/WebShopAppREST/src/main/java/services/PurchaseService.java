@@ -86,6 +86,14 @@ public class PurchaseService {
 		return dao.rejectPurchase(dto);
 	}
 	
+	@PUT
+	@Path("/approvePurchase/{purchaseId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Purchase approvePurchase(@PathParam("purchaseId") Long purchaseId) {
+		PurchaseDAO dao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
+		return dao.approvePurchase(purchaseId);
+	}
+	
 	@GET
 	@Path("/sortBy/{attribute}/{order}")
 	@Produces(MediaType.APPLICATION_JSON)

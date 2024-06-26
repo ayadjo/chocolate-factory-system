@@ -171,7 +171,6 @@ public class ChocolateDAO {
 	            } catch (Exception e) {}
 	        }
 	    }
-	    //loadChocolates(contextPath);
 	}
 
 	

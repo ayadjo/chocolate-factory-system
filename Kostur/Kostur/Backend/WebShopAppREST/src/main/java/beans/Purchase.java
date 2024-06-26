@@ -14,6 +14,7 @@ public class Purchase {
 	private PurchaseStatus status;
 	private Factory factory;
 	private String rejectionNote;
+	private boolean hasComment;
 	
 	public Purchase() {
 		super();
@@ -21,7 +22,7 @@ public class Purchase {
 	}
 
 	public Purchase(Long id, Date purchaseDateAndTime, double price,
-			User user, PurchaseStatus status, Factory factory, String rejectionNote) {
+			User user, PurchaseStatus status, Factory factory, String rejectionNote, boolean hasComment) {
 		super();
 		this.id = id;
 		this.purchaseDateAndTime = purchaseDateAndTime;
@@ -31,12 +32,13 @@ public class Purchase {
 		this.items = new ArrayList<>();
 		this.factory = factory;
 		this.rejectionNote = rejectionNote;
+		this.hasComment = hasComment;
 	}
 	
 	public String toStringForFile() {
         return id + ";" + purchaseDateAndTime + ";" + price + ";" + 
                (user != null ? user.getId() : "-1") + ";" + status + ";" +
-               (factory != null ? factory.getId() : "-1") + ";" + rejectionNote;
+               (factory != null ? factory.getId() : "-1") + ";" + rejectionNote + ";" + hasComment;
     }
 
 
@@ -102,6 +104,14 @@ public class Purchase {
 
 	public void setRejectionNote(String rejectionNote) {
 		this.rejectionNote = rejectionNote;
+	}
+
+	public boolean isHasComment() {
+		return hasComment;
+	}
+
+	public void setHasComment(boolean hasComment) {
+		this.hasComment = hasComment;
 	}
 	
 	

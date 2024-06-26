@@ -72,53 +72,54 @@
                     src="../assets/processingPurchase.png"  <//zameniti ikonicu
                     alt="Icon" 
                 />
-                <p>{{purchase.status}}</p>
+                <p class="purchase-date">{{purchase.status}}</p>
             </div>
 
             <p class="user-name" v-if="isManager"><strong>{{ purchase.user.firstName }} {{ purchase.user.lastName }}</strong></p>
             <p class="purchase-date">Date: {{ purchase.purchaseDateAndTime }}</p>
             <p class="purchase-price">Price: ${{ formatPrice(purchase.price) }}</p>
+            <button class="review-button"  @click="openCommentModal(purchase)" v-if="isCustomer && purchase.status == 'Approved' & !purchase.hasComment">Review</button>
             <button class="details-button" @click="showDetails(purchase)">Show Details</button>
         </div>
 
     </div>
 
 
-    <div v-if="selectedPurchase" class="modal" @click.self="closeModal">
-    <div class="modal-content">
-      <span class="close-button" @click="closeModal">&times;</span>
-      <h4>Purchase Details</h4>
-      <table class="styled-table">
-        <thead>
-          <tr>
-            <th>Chocolate Name</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in selectedPurchase.items" :key="item.id">
-            <td>{{ item.chocolate.name }}</td>
-            <td>${{ formatPrice(item.chocolate.price) }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.chocolate.description }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-if="showDetailsModal" class="modal" @click.self="closeModal">
+      <div class="modal-content">
+        <span class="close-button" @click="closeModal">&times;</span>
+        <h4>Purchase Details</h4>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Chocolate Name</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in selectedPurchase.items" :key="item.id">
+              <td>{{ item.chocolate.name }}</td>
+              <td>${{ formatPrice(item.chocolate.price) }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.chocolate.description }}</td>
+            </tr>
+          </tbody>
+        </table>
 
-      <div class="status-buttons">
-        <button v-if="selectedPurchase.status == 'Processing'" class="approve-button" @click="approvePurchase(purchase)">
-          <i class="fas fa-check"></i> Approve
-        </button>
-        <button v-if="selectedPurchase.status == 'Processing'" class="reject-button" @click="openRejectModal(selectedPurchase)">
-          <i class="fas fa-times"></i> Reject
-        </button>
-        <button v-if="isCustomer && selectedPurchase.status !== 'Cancelled'" class="cancel-button" @click="cancelPurchase(selectedPurchase.id)">
-          <i class="fas fa-times"></i> Cancel
-        </button>
+        <div class="status-buttons">
+          <button v-if="isManager && selectedPurchase.status == 'Processing'" class="approve-button" @click="approvePurchase(selectedPurchase.id)">
+            <i class="fas fa-check"></i> Approve
+          </button>
+          <button v-if="isManager && selectedPurchase.status == 'Processing'" class="reject-button" @click="openRejectModal(selectedPurchase)">
+            <i class="fas fa-times"></i> Reject
+          </button>
+          <button v-if="isCustomer && selectedPurchase.status == 'Processing'" class="cancel-button" @click="cancelPurchase(selectedPurchase.id)">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+        </div>
       </div>
-      
     </div>
 
     <div v-if="showRejectModal" class="small-modal" @click.self="closeRejectModal">
@@ -128,7 +129,20 @@
           <textarea v-model="rejectionNote" placeholder="Enter reason for rejection" class="rejection-note"></textarea>
           <button class="reject-button" @click="submitRejection">Submit Rejection</button>
       </div>
-  </div>
+    </div>
+
+  <div v-if="showCommentModal" class="modal" @click.self="closeCommentModal">
+    <div class="modal-content">
+      <span class="close-button" @click="closeCommentModal">&times;</span>
+      <h4 class="review-title">Review</h4>
+      <div class="rating">
+        <span v-for="heart in 5" :key="heart" class="heart" :class="{'selected': heart <= rating}" @click="setRating(heart)">
+          &#9829;
+        </span>        
+      </div>
+      <textarea v-model="commentText" placeholder="Enter your comment" class="comment-text"></textarea>
+      <button class="comment-button" @click="submitComment">Submit Comment</button>
+    </div>
   </div>
 </template>
 
@@ -151,6 +165,10 @@ const searchQuery = ref({
   dateFrom: null,
   dateTo: null
 });
+const showDetailsModal = ref(false);
+const showCommentModal = ref(false);
+const commentText = ref('');
+const rating = ref(0);
 
 
 const getPurchases = async (id) => {
@@ -207,6 +225,48 @@ const closeRejectModal = () => {
   rejectionNote.value = '';
 };
 
+const openCommentModal = (purchase) => {
+  selectedPurchase.value = purchase;
+  showCommentModal.value = true;
+  console.log("purchase:", selectedPurchase.value.id)
+};
+
+const closeCommentModal = () => {
+  selectedPurchase.value = null;
+  showCommentModal.value = false;
+  commentText.value = '';
+  rating.value = 0;
+};
+
+const setRating = (heart) => {
+  rating.value = heart;
+};
+
+const submitComment = async () => {
+  if (!selectedPurchase.value || !selectedPurchase.value.items || !selectedPurchase.value.items.length) {
+    console.error("Selected purchase is not properly set.");
+    return;
+  }
+
+  try {
+    await axios.post(`http://localhost:8080/WebShopAppREST/rest/comments/addComment`, {
+      userId: localStorage.getItem('loggedUserId'),
+      factoryId: selectedPurchase.value.factory.id,
+      text: commentText.value,
+      grade: rating.value,
+      purchaseId: selectedPurchase.value.id
+    }
+  
+  );
+    console.log("Comment submitted successfully.");
+    alert("Review successfully submitted!");
+    closeCommentModal();
+    getPurchases(id); 
+  } catch (error) {
+    console.error("There was an error submitting the comment.", error);
+  }
+};
+
 const rejectPurchase = async (purchaseId, rejectionNote) => {
   try {
     await axios.put(`http://localhost:8080/WebShopAppREST/rest/purchases/rejectPurchase`, {
@@ -216,7 +276,7 @@ const rejectPurchase = async (purchaseId, rejectionNote) => {
     alert("Purchase rejected successfully.");
     closeRejectModal();
     closeModal();
-    getPurchases(factoryId); 
+    getPurchases(id); 
   } catch (error) {
     console.error('Error rejecting purchase:', error);
     alert('Failed to reject purchase. Please try again.');
@@ -234,8 +294,8 @@ const submitRejection = () => {
 
 
 const checkLoggedIn = () => {
+  const userId = localStorage.getItem('loggedUserId');
   return new Promise((resolve, reject) => {
-    const userId = localStorage.getItem('loggedUserId');
     if (userId) {
       axios.get(`http://localhost:8080/WebShopAppREST/rest/users/${userId}`)
         .then(response => {
@@ -258,25 +318,39 @@ const checkLoggedIn = () => {
 
 const showDetails = (purchase) => {
   selectedPurchase.value = purchase;
+  showDetailsModal.value = true;
 };
+
+
 
 const closeModal = () => {
   selectedPurchase.value = null;
+  showDetailsModal.value = false;
 };
 
 const formatPrice = (price) => {
   return parseFloat(price).toFixed(2);
 };
 
-const approvePurchase = (purchase) => {
-  console.log("Purchase approved:", purchase);
+const approvePurchase = async (purchaseId) => {
+  try {
+    const response = await axios.put(`http://localhost:8080/WebShopAppREST/rest/purchases/approvePurchase/${purchaseId}`);
+    console.log("Purchase approved!");
+    alert("Purchase successfully approved!")
+    closeModal();
+    await getPurchases(id);
+  }
+  catch(error){
+    console.error(`Error approving the purchase.`, error);
+  }
 };
 
 
 const cancelPurchase = async (purchaseId) => {
   try {
     const response = await axios.patch(`http://localhost:8080/WebShopAppREST/rest/purchases/cancel/${purchaseId}`);
-    console.log("Purchase cancelled");
+    console.log("Purchase cancelled!");
+    alert("Purchase successfully cancelled!")
     await getPurchases(id);
   }
   catch(error){
@@ -415,13 +489,13 @@ const isCustomer = computed(() => {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  margin-bottom: 8px;
+  margin-bottom: 0px;
 }
 
 
 .user-username {
   font-weight: bold;
-  margin-bottom: 1px;
+  margin-bottom: 0px;
 }
 
 .user-name {
@@ -447,6 +521,28 @@ const isCustomer = computed(() => {
 
 .details-button:hover {
   background-color: #8f0710;
+}
+
+.review-button .fas {
+  color: red; 
+  margin-right: 4px;
+}
+
+.review-button {
+  background-color: #00A478;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  position: absolute;
+  width: 48%;
+  bottom: 50px; 
+}
+
+.review-button:hover {
+  background-color: #00654a;
 }
 
 .status-buttons {
@@ -691,6 +787,59 @@ const isCustomer = computed(() => {
   
   .sort-container select option {
     padding: 8px;
+  }
+
+  .comment-button {
+    background-color: #00A478;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+    margin-top: 16px;
+  }
+  
+  .comment-button:hover {
+    background-color: #00654a;
+  }
+  
+  .rating {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  
+  .rating .heart {
+    font-size: 2em;
+    color: #ccc;
+    cursor: pointer;
+    margin: 0 5px;
+  }
+  
+  .rating .heart.selected {
+    color: red;
+  }
+  
+  .comment-text {
+    width: 80%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin-bottom: 16px;
+    resize: none;
+    height: 80px;
+  }
+
+
+  
+
+  .review-title {
+    text-align: center;
+    font-weight: 100;
+    font-size: 1.3vw;
+    color: #201d0e;
   }
 
 

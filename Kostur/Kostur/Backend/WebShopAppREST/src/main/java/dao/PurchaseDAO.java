@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -23,17 +22,11 @@ import javax.ws.rs.NotFoundException;
 
 import beans.Basket;
 import beans.BasketItem;
-import beans.Chocolate;
 import beans.Factory;
 import beans.Purchase;
 import beans.PurchaseItem;
 import beans.User;
-import dto.ChocolateDTO;
-import dto.PurchaseDTO;
 import dto.RejectPurchaseDTO;
-import enums.ChocolateKind;
-import enums.ChocolateStatus;
-import enums.ChocolateType;
 import enums.PurchaseStatus;
 
 public class PurchaseDAO {
@@ -85,6 +78,7 @@ public class PurchaseDAO {
 	            String status = st.nextToken().trim();
 	            String factoryId = st.nextToken().trim();
 	            String rejectionNote = st.nextToken().trim();
+	            String hasComment = st.nextToken().trim();
 
 	            long purchaseId = Long.parseLong(id);
 	            double priceDouble = Double.parseDouble(price);
@@ -95,8 +89,13 @@ public class PurchaseDAO {
                 Date parsedPurchaseDate = inputDateFormat.parse(purchaseDateAndTime);
 
 	            
-	            User user = new User(userIdLong);
-	            Purchase purchase = new Purchase(purchaseId, parsedPurchaseDate, priceDouble, user, purchaseStatus,  new Factory(Long.parseLong(factoryId)), rejectionNote);
+                UserDAO userDAO = new UserDAO(contextPath);
+        		HashMap<Long, User> users = userDAO.getUsers();
+        		User user = users.get(userIdLong);
+                if (user == null) {
+                    user = new User(userIdLong);
+                }
+	            Purchase purchase = new Purchase(purchaseId, parsedPurchaseDate, priceDouble, user, purchaseStatus,  new Factory(Long.parseLong(factoryId)), rejectionNote, Boolean.parseBoolean(hasComment));
 	            
 	            purchases.put(purchaseId, purchase);
 	        }
@@ -155,6 +154,7 @@ public class PurchaseDAO {
 		purchase.setPurchaseDateAndTime(new Date());
 		purchase.setStatus(PurchaseStatus.Processing);
 		purchase.setUser(user);
+		purchase.setHasComment(false);
 		purchases.put(purchase.getId(), purchase);
 		writeToFile();
 		
@@ -163,10 +163,19 @@ public class PurchaseDAO {
 
 	
 	public Collection<Purchase> findAllByUserId(Long userId) {
+		loadPurchases(contextPath);
 		List<Purchase> userPurchases = new ArrayList<>();
+		PurchaseItemDAO purchaseItemDAO = new PurchaseItemDAO(contextPath);
+		Collection<PurchaseItem> items = purchaseItemDAO.findAll();
         for (Purchase purchase : purchases.values()) {
             if (purchase.getUser().getId().equals(userId)) {
-            	userPurchases.add(purchase);
+            	purchase.getItems().clear();
+        		for (PurchaseItem item : items) {  
+            		if (item.getPurchaseId().equals(purchase.getId())) { 
+            			purchase.getItems().add(item);
+            		}
+            	}
+        		userPurchases.add(purchase);
             }
         }
         return userPurchases; 
@@ -174,21 +183,19 @@ public class PurchaseDAO {
 	
 	public Collection<Purchase> findAllByFactoryId(Long factoryId) {
 		List<Purchase> factoryPurchases = new ArrayList<>();
-		boolean factoryItem = false;
 		PurchaseItemDAO purchaseItemDAO = new PurchaseItemDAO(contextPath);
 		Collection<PurchaseItem> items = purchaseItemDAO.findAll();
         for (Purchase purchase : purchases.values()) {	
         	if(purchase.getFactory().getId().equals(factoryId)) {
+        		purchase.getItems().clear();
+        		for (PurchaseItem item : items) {  
+            		if (item.getPurchaseId().equals(purchase.getId())) { 
+            			purchase.getItems().add(item);
+            		}
+            	}
         		factoryPurchases.add(purchase);
         	}
-//        	for (PurchaseItem item : items) {  
-//        		if (item.getChocolate().getFactory().getId().equals(factoryId) && item.getPurchaseId().equals(purchase.getId())) { 
-//        			factoryItem = true;
-//        		}
-//        	}
-//        	if(factoryItem) {
-//        		factoryPurchases.add(purchase);  
-//        	}
+        	
         }
         
         /*List<Purchase> updatedFactoryPurchases = new ArrayList<>();
@@ -252,6 +259,16 @@ public class PurchaseDAO {
 		
 		return purchase;
 	}
+	
+	public Purchase approvePurchase(Long purchaseId) {
+		
+		Purchase purchase = findById(purchaseId);
+		purchase.setStatus(PurchaseStatus.Approved);
+		writeToFile();
+		
+		return purchase;
+	}
+	
 	public Collection<Purchase> sortByAttribute(String attribute, String order) {
 	    Stream<Purchase> stream = purchases.values().stream();
 	    Comparator<Purchase> comparator;
@@ -317,5 +334,14 @@ public class PurchaseDAO {
 		 return purchase;
 	 }
 
+	 public void updateHasComment(Long id) {
+		 Purchase purchase = findById(id);
+		 if (purchase != null) {
+	            purchase.setHasComment(true);
+	            writeToFile();		
+	        } else {
+	            throw new NotFoundException("Purchase not found. ");
+	        }
+	 }
 	
 }
