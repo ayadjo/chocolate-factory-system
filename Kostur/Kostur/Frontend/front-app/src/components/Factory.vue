@@ -82,7 +82,7 @@
           <div class="author">
             <img v-if="comment.status == 'Approved'" class="verified-icon" src="../assets/verified.png"></img>
             <img v-if="comment.status != 'Approved'" class="verified-icon" src="../assets/question.png"></img>
-            <p>{{ comment.user.firstName }}{{ comment.user.lastName}}</p>
+            <p>{{ comment.user.firstName }} {{ comment.user.lastName}}</p>
           </div>
           <p class="comment-grade">grade <i class="fas fa-star"></i>: {{ comment.grade }}</p>
           <p class="comment-text">{{ comment.text }}</p>
@@ -232,6 +232,8 @@ const checkLoggedIn = () => {
     } else {
       isLoggedIn.value = false;
       userRole.value = null;
+      loadApprovedComments(route.params.id);
+      loadChocolates(route.params.id);
     }
 };
 
