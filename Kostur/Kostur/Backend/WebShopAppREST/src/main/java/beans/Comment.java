@@ -15,13 +15,15 @@ public class Comment {
 		super();
 	}
 
-	public Comment(Long id, User user, Factory factory, String text, double grade) {
+	public Comment(Long id, User user, Factory factory, String text, double grade, boolean isApproved, boolean isDeleted) {
 		super();
 		this.id = id;
 		this.user = user;
 		this.factory = factory;
 		this.text = text;
 		this.grade = grade;
+		this.isApproved = isApproved;
+		this.isDeleted = isDeleted;
 	}
 	
 	public String toStringForFile() {

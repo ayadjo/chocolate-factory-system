@@ -5,11 +5,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import beans.Basket;
+import beans.Chocolate;
 import beans.Comment;
 import beans.Factory;
 import beans.Location;
@@ -83,7 +86,7 @@ public class CommentDAO {
 			File file = new File(contextPath + "/comments.txt");
 			System.out.println(file.getCanonicalPath());
 			in = new BufferedReader(new FileReader(file));
-			String line, id = "", userId = "", factoryId = "", text = "", grade = "";
+			String line, id = "", userId = "", factoryId = "", text = "", grade = "", isApproved = "", isDeleted = "";
 			StringTokenizer st;
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
@@ -96,10 +99,25 @@ public class CommentDAO {
 					factoryId = st.nextToken().trim();
 					text = st.nextToken().trim();
 					grade = st.nextToken().trim();
+					isApproved = st.nextToken().trim();
+				    isDeleted = st.nextToken().trim();
 				}
 				
+				UserDAO userDAO = new UserDAO(contextPath);
+        		HashMap<Long, User> users = userDAO.getUsers();
+        		User user = users.get(Long.parseLong(userId));
+                if (user == null) {
+                    user = new User(Long.parseLong(userId));
+                }
+                
+                FactoryDAO factoryDAO = new FactoryDAO(contextPath);
+        		HashMap<Long, Factory> factories = factoryDAO.getFactories();
+        		Factory factory = factories.get(Long.parseLong(factoryId));
+                if (factory == null) {
+                	factory = new Factory(Long.parseLong(factoryId));
+                }
 				
-				comments.put(Long.parseLong(id), new Comment(Long.parseLong(id), new User(Long.parseLong(factoryId)), new Factory(Long.parseLong(factoryId)), text, Double.parseDouble(grade)));
+				comments.put(Long.parseLong(id), new Comment(Long.parseLong(id), user, factory, text, Double.parseDouble(grade), Boolean.parseBoolean(isApproved), Boolean.parseBoolean(isDeleted)));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -133,5 +151,33 @@ public class CommentDAO {
 	            } catch (Exception e) {}
 	        }
 	    }
+	}
+	
+	public Collection<Comment> findByFactoryId(Long factoryId) {
+		loadComments(contextPath);
+	    List<Comment> comments = new ArrayList<>();
+	    Collection<Comment> allComments = findAll();
+
+	    for (Comment c : allComments) {
+	        if (c.getFactory().getId().equals(factoryId) && !c.isDeleted()) {
+	            comments.add(c);
+	        }
+	    }
+
+	    return comments;
+	}
+	
+	public Collection<Comment> findApprovedByFactoryId(Long factoryId) {
+		loadComments(contextPath);
+	    List<Comment> comments = new ArrayList<>();
+	    Collection<Comment> allComments = findAll();
+
+	    for (Comment c : allComments) {
+	        if (c.getFactory().getId().equals(factoryId) && !c.isDeleted() && c.isApproved()) {
+	            comments.add(c);
+	        }
+	    }
+
+	    return comments;
 	}
 }

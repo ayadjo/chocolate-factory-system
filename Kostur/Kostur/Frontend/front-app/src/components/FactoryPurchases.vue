@@ -134,7 +134,7 @@
   <div v-if="showCommentModal" class="modal" @click.self="closeCommentModal">
     <div class="modal-content">
       <span class="close-button" @click="closeCommentModal">&times;</span>
-      <h4 class="review-title">Review</h4>
+      <h4 class="review-title">Review for {{ selectedPurchase.factory.name }}</h4>
       <div class="rating">
         <span v-for="heart in 5" :key="heart" class="heart" :class="{'selected': heart <= rating}" @click="setRating(heart)">
           &#9829;

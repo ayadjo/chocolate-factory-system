@@ -1,15 +1,21 @@
 package services;
 
+import java.util.Collection;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import beans.Chocolate;
 import beans.Comment;
+import dao.ChocolateDAO;
 import dao.CommentDAO;
 import dto.CommentDTO;
 
@@ -37,5 +43,21 @@ public class CommentService {
 	public Comment createComment(CommentDTO commentDTO) {
 		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("commentDAO");
 		return commentDAO.save(commentDTO);
+	}
+	
+	@GET
+	@Path("/{factoryId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Comment> findAllByFactoryId(@PathParam("factoryId") Long factoryId){
+		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("commentDAO");
+		return commentDAO.findByFactoryId(factoryId);
+	}
+	
+	@GET
+	@Path("/getApproved/{factoryId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Comment> findApprovedByFactoryId(@PathParam("factoryId") Long factoryId){
+		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("commentDAO");
+		return commentDAO.findApprovedByFactoryId(factoryId);
 	}
 }

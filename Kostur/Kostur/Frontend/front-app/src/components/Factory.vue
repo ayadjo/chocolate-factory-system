@@ -68,9 +68,25 @@
       </div>
       
     </div>
-    <div class="no-comments">
+    <div v-if="comments.length == 0" class="no-comments">
       <p>No comments available.</p>
       <i class="far fa-comment-alt fa-3x"></i>
+    </div>
+    <div v-else>
+      <div v-for="comment in comments" :key="comment.id" class="comment">
+        <h2 class="title">
+          What people said about {{ factory.name}}?
+          <i class="far fa-comment-alt"></i>
+        </h2>
+        <div class="comment-card">
+          <div class="author">
+            <i class="material-icons search-icon">person</i>
+            <p>{{ comment.user.firstName }}{{ comment.user.lastName}}</p>
+          </div>
+          <p class="comment-grade">grade <i class="fas fa-star"></i>: {{ comment.grade }}</p>
+          <p class="comment-text">{{ comment.text }}</p>
+        </div>
+      </div>
     </div>
 
     <div>
@@ -115,6 +131,7 @@ let factoryMarker = ref(null);
 
 const factory = ref({ id: "",name: "", grade: 0, logo: "", location: { address: "", longitude: "", latitude: "" } });
 const chocolates = ref([]);
+const comments = ref([]);
 const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
@@ -182,10 +199,16 @@ const checkLoggedIn = () => {
           const user = response.data;
           isLoggedIn.value = true;
           userRole.value = user.role;
+          const f = route.params.id;
           if(userRole.value == 'Customer'){
               loadChocolatesForCustomer(route.params.id);
             }else {
               loadChocolates(route.params.id);
+            }
+            if((userRole.value == 'Manager' && user.factory.id == route.params.id) || userRole.value == 'Admin'){
+              loadAllComments(route.params.id);
+            }else {
+              loadApprovedComments(route.params.id);
             }
         })
         .catch(error => {
@@ -247,6 +270,20 @@ function loadChocolatesForCustomer(factoryId) {
       chocolates.value.forEach(chocolate => {
         quantities.value[chocolate.id] = 1; 
       });
+    });
+}
+
+function loadAllComments(factoryId) {
+  axios.get(`http://localhost:8080/WebShopAppREST/rest/comments/${factoryId}`)
+    .then(response => {
+      comments.value = response.data;
+    });
+}
+
+function loadApprovedComments(factoryId) {
+  axios.get(`http://localhost:8080/WebShopAppREST/rest/comments/getApproved/${factoryId}`)
+    .then(response => {
+      comments.value = response.data;
     });
 }
 
@@ -523,6 +560,16 @@ function navigateToPurchases(id) {
   margin-left: 4px;
 }
 
+.comment-grade .fas {
+  color: #FFD700; 
+  margin-left: 4px;
+}
+
+.comment-grade{
+  margin-top: -8px;
+  margin-left: 10px;
+}
+
 .logo {
   width: 150px;
   height: auto;
@@ -556,6 +603,49 @@ function navigateToPurchases(id) {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: white; 
   font-size: small;
+}
+
+
+.comment-text{
+  font-size: 1.1vw;
+  margin-left: 100px;
+  margin-top: -52px;
+  height: 70px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+.author{
+  font-size: 1.0vw;
+}
+.author {
+  font-size: 1.0vw;
+  display: flex; 
+  align-items: center;
+}
+
+.author i {
+  margin-right: 5px;
+}
+
+
+.comment-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  width: 250px;
+  text-align: left;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: white; 
+  font-size: small;
+  margin-bottom: 10px;
+  width: 50%;
+  margin-left: 350px;
+  height: 100px
+}
+
+.comment-card:hover {
+  transform: scale(1.05);
 }
 
 .chocolate-card:hover {

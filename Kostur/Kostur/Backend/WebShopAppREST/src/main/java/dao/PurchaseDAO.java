@@ -95,7 +95,14 @@ public class PurchaseDAO {
                 if (user == null) {
                     user = new User(userIdLong);
                 }
-	            Purchase purchase = new Purchase(purchaseId, parsedPurchaseDate, priceDouble, user, purchaseStatus,  new Factory(Long.parseLong(factoryId)), rejectionNote, Boolean.parseBoolean(hasComment));
+                
+                FactoryDAO factoryDAO = new FactoryDAO(contextPath);
+        		HashMap<Long, Factory> factories = factoryDAO.getFactories();
+        		Factory factory = factories.get(Long.parseLong(factoryId));
+                if (factory == null) {
+                	factory = new Factory(Long.parseLong(factoryId));
+                }
+	            Purchase purchase = new Purchase(purchaseId, parsedPurchaseDate, priceDouble, user, purchaseStatus, factory, rejectionNote, Boolean.parseBoolean(hasComment));
 	            
 	            purchases.put(purchaseId, purchase);
 	        }
