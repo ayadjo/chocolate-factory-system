@@ -170,14 +170,14 @@ public class PurchaseDAO {
         	if(purchase.getFactory().getId().equals(factoryId)) {
         		factoryPurchases.add(purchase);
         	}
-        	/*for (PurchaseItem item : items) {  
-        		if (item.getChocolate().getFactory().getId().equals(factoryId) && item.getPurchaseId().equals(purchase.getId())) { 
-        			factoryItem = true;
-        		}
-        	}
-        	if(factoryItem) {
-        		factoryPurchases.add(purchase);  
-        	}*/
+//        	for (PurchaseItem item : items) {  
+//        		if (item.getChocolate().getFactory().getId().equals(factoryId) && item.getPurchaseId().equals(purchase.getId())) { 
+//        			factoryItem = true;
+//        		}
+//        	}
+//        	if(factoryItem) {
+//        		factoryPurchases.add(purchase);  
+//        	}
         }
         
         /*List<Purchase> updatedFactoryPurchases = new ArrayList<>();

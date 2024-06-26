@@ -176,6 +176,7 @@ public class ChocolateDAO {
 
 	
 	public Collection<Chocolate> findByFactoryId(Long factoryId) {
+		loadChocolates(contextPath);
 	    List<Chocolate> foundChocolates = new ArrayList<>();
 	    Collection<Chocolate> allChocolates = chocolates.values();
 
