@@ -2,34 +2,36 @@ package beans;
 
 import java.util.ArrayList;
 
+import enums.CommentStatus;
+
 public class Comment {
 	private Long id;
 	private User user;
 	private Factory factory;
 	private String text;
 	double grade;
-	private boolean isApproved;
+	private CommentStatus status;
 	private boolean isDeleted;
 	
 	public Comment() {
 		super();
 	}
 
-	public Comment(Long id, User user, Factory factory, String text, double grade, boolean isApproved, boolean isDeleted) {
+	public Comment(Long id, User user, Factory factory, String text, double grade, CommentStatus status, boolean isDeleted) {
 		super();
 		this.id = id;
 		this.user = user;
 		this.factory = factory;
 		this.text = text;
 		this.grade = grade;
-		this.isApproved = isApproved;
+		this.status = status;
 		this.isDeleted = isDeleted;
 	}
 	
 	public String toStringForFile() {
         return id + ";" + (user != null ? user.getId() : "-1") + ";" +
                (factory != null ? factory.getId() : "-1") + ";" + 
-               text + ";" + grade + ";" + isApproved + ";" + isDeleted;
+               text + ";" + grade + ";" + status + ";" + isDeleted;
     }
 
 
@@ -73,12 +75,13 @@ public class Comment {
 		this.grade = grade;
 	}
 
-	public boolean isApproved() {
-		return isApproved;
+
+	public CommentStatus getStatus() {
+		return status;
 	}
 
-	public void setApproved(boolean isApproved) {
-		this.isApproved = isApproved;
+	public void setStatus(CommentStatus status) {
+		this.status = status;
 	}
 
 	public boolean isDeleted() {

@@ -73,18 +73,27 @@
       <i class="far fa-comment-alt fa-3x"></i>
     </div>
     <div v-else>
+      <h2 class="title">
+        What people said about {{ factory.name}}?
+        <i class="far fa-comment-alt"></i>
+      </h2>
       <div v-for="comment in comments" :key="comment.id" class="comment">
-        <h2 class="title">
-          What people said about {{ factory.name}}?
-          <i class="far fa-comment-alt"></i>
-        </h2>
         <div class="comment-card">
           <div class="author">
-            <i class="material-icons search-icon">person</i>
+            <img v-if="comment.status == 'Approved'" class="verified-icon" src="../assets/verified.png"></img>
+            <img v-if="comment.status != 'Approved'" class="verified-icon" src="../assets/question.png"></img>
             <p>{{ comment.user.firstName }}{{ comment.user.lastName}}</p>
           </div>
           <p class="comment-grade">grade <i class="fas fa-star"></i>: {{ comment.grade }}</p>
           <p class="comment-text">{{ comment.text }}</p>
+          <div class="status-buttons" v-if="isFactoryManager && comment.status == 'Proccessing'">
+            <button class="approve-button">
+              <i class="fas fa-check"></i> Approve
+            </button>
+            <button class="reject-button">
+              <i class="fas fa-times"></i> Reject
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -155,6 +164,10 @@ const navigateToEmployees = () => {
     console.error('User role is not Manager!');
   }
 };
+
+const isFactoryManager = computed(() => {
+    return userRole.value === 'Manager' && userFactory.value == route.params.id;
+  });
 
 const setupMap = () => {
   if (!savedMap.value) {
@@ -432,6 +445,71 @@ function navigateToPurchases(id) {
 </script>
 
 <style scoped>
+.verified-icon{
+  width: 30px;
+  height: 30px;
+  margin-right: 2px
+}
+
+
+.status-buttons {
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 560px;
+  width: 200px;
+  justify-content: space-between;
+}
+
+.approve-button{
+  background-color: #00A478; 
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s;
+  margin-right: 10px;
+}
+
+.reject-button{
+  background-color: #8f0710; 
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s;
+  margin-right: 10px;
+}
+
+.reject-button:hover,
+.approve-button:hover,
+.cancel-button:hover {
+  background-color: white; 
+  color: black;
+  border: 1px solid #201d0e;
+}
+
+.approve-button i {
+  color: white;
+  margin-right: 4px;
+}
+
+.reject-button i {
+  color: white;
+  margin-right: 4px;
+}
+
+.approve-button:hover i {
+  color: black;
+}
+
+.reject-button:hover i {
+  color: black;
+}
 
 #map {
   margin-top: 30px;
@@ -607,7 +685,7 @@ function navigateToPurchases(id) {
 
 
 .comment-text{
-  font-size: 1.1vw;
+  font-size: 0.9vw;
   margin-left: 100px;
   margin-top: -52px;
   height: 70px;
@@ -641,7 +719,7 @@ function navigateToPurchases(id) {
   margin-bottom: 10px;
   width: 50%;
   margin-left: 350px;
-  height: 100px
+  height: 130px
 }
 
 .comment-card:hover {

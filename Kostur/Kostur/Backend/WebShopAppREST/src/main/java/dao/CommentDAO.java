@@ -20,6 +20,7 @@ import beans.Purchase;
 import beans.User;
 import dto.CommentDTO;
 import dto.LocationDTO;
+import enums.CommentStatus;
 
 public class CommentDAO {
 	private HashMap<Long, Comment> comments = new HashMap<Long, Comment>();
@@ -63,7 +64,7 @@ public class CommentDAO {
 		
 		comment.setText(commentDTO.getText());
 		comment.setGrade(commentDTO.getGrade());
-		comment.setApproved(false);
+		comment.setStatus(CommentStatus.Proccessing);
 		comment.setDeleted(false);
 		
 		PurchaseDAO purchaseDAO = new PurchaseDAO(contextPath);
@@ -86,7 +87,7 @@ public class CommentDAO {
 			File file = new File(contextPath + "/comments.txt");
 			System.out.println(file.getCanonicalPath());
 			in = new BufferedReader(new FileReader(file));
-			String line, id = "", userId = "", factoryId = "", text = "", grade = "", isApproved = "", isDeleted = "";
+			String line, id = "", userId = "", factoryId = "", text = "", grade = "", status = "", isDeleted = "";
 			StringTokenizer st;
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
@@ -99,7 +100,7 @@ public class CommentDAO {
 					factoryId = st.nextToken().trim();
 					text = st.nextToken().trim();
 					grade = st.nextToken().trim();
-					isApproved = st.nextToken().trim();
+					status = st.nextToken().trim();
 				    isDeleted = st.nextToken().trim();
 				}
 				
@@ -117,7 +118,7 @@ public class CommentDAO {
                 	factory = new Factory(Long.parseLong(factoryId));
                 }
 				
-				comments.put(Long.parseLong(id), new Comment(Long.parseLong(id), user, factory, text, Double.parseDouble(grade), Boolean.parseBoolean(isApproved), Boolean.parseBoolean(isDeleted)));
+				comments.put(Long.parseLong(id), new Comment(Long.parseLong(id), user, factory, text, Double.parseDouble(grade), CommentStatus.valueOf(status), Boolean.parseBoolean(isDeleted)));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -173,7 +174,7 @@ public class CommentDAO {
 	    Collection<Comment> allComments = findAll();
 
 	    for (Comment c : allComments) {
-	        if (c.getFactory().getId().equals(factoryId) && !c.isDeleted() && c.isApproved()) {
+	        if (c.getFactory().getId().equals(factoryId) && !c.isDeleted() && c.getStatus().equals(CommentStatus.Approved)) {
 	            comments.add(c);
 	        }
 	    }
