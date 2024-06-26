@@ -122,7 +122,7 @@
         <button v-if="selectedPurchase.status == 'Processing'" class="reject-button" @click="openRejectModal(selectedPurchase)">
           <i class="fas fa-times"></i> Reject
         </button>
-        <button v-if="isCustomer && selectedPurchase.status !== 'Cancelled'" class="cancel-button" @click="cancelPurchase(selectedPurchase)">
+        <button v-if="isCustomer && selectedPurchase.status == 'Processing'" class="cancel-button" @click="cancelPurchase(selectedPurchase)">
           <i class="fas fa-times"></i> Cancel
         </button>
       </div>
