@@ -89,7 +89,7 @@
       <!--<span class="close-button3" v-if="isCustomer" @click="closeModal">&times;</span>
       <span class="close-button2" v-if="isManager" @click="closeModal">&times;</span>-->
       <div class="modal-content">
-        <span class="close-button" @click="closeModal">&times;</span>
+        <!--<span class="close-button" @click="closeModal">&times;</span>-->
         <h4>Purchase Details</h4>
         <p v-if="isCustomer">Name: {{selectedPurchase.user.firstName}} {{ selectedPurchase.user.lastName }}</p>
         <p v-if="isManager">Factory name: {{selectedPurchase.factory.name}} </p>
@@ -129,7 +129,7 @@
     </div>
 
     <div v-if="showRejectModal" class="small-modal" @click.self="closeRejectModal">
-      <div class="modal-content">
+      <div class="modal-content-reject">
           <span class="close-button" @click="closeRejectModal">&times;</span>
           <h4>Reject Purchase</h4>
           <textarea v-model="rejectionNote" placeholder="Enter reason for rejection" class="rejection-note"></textarea>
@@ -138,7 +138,7 @@
     </div>
 
   <div v-if="showCommentModal" class="modal" @click.self="closeCommentModal">
-    <div class="modal-content">
+    <div class="modal-content-reject">
       <span class="close-button" @click="closeCommentModal">&times;</span>
       <h4 class="review-title">Review for {{ selectedPurchase.factory.name }}</h4>
       <div class="rating">
@@ -717,7 +717,7 @@ const isCustomer = computed(() => {
 
 .rejection-note {
   width: 100%;
-  padding: 8px;
+  padding: 5px;
   border-radius: 4px;
   border: 1px solid #ddd;
   margin-bottom: 16px;
@@ -880,6 +880,14 @@ const isCustomer = computed(() => {
 
 .purchase-status {
   margin-top: -1px;
+}
+
+.modal-content-reject {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 600px;
 }
 
 </style>

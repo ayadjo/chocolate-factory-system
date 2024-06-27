@@ -115,7 +115,7 @@ public class Purchase {
 	public void setHasComment(boolean hasComment) {
 		this.hasComment = hasComment;
 	}
-	
+
 	public Date getCancellationDate() {
 		return cancellationDate;
 	}
@@ -123,5 +123,7 @@ public class Purchase {
 	public void setCancellationDate(Date cancellationDate) {
 		this.cancellationDate = cancellationDate;
 	}
+	
+	
 	
 }
