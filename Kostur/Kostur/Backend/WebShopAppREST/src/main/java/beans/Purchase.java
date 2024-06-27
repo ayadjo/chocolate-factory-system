@@ -15,6 +15,7 @@ public class Purchase {
 	private Factory factory;
 	private String rejectionNote;
 	private boolean hasComment;
+	private Date cancellationDate;
 	
 	public Purchase() {
 		super();
@@ -22,7 +23,7 @@ public class Purchase {
 	}
 
 	public Purchase(Long id, Date purchaseDateAndTime, double price,
-			User user, PurchaseStatus status, Factory factory, String rejectionNote, boolean hasComment) {
+			User user, PurchaseStatus status, Factory factory, String rejectionNote, boolean hasComment, Date cancellationDate) {
 		super();
 		this.id = id;
 		this.purchaseDateAndTime = purchaseDateAndTime;
@@ -33,12 +34,13 @@ public class Purchase {
 		this.factory = factory;
 		this.rejectionNote = rejectionNote;
 		this.hasComment = hasComment;
+		this.cancellationDate = cancellationDate;
 	}
 	
 	public String toStringForFile() {
         return id + ";" + purchaseDateAndTime + ";" + price + ";" + 
                (user != null ? user.getId() : "-1") + ";" + status + ";" +
-               (factory != null ? factory.getId() : "-1") + ";" + rejectionNote + ";" + hasComment;
+               (factory != null ? factory.getId() : "-1") + ";" + rejectionNote + ";" + hasComment + ";" + cancellationDate;
     }
 
 
@@ -114,6 +116,12 @@ public class Purchase {
 		this.hasComment = hasComment;
 	}
 	
-	
+	public Date getCancellationDate() {
+		return cancellationDate;
+	}
+
+	public void setCancellationDate(Date cancellationDate) {
+		this.cancellationDate = cancellationDate;
+	}
 	
 }

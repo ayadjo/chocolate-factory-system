@@ -120,5 +120,19 @@ public class FactoryService {
         return FactoryDTO.convertToDTO(factory);
     }
 	
+	@GET
+	@Path("/combined")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Factory> getCombinedResults(@QueryParam("name") String name,
+	                                        @QueryParam("chocolateName") String chocolateName,
+	                                        @QueryParam("location") String location,
+	                                        @QueryParam("grade") Integer grade,
+	                                        @QueryParam("chocolateType") String chocolateType,
+	                                        @QueryParam("chocolateKind") String chocolateKind,
+	                                        @QueryParam("isOpen") Boolean isOpen,
+	                                        @QueryParam("sortOrder") String sortOrder) {
+		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
+		return dao.getCombinedResults(name, chocolateName, location, grade, chocolateType, chocolateKind, isOpen, sortOrder);
+	}
 
 }

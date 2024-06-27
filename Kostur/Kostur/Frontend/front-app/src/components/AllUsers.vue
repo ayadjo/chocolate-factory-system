@@ -69,7 +69,8 @@
               user.role === 'Manager' ? 'manager-card' : '',
               user.role === 'Customer' && user.type.name === 'Gold' ? 'gold-customer' : '',
               user.role === 'Customer' && user.type.name === 'Silver' ? 'silver-customer' : '',
-              user.role === 'Customer' && user.type.name === 'Regular' ? 'regular-customer' : ''
+              user.role === 'Customer' && user.type.name === 'Regular' ? 'regular-customer' : '',
+              user.suspicious ? 'suspicious-user' : ''
             ]"
           >
             <div class="image-container">
@@ -97,7 +98,7 @@
             <p class="user-name">{{ user.firstName }} {{ user.lastName }}</p>
             <p class="user-role">{{ user.role }}</p>
             <p class="user-points" v-if="user.role == 'Customer'">points: {{ user.points }}</p>
-            <button class="block-button" v-if="user.role != 'Admin'">Block</button>
+            <button class="block-button" @click="blockUser(user.id)" v-if="user.role != 'Admin' && !user.blocked">Block</button>
           </div>
         </div>
       </div>
@@ -122,6 +123,8 @@
   
   const selectedRole = ref(null);
   const selectedType = ref(null);
+
+  const isSus = ref(false);
 
   
   const fetchRoles = async () => {
@@ -202,6 +205,16 @@ function removeSearch() {
     searchQuery.value.firstName = '';
     searchQuery.value.lastName = '';
     searchQuery.value.username = '';
+}
+
+function blockUser(id) {
+  axios.patch(`http://localhost:8080/WebShopAppREST/rest/users/block/${id}`)
+    .then(response => {
+      fetchAllUsers();
+    })
+    .catch(error => {
+      console.error("Error blocking user ", error);
+    });
 }
 
 const handleSortChange = (event) => {
@@ -426,6 +439,11 @@ const resetFilters = () => {
     border: 1px solid #cacaad;
     background-color: #f5f5dc;
   }
+
+  .suspicious-user {
+    background-color: #cd5c5c;
+}
+
   
   .search-button {
     background-color: #201d0e;

@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.QueryParam;
+
 import beans.Chocolate;
 import beans.Factory;
 import beans.Location;
@@ -218,5 +220,72 @@ public class FactoryDAO {
         		.anyMatch(c -> c.getKind().name().equals(chocolateKind));
     }
 
-	
+    public List<Factory> getCombinedResults(String name,
+                                            String chocolateName,
+                                            String location,
+                                            Integer grade,
+                                            String chocolateType,
+                                            String chocolateKind,
+                                            Boolean isOpen,
+                                            String sortOrder) {
+        
+        Collection<Factory> results = findAll();
+
+        // Primjena filtera
+        if (chocolateType != null && !chocolateType.isEmpty()) {
+            results = results.stream()
+                    .filter(factory -> hasChocolateType(factory.getId(), chocolateType))
+                    .collect(Collectors.toList());
+        }
+        if (chocolateKind != null && !chocolateKind.isEmpty()) {
+            results = results.stream()
+                    .filter(factory -> hasChocolateKind(factory.getId(), chocolateKind))
+                    .collect(Collectors.toList());
+        }
+        if (isOpen != null) {
+            results = results.stream()
+                    .filter(factory -> factory.isOpen() == isOpen)
+                    .collect(Collectors.toList());
+        }
+
+        // Primjena pretrage
+        if (name != null && !name.isEmpty()) {
+            results = results.stream()
+                    .filter(factory -> factory.getName().toLowerCase().contains(name.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        if (chocolateName != null && !chocolateName.isEmpty()) {
+            results = results.stream()
+                    .filter(factory -> hasChocolateWithName(factory.getId(), chocolateName.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        if (location != null && !location.isEmpty()) {
+            results = results.stream()
+                    .filter(factory -> factory.getLocation().getAddress().toLowerCase().contains(location.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        if (grade != null) {
+            results = results.stream()
+                    .filter(factory -> factory.getGrade() >= grade)
+                    .collect(Collectors.toList());
+        }
+
+        // Primjena sortiranja
+        if (sortOrder != null && !sortOrder.isEmpty()) {
+            Comparator<Factory> comparator = Comparator.comparing(Factory::getName)
+                    .thenComparing(f -> f.getLocation().getAddress())
+                    .thenComparing(Factory::getGrade);
+            
+            if ("desc".equalsIgnoreCase(sortOrder)) {
+                comparator = comparator.reversed();
+            }
+
+            results = results.stream()
+                    .sorted(comparator)
+                    .collect(Collectors.toList());
+        }
+
+        return new ArrayList<>(results);
+    }
+
 }
