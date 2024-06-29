@@ -181,4 +181,21 @@ public class CommentDAO {
 
 	    return comments;
 	}
+	
+	public Comment approveComment(Long id) {
+		Comment comment = findById(id);
+		comment.setStatus(CommentStatus.Approved);
+		writeToFile();
+		
+		return comment;
+	}
+	
+	public Comment rejectComment(Long id) {
+		Comment comment = findById(id);
+		comment.setStatus(CommentStatus.Rejected);
+		writeToFile();
+		
+		return comment;
+	}
+	
 }

@@ -118,5 +118,4 @@ public class Factory {
 	public void setLogo(String logo) {
 		this.logo = logo;
 	}
-	
 }

@@ -89,7 +89,11 @@ public class PurchaseDAO {
 	            
 	            SimpleDateFormat inputDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.UK);
                 Date parsedPurchaseDate = inputDateFormat.parse(purchaseDateAndTime);
-                Date cancellationDateFormat = inputDateFormat.parse(cancellationDate);
+                
+                Date parsedCancellationDate = null;
+                if (!"null".equals(cancellationDate)) {
+                    parsedCancellationDate = inputDateFormat.parse(cancellationDate);
+                }
 	            
                 UserDAO userDAO = new UserDAO(contextPath);
         		HashMap<Long, User> users = userDAO.getUsers();
@@ -104,7 +108,7 @@ public class PurchaseDAO {
                 if (factory == null) {
                 	factory = new Factory(Long.parseLong(factoryId));
                 }
-	            Purchase purchase = new Purchase(purchaseId, parsedPurchaseDate, priceDouble, user, purchaseStatus, factory, rejectionNote, Boolean.parseBoolean(hasComment), cancellationDateFormat);
+	            Purchase purchase = new Purchase(purchaseId, parsedPurchaseDate, priceDouble, user, purchaseStatus, factory, rejectionNote, Boolean.parseBoolean(hasComment), parsedCancellationDate);
 	            //User user = new User(userIdLong);
 	            
 	            

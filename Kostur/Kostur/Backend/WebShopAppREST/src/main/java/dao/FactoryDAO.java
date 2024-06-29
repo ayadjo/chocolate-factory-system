@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.QueryParam;
 
 import beans.Chocolate;
+import beans.Comment;
 import beans.Factory;
 import beans.Location;
 import dto.ChocolateDTO;
@@ -24,6 +25,7 @@ import dto.FactoryDTO;
 import enums.ChocolateKind;
 import enums.ChocolateStatus;
 import enums.ChocolateType;
+import enums.CommentStatus;
 
 public class FactoryDAO {
 	private HashMap<Long, Factory> factories = new HashMap<Long, Factory>();
@@ -231,7 +233,7 @@ public class FactoryDAO {
         
         Collection<Factory> results = findAll();
 
-        // Primjena filtera
+ 
         if (chocolateType != null && !chocolateType.isEmpty()) {
             results = results.stream()
                     .filter(factory -> hasChocolateType(factory.getId(), chocolateType))
@@ -248,7 +250,7 @@ public class FactoryDAO {
                     .collect(Collectors.toList());
         }
 
-        // Primjena pretrage
+
         if (name != null && !name.isEmpty()) {
             results = results.stream()
                     .filter(factory -> factory.getName().toLowerCase().contains(name.toLowerCase()))
@@ -270,7 +272,7 @@ public class FactoryDAO {
                     .collect(Collectors.toList());
         }
 
-        // Primjena sortiranja
+  
         if (sortOrder != null && !sortOrder.isEmpty()) {
             Comparator<Factory> comparator = Comparator.comparing(Factory::getName)
                     .thenComparing(f -> f.getLocation().getAddress())
@@ -288,4 +290,27 @@ public class FactoryDAO {
         return new ArrayList<>(results);
     }
 
+    public Factory updateFactoryAverageRating(Long factoryId) {
+        double totalGrade = 0;
+        int count = 0;
+        
+        CommentDAO commentDAO = new CommentDAO(contextPath);
+
+        for (Comment comment : commentDAO.findApprovedByFactoryId(factoryId)) {       
+                totalGrade += comment.getGrade();
+                count++;        
+        }
+
+        Factory factory = findById(factoryId);
+        if (count > 0) {
+            double newAverageGrade = totalGrade / count;
+            factory.setGrade(newAverageGrade);
+            writeToFile();
+        } else {
+            factory.setGrade(0);
+            writeToFile();
+        }
+        
+        return factory;
+    }
 }
