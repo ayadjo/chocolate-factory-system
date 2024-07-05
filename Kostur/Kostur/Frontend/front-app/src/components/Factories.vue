@@ -70,10 +70,22 @@
 
 
     <div>
-      <select v-model="sortOrder" class="sort-order">
+      <!--<select v-model="sortOrder" class="sort-order">
         <option value="asc">Sort Ascending</option>
         <option value="desc">Sort Descending</option>
-      </select>
+      </select>-->
+      <div class="sort-container">
+        <label for="sort-select">Sort by </label>
+        <select id="sort-select" @change="handleSortChange">
+          <option value="none">None</option>
+          <option value="factoryName">Factory Name (Ascending)</option>
+          <option value="factoryName_desc">Factory Name (Descending)</option>
+          <option value="location">Location (Ascending)</option>
+          <option value="location_desc">Location (Descending)</option>
+          <option value="grade">Grade (Ascending)</option>
+          <option value="grade_desc">Grade (Descending)</option>
+        </select>
+      </div>
       <!--<button @click="sortAscending" class="ascending-button">Sort Ascending</button>
       <button @click="sortDescending" class="descending-button">Sort Descending</button>-->
       <button @click="combinedSearchFilterSort" class="combined-button">Search, Filter & Sort</button>
@@ -223,6 +235,27 @@ function combinedSearchFilterSort() {
       factories.value = response.data;
     });
 }
+
+const handleSortChange = async (event) => {
+  const sortBy = event.target.value;
+  if (sortBy !== 'none') {
+    const [attribute, order] = sortBy.split('_');
+    sortFactories(attribute, order || 'asc');
+  } else {
+    loadFactories();
+  }
+};
+
+const sortFactories = async (attribute, order) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/factories/sortBy/${attribute}/${order}`);
+    if (response && response.data) {
+      factories.value = response.data;
+    }
+  } catch (error) {
+    console.error(`Error sorting purchases by ${attribute}:`, error);
+  }
+};
 
 
 </script>
@@ -589,5 +622,38 @@ function combinedSearchFilterSort() {
   color: black;
   border: 1px solid #201d0e;
 }
+
+.sort-container {
+    margin-top: 20px;
+    display: inline-block;
+    margin-bottom: 10px;
+    transform: translateX(-5%);
+  }
+  
+  .sort-container label {
+    font-size: 14px;
+    margin-right: 10px;
+  }
+  
+  .sort-container select {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .sort-container select:hover,
+  .sort-container select:focus {
+    border-color: #8f0710;
+    box-shadow: 0 0 6px rgba(1, 10, 19, 0.5);
+  }
+  
+  .sort-container select option {
+    padding: 8px;
+  }
 
 </style>

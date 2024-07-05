@@ -20,9 +20,11 @@ import javax.ws.rs.PathParam;
 import beans.Chocolate;
 import beans.Factory;
 import beans.Location;
+import beans.Purchase;
 import dao.ChocolateDAO;
 import dao.FactoryDAO;
 import dao.LocationDAO;
+import dao.PurchaseDAO;
 import dto.ChocolateDTO;
 import dto.FactoryDTO;
 import dto.LocationDTO;
@@ -151,5 +153,13 @@ public class FactoryService {
 	public Factory delete(@PathParam("id") Long id) {
 		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
 		return dao.deleteFactory(id);
+	}
+	
+	@GET
+	@Path("/sortBy/{attribute}/{order}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Factory> sortByAttribute(@PathParam("attribute") String attribute, @PathParam("order") String order) {
+		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
+	    return dao.sortByAttribute(attribute, order);
 	}
 }

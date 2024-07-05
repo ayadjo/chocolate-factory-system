@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.QueryParam;
 
@@ -20,6 +21,7 @@ import beans.Chocolate;
 import beans.Comment;
 import beans.Factory;
 import beans.Location;
+import beans.Purchase;
 import dto.ChocolateDTO;
 import dto.FactoryDTO;
 import enums.ChocolateKind;
@@ -324,4 +326,30 @@ public class FactoryDAO {
     	writeToFile();
     	return factory;
     }
+    
+
+    public Collection<Factory> sortByAttribute(String attribute, String order) {
+	    Stream<Factory> stream = factories.values().stream();
+	    Comparator<Factory> comparator;
+
+	    switch (attribute) {
+	        case "factoryName":
+	            comparator = Comparator.comparing(Factory::getName);
+	            break;
+	        case "grade":
+	            comparator = Comparator.comparing(Factory::getGrade);
+	            break;
+	        case "location":
+	            comparator = Comparator.comparing(f -> f.getLocation().getAddress());
+	            break;
+	        default:
+	            throw new IllegalArgumentException("Unknown attribute: " + attribute);
+	    }
+
+	    if ("desc".equals(order)) {
+	        comparator = comparator.reversed();
+	    }
+
+	    return stream.sorted(comparator).collect(Collectors.toList());
+	}
 }
