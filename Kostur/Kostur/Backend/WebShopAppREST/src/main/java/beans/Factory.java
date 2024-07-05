@@ -14,6 +14,7 @@ public class Factory {
 	private Location location;
 	private double grade;
 	private String logo;
+	private boolean isDeleted;
 	
 	public Factory() {
 		super();
@@ -28,7 +29,7 @@ public class Factory {
 
 
 	public Factory(Long id, String name, String startTime, String endTime, boolean isOpen, Location location,
-			double grade, String logo) {
+			double grade, String logo, boolean isDeleted) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -39,11 +40,12 @@ public class Factory {
 		this.grade = grade;
 		this.logo = logo;
 		this.chocolates = new ArrayList<>();
+		this.isDeleted = isDeleted;
 	}
 	
 	public String toStringForFile() {
         return id + ";" + name + ";" + startTime + ";" + endTime + ";" + isOpen + ";" +
-               (location != null ? location.getId() : "-1") + ";" + grade + ";" + logo;
+               (location != null ? location.getId() : "-1") + ";" + grade + ";" + logo + ";" + isDeleted;
     }
 
 
@@ -118,4 +120,13 @@ public class Factory {
 	public void setLogo(String logo) {
 		this.logo = logo;
 	}
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+	
 }

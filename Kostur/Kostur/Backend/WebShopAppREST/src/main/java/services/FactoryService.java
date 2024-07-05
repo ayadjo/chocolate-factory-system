@@ -7,6 +7,7 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -144,5 +145,11 @@ public class FactoryService {
 		return dao.updateFactoryAverageRating(id);
 	}
 	
-
+	@PATCH
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Factory delete(@PathParam("id") Long id) {
+		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
+		return dao.deleteFactory(id);
+	}
 }

@@ -46,7 +46,9 @@ public class FactoryDAO {
     }
 	
 	public Collection<Factory> findAll() {
-		List<Factory> sortedFactories = new ArrayList<>(factories.values());
+		//List<Factory> sortedFactories = new ArrayList<>(factories.values());
+		List<Factory> sortedFactories = factories.values().stream()
+		        .filter(factory -> !factory.isDeleted()).collect(Collectors.toList());
 		
 		Collections.sort(sortedFactories, new Comparator<Factory>() {
 			@Override
@@ -99,7 +101,7 @@ public class FactoryDAO {
 			File file = new File(contextPath + "/factories.txt");
 			System.out.println(file.getCanonicalPath());
 			in = new BufferedReader(new FileReader(file));
-			String line, id = "", name = "", startTime = "", endTime = "", isOpen = "", locationId = "", grade = "", logo = "";
+			String line, id = "", name = "", startTime = "", endTime = "", isOpen = "", locationId = "", grade = "", logo = "", isDeleted = "";
 			StringTokenizer st;
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
@@ -115,6 +117,7 @@ public class FactoryDAO {
 					locationId = st.nextToken().trim();
 					grade = st.nextToken().trim();
 					logo = st.nextToken().trim();
+					isDeleted = st.nextToken().trim();
 				}
 				
 				Location location = locations.get(Long.parseLong(locationId));
@@ -122,7 +125,7 @@ public class FactoryDAO {
                     location = new Location(Long.parseLong(locationId));
                 }
 
-                factories.put(Long.parseLong(id), new Factory(Long.parseLong(id), name, startTime, endTime, Boolean.parseBoolean(isOpen), location, Double.parseDouble(grade), logo));
+                factories.put(Long.parseLong(id), new Factory(Long.parseLong(id), name, startTime, endTime, Boolean.parseBoolean(isOpen), location, Double.parseDouble(grade), logo, Boolean.parseBoolean(isDeleted)));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -312,5 +315,12 @@ public class FactoryDAO {
         }
         
         return factory;
+    }
+    
+    public Factory deleteFactory(Long id) {
+    	Factory factory = findById(id);
+    	factory.setDeleted(true);
+    	writeToFile();
+    	return factory;
     }
 }
