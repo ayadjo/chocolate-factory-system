@@ -84,6 +84,7 @@ public class FactoryDAO {
 	  
 	    factory.setOpen(true);
 	    factory.setGrade(0);
+	    factory.setDeleted(false);
 		
 	    factories.put(maxId, factory); 
 	    System.out.println("Saving factory: " + factory.toStringForFile());
