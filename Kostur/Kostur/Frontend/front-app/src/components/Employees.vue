@@ -1,6 +1,7 @@
 <template>
     <div class="all-employees">
         <div v-if="allEmployees.length === 0" class="no-employees">
+            <button @click="newEmployee" class="new-employee-button">New Employee</button>
             <img class="empty-image" src="../assets/EMPTY.jpg" alt="No Employees Found">
             <p class="no-employees-message">Ups!... no employees found</p>
         </div>

@@ -42,7 +42,7 @@
             <i class="material-icons search-icon">account_circle</i>
           </div>
           <button class="search-button" @click="search"><i class="bi bi-search"></i> Search</button>
-          <button class="remove-search-button" @click="removeSearch"><i class="bi bi-x"></i></button>
+          <!-- <button class="remove-search-button" @click="removeSearch"><i class="bi bi-x"></i></button> -->
         </div>
   
         <div class="sort-container">
@@ -194,14 +194,20 @@
   axios.get('http://localhost:8080/WebShopAppREST/rest/users/search', { params })
     .then(response => {
       allUsers.value = response.data; 
+      sortUsers();
+      applyFilters();
     })
     .catch(error => {
       console.error('Error fetching users:', error);
     });
 }
 
+
+
 function removeSearch() {
-   fetchAllUsers();
+    fetchAllUsers();
+    sortUsers();
+    applyFilters();
     searchQuery.value.firstName = '';
     searchQuery.value.lastName = '';
     searchQuery.value.username = '';
@@ -222,46 +228,92 @@ const handleSortChange = (event) => {
   if (sortBy !== 'none') {
     sortUsers(sortBy);
   } else {
-    fetchAllUsers(); 
+    search(); 
   }
 };
 
-const sortUsers = async (sortBy) => {
-  try {
-    let endpoint = `http://localhost:8080/WebShopAppREST/rest/users/sortAsc/${sortBy}/${adminId}`;
-    if (sortBy.endsWith('_desc')) {
-      endpoint = `http://localhost:8080/WebShopAppREST/rest/users/sortDesc/${sortBy.slice(0, -5)}/${adminId}`;
-    }
+// const sortUsers = async (sortBy) => {
+//   try {
+//     let endpoint = `http://localhost:8080/WebShopAppREST/rest/users/sortAsc/${sortBy}/${adminId}`;
+//     if (sortBy.endsWith('_desc')) {
+//       endpoint = `http://localhost:8080/WebShopAppREST/rest/users/sortDesc/${sortBy.slice(0, -5)}/${adminId}`;
+//     }
     
-    const response = await axios.get(endpoint);
-    if (response.status === 200) {
-      allUsers.value = response.data;
-    } else {
-      console.error('Failed to fetch sorted users:', response.status);
-    }
-  } catch (error) {
-    console.error('Error sorting users:', error);
+//     const response = await axios.get(endpoint);
+//     if (response.status === 200) {
+//       allUsers.value = response.data;
+//     } else {
+//       console.error('Failed to fetch sorted users:', response.status);
+//     }
+//   } catch (error) {
+//     console.error('Error sorting users:', error);
+//   }
+// };
+
+const sortUsers = (sortBy) => {
+  let sortedUsers = [...allUsers.value];
+  switch (sortBy) {
+    case 'firstName':
+      sortedUsers.sort((a, b) => a.firstName.localeCompare(b.firstName));
+      break;
+    case 'firstName_desc':
+      sortedUsers.sort((a, b) => b.firstName.localeCompare(a.firstName));
+      break;
+    case 'lastName':
+      sortedUsers.sort((a, b) => a.lastName.localeCompare(b.lastName));
+      break;
+    case 'lastName_desc':
+      sortedUsers.sort((a, b) => b.lastName.localeCompare(a.lastName));
+      break;
+    case 'username':
+      sortedUsers.sort((a, b) => a.username.localeCompare(b.username));
+      break;
+    case 'username_desc':
+      sortedUsers.sort((a, b) => b.username.localeCompare(a.username));
+      break;
+      case 'points':
+      sortedUsers.sort((a, b) => a.points - b.points); // Sort numerically
+      break;
+    case 'points_desc':
+      sortedUsers.sort((a, b) => b.points - a.points); // Sort numerically descending
+      break;
+    default:
+      break;
   }
+  allUsers.value = sortedUsers;
 };
 
   
-const applyFilters = () => {
-  const params = {
-    role: selectedRole.value,
-    type: selectedType.value
-  };
+// const applyFilters = () => {
+//   const params = {
+//     role: selectedRole.value,
+//     type: selectedType.value
+//   };
 
-  axios.get(`http://localhost:8080/WebShopAppREST/rest/users/filter/${adminId}`, { params })
-    .then(response => {
-      allUsers.value = response.data;
-    })
-    .catch(error => {
-      console.error('Error applying filters:', error);
-    });
+//   axios.get(`http://localhost:8080/WebShopAppREST/rest/users/filter/${adminId}`, { params })
+//     .then(response => {
+//       allUsers.value = response.data;
+//     })
+//     .catch(error => {
+//       console.error('Error applying filters:', error);
+//     });
+// };
+
+const applyFilters = () => {
+  const filteredUsers = allUsers.value.filter(user => {
+    if (selectedRole.value && user.role !== selectedRole.value) {
+      return false;
+    }
+    if (selectedType.value && user.type.name !== selectedType.value) {
+      return false;
+    }
+    return true;
+  });
+  allUsers.value = filteredUsers;
 };
 
 const resetFilters = () => {
-  fetchAllUsers();
+  search();
   selectedRole.value = null;
   selectedType.value = null;
 };
