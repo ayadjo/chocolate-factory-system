@@ -1,4 +1,4 @@
-1;Stark;8:00;20:00;true;1;4.8;https://upload.wikimedia.org/wikipedia/sr/d/de/%D0%A8%D1%82%D0%B0%D1%80%D0%BA_%28%D0%BB%D0%BE%D0%B3%D0%BE%2C_2022%29.png;false
+1;Stark;8:00;22:00;true;1;4.8;https://upload.wikimedia.org/wikipedia/sr/d/de/%D0%A8%D1%82%D0%B0%D1%80%D0%BA_%28%D0%BB%D0%BE%D0%B3%D0%BE%2C_2022%29.png;false
 2;Swisslion-Takovo;8:00;20:00;true;2;4.7;https://www.swisslion-takovo.com/wp-content/uploads/2022/05/swisslion-takovo-krug.webp;false
 3;Pionir;8:00;20:00;true;3;4.4;https://media.licdn.com/dms/image/C560BAQEkUJBPowYj9Q/company-logo_200_200/0/1630613223753/pionir_logo?e=2147483647&v=beta&t=yTn8yTYC7MMxSITJQulqen8DevbmTbBAqLvC1teAW-0;false
 4;Nelly;8:00;20:00;false;4;4.0;https://www.companywall.rs/upload/UserUploads/nelly-logo.png;false

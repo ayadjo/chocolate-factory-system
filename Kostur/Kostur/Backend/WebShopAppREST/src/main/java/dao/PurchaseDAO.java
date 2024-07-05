@@ -23,6 +23,7 @@ import javax.ws.rs.NotFoundException;
 
 import beans.Basket;
 import beans.BasketItem;
+import beans.CustomerType;
 import beans.Factory;
 import beans.Purchase;
 import beans.PurchaseItem;
@@ -174,8 +175,15 @@ public class PurchaseDAO {
 		FactoryDAO factoryDAO = new FactoryDAO(contextPath);
 		Factory factory = factoryDAO.findById(factoryId);
 		
+		double basketPrice = basket.getPrice();
+		CustomerType customerType = user.getType();
+	    if (customerType != null) {
+	        double discount = customerType.getDiscount();
+	        basketPrice = basketPrice - (basketPrice * discount / 100);
+	    }
+		
 		purchase.setFactory(factory);
-		purchase.setPrice(basket.getPrice());
+		purchase.setPrice(basketPrice);
 		purchase.setPurchaseDateAndTime(new Date());
 		purchase.setStatus(PurchaseStatus.Processing);
 		purchase.setUser(user);

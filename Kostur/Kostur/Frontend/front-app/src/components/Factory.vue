@@ -139,7 +139,7 @@ const savedMapContainer = ref(null);
 let savedMap = ref(null);
 let factoryMarker = ref(null);
 
-const factory = ref({ id: "",name: "", grade: 0, logo: "", location: { address: "", longitude: "", latitude: "" } });
+const factory = ref({ id: "",name: "", grade: 0, logo: "", location: { address: "", longitude: "", latitude: "" }});
 const chocolates = ref([]);
 const comments = ref([]);
 const route = useRoute();
@@ -265,6 +265,8 @@ function loadFactory(id) {
   axios.get(`http://localhost:8080/WebShopAppREST/rest/factories/${id}`)
     .then(response => {
       factory.value = response.data;
+      factory.value.open = response.data.open;
+      console.log(factory.value.open);
       setupMap();
     });
 }
@@ -458,8 +460,9 @@ async function addToBasket(chocolate, quantity) {
     return;
   }
 
-  if (!chocolate.factory.isOpen) {
+  if (!factory.value.open) {
     alert("Purchase is currently not possible, as the factory is closed.");
+    console.log(factory.value.open);
     return;
   }
 

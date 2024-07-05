@@ -26,10 +26,12 @@ public class Factory {
 		this.chocolates = new ArrayList<>();
 		this.id = id;
 	}
+	
+	
 
 
-	public Factory(Long id, String name, String startTime, String endTime, boolean isOpen, Location location,
-			double grade, String logo, boolean isDeleted) {
+	public Factory(Long id, String name, String startTime, String endTime,
+			boolean isOpen, Location location, double grade, String logo, boolean isDeleted) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -39,8 +41,8 @@ public class Factory {
 		this.location = location;
 		this.grade = grade;
 		this.logo = logo;
-		this.chocolates = new ArrayList<>();
 		this.isDeleted = isDeleted;
+		this.chocolates = new ArrayList<>();
 	}
 	
 	public String toStringForFile() {
