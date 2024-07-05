@@ -20,8 +20,8 @@ public class PurchaseItem {
 	}
 	
 	public String toStringForFile() {
-        return id + ";" + (chocolate != null ? chocolate.getId() : "-1") + ";" + quantity + ";" + 
-        	   purchaseId;
+        return this.id + ";" + (this.chocolate != null ? this.chocolate.getId() : "-1") + ";" + this.quantity + ";" + 
+        	   this.purchaseId;
     }
 	
 

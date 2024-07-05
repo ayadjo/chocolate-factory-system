@@ -6,29 +6,39 @@
         <label class="filter-label">Chocolate Type</label>
         <hr></hr>
         <div class="filterBy" v-for="type in chocolateTypes" :key="type">
-          <input type="radio" :id="type" :value="type" v-model="selectedType">    
-          <label :for="type">{{ type }}</label>       
+          <div class="radio-group">
+            <input type="radio" :id="type" :value="type" v-model="selectedType">    
+            <label :for="type">{{ type }}</label>   
+          </div>    
         </div>
       </div>
       <div class="filter-item">
         <label class="filter-label">Chocolate Kind</label>
         <hr></hr>
         <div class="filterBy" v-for="kind in chocolateKinds" :key="kind">
-          <input type="radio" :id="kind" :value="kind" v-model="selectedKind">
-          <label :for="kind">{{ kind }}</label>
+          <div class="radio-group">
+            <input type="radio" :id="kind" :value="kind" v-model="selectedKind">
+            <label :for="kind">{{ kind }}</label>
+          </div>
         </div>
       </div>
       <div class="filter-item">
         <label class="filter-label">Is it open?</label>
         <hr></hr>
-        <div class="filterBy">
-          <input type="radio" id="open" value="true" v-model="isOpen">
-          <label for="open">Yes</label>
-        </div>
-        <div class="filterBy">
-          <input type="radio" id="not-open" value="false" v-model="isOpen">
-          <label for="not-open">No</label>
-        </div>
+        
+          <div class="filterBy">
+            <div class="radio-group">
+              <input type="radio" id="open" value="true" v-model="isOpen">
+              <label for="open">Yes</label>
+            </div>
+          </div>
+          <div class="filterBy">
+            <div class="radio-group">
+              <input type="radio" id="not-open" value="false" v-model="isOpen">
+              <label for="not-open">No</label>
+            </div>
+          </div>
+        
       </div>
       <div clas="filter-button">
         <button @click="applyFilters" class="apply-button">Apply</button>
@@ -58,9 +68,15 @@
       <button @click="search" class="search-button"><i class="bi bi-search"></i>Search</button>
     </div>
 
+
     <div>
-      <button @click="sortAscending" class="ascending-button">Sort Ascending</button>
-      <button @click="sortDescending" class="descending-button">Sort Descending</button>
+      <select v-model="sortOrder" class="sort-order">
+        <option value="asc">Sort Ascending</option>
+        <option value="desc">Sort Descending</option>
+      </select>
+      <!--<button @click="sortAscending" class="ascending-button">Sort Ascending</button>
+      <button @click="sortDescending" class="descending-button">Sort Descending</button>-->
+      <button @click="combinedSearchFilterSort" class="combined-button">Search, Filter & Sort</button>
     </div>
 
     <div class="card-container">
@@ -103,6 +119,8 @@ const chocolateKinds = ref([]);
 const selectedType = ref(''); 
 const selectedKind = ref(''); 
 const isOpen = ref(true);
+const sortOrder = ref('asc');
+
 
 
 onMounted(() => {
@@ -188,6 +206,23 @@ function deleteFilters() {
   loadFactories();
 }
 
+function combinedSearchFilterSort() {
+  const params = {
+    name: searchQuery.value.name,
+    chocolateName: searchQuery.value.chocolate,
+    location: searchQuery.value.location,
+    grade: searchQuery.value.grade,
+    chocolateType: selectedType.value,
+    chocolateKind: selectedKind.value,
+    isOpen: isOpen.value,
+    sortOrder: sortOrder.value
+  };
+
+  axios.get('http://localhost:8080/WebShopAppREST/rest/factories/combined', { params })
+    .then(response => {
+      factories.value = response.data;
+    });
+}
 
 
 </script>
@@ -397,43 +432,43 @@ function deleteFilters() {
 }
 
 .apply-button {
-  background-color: #8f0710; 
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-size: 0.9em;
-  transition: background-color 0.3s;
-  margin-top: 30px;
-  margin-right: 10px;
-  width: 60%;
-}
-
-.apply-button:hover {
-  background-color: white; 
-  color: black;
-  border: 1px solid #8f0710;
-}
+    background-color: #f0f0f0; 
+    color: #201d0e;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+    margin-top: 30px;
+    margin-right: 10px;
+    width: 60%;
+  }
+  
+  .apply-button:hover {
+    background-color: white; 
+    color: black;
+    border: 1px solid #8f0710;
+  }
 
 .delete-button {
-  background-color: #8f0710; 
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-size: 0.9em;
-  transition: background-color 0.3s;
-  margin-top: 30px;
-  width: 30%;
-}
-
-.delete-button:hover {
-  background-color: white; 
-  color: black;
-  border: 1px solid #8f0710;
-}
+    background-color: #f0f0f0; 
+    color: #201d0e;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+    margin-top: 30px;
+    width: 30%;
+  }
+  
+  .delete-button:hover {
+    background-color: white; 
+    color: black;
+    border: 1px solid #8f0710;
+  }
 
 .ascending-button {
   background-color: #8f0710; 
@@ -446,7 +481,7 @@ function deleteFilters() {
   transition: background-color 0.3s;
   margin-top: 30px;
   margin-right: 10px;
-  width: 10%;
+  width: 12%;
 }
 
 .ascending-button:hover {
@@ -466,13 +501,93 @@ function deleteFilters() {
   transition: background-color 0.3s;
   margin-top: 30px;
   margin-right: 10px;
-  width: 10%;
+  width: 12%;
 }
 
 .descending-button:hover {
   background-color: white; 
   color: black;
   border: 1px solid #8f0710;
+}
+
+.radio-group {
+    display: inline-block;
+    margin-right: 1rem;
+    font-weight: 100;
+    font-size: 1.3vw;
+  }
+
+  .radio-group-open {
+    display: flex;
+    flex-direction: column;
+    margin-right: 1rem;
+    font-weight: 100;
+    font-size: 1.1vw;
+  }
+  
+  .radio-group input[type="radio"] {
+    display: none;
+  }
+
+  .radio-group-open input[type="radio"] {
+    display: none;
+  }
+  
+  .radio-group label {
+    cursor: pointer;
+    font-weight: 100;
+    font-size: 1.0vw;
+  }
+  
+  .radio-group label:before {
+    content: "";
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    margin-right: 0.5em;
+    position: relative;
+    top: 0.2em;
+    background-color: transparent;
+  }
+  
+  .radio-group input[type="radio"]:checked + label:before {
+    background-color: #8f0710;
+    border-color: rgb(220, 204, 180);
+  }
+
+  .radio-group-open input[type="radio"]:checked + label:before {
+    background-color: #8f0710;
+    border-color: rgb(220, 204, 180);
+  }
+
+.sort-order {
+  padding: 8px;
+  border-radius: 4px;
+  margin-top: 30px;
+  margin-right: 10px;
+  font-size: 0.9em;
+  width: 12%;
+}
+
+.combined-button {
+  background-color: #201d0e;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s;
+  margin-top: 30px;
+  width: 15%;
+}
+
+.combined-button:hover {
+  background-color: white;
+  color: black;
+  border: 1px solid #201d0e;
 }
 
 </style>

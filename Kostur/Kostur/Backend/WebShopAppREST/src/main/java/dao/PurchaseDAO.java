@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -79,6 +80,7 @@ public class PurchaseDAO {
 	            String factoryId = st.nextToken().trim();
 	            String rejectionNote = st.nextToken().trim();
 	            String hasComment = st.nextToken().trim();
+	            String cancellationDate = st.nextToken().trim();
 
 	            long purchaseId = Long.parseLong(id);
 	            double priceDouble = Double.parseDouble(price);
@@ -87,7 +89,11 @@ public class PurchaseDAO {
 	            
 	            SimpleDateFormat inputDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.UK);
                 Date parsedPurchaseDate = inputDateFormat.parse(purchaseDateAndTime);
-
+                
+                Date parsedCancellationDate = null;
+                if (!"null".equals(cancellationDate)) {
+                    parsedCancellationDate = inputDateFormat.parse(cancellationDate);
+                }
 	            
                 UserDAO userDAO = new UserDAO(contextPath);
         		HashMap<Long, User> users = userDAO.getUsers();
@@ -102,7 +108,19 @@ public class PurchaseDAO {
                 if (factory == null) {
                 	factory = new Factory(Long.parseLong(factoryId));
                 }
-	            Purchase purchase = new Purchase(purchaseId, parsedPurchaseDate, priceDouble, user, purchaseStatus, factory, rejectionNote, Boolean.parseBoolean(hasComment));
+	            Purchase purchase = new Purchase(purchaseId, parsedPurchaseDate, priceDouble, user, purchaseStatus, factory, rejectionNote, Boolean.parseBoolean(hasComment), parsedCancellationDate);
+	            //User user = new User(userIdLong);
+	            
+	            
+	            /*PurchaseItemDAO purchaseItemDAO = new PurchaseItemDAO(contextPath);
+	            Collection<PurchaseItem> purchaseItems = purchaseItemDAO.findAll();
+	            ArrayList<PurchaseItem> purchaseItemsForThisPurchase = new ArrayList<>();
+	            for (PurchaseItem purchaseItem : purchaseItems) {
+	                if (purchaseItem.getPurchaseId().equals(purchaseId)) {
+	                    purchaseItemsForThisPurchase.add(purchaseItem);
+	                }
+	            }
+	            purchase.setItems(purchaseItemsForThisPurchase);*/
 	            
 	            purchases.put(purchaseId, purchase);
 	        }
@@ -162,6 +180,9 @@ public class PurchaseDAO {
 		purchase.setStatus(PurchaseStatus.Processing);
 		purchase.setUser(user);
 		purchase.setHasComment(false);
+		purchase.setCancellationDate(null);
+		
+		
 		purchases.put(purchase.getId(), purchase);
 		writeToFile();
 		
@@ -233,6 +254,12 @@ public class PurchaseDAO {
 	            String purchaseData = purchase.toStringForFile();
 	            System.out.println("Writing purchase data: " + purchaseData); 
 	            out.write(purchaseData + "\n");
+	            
+	       
+	            /*for (PurchaseItem item : purchase.getItems()) {
+	                String purchaseItemData = item.toStringForFile();
+	                out.write("#" + purchaseItemData + "\n"); 
+	            }*/
 	        }
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -287,9 +314,9 @@ public class PurchaseDAO {
 	        case "date":
 	            comparator = Comparator.comparing(Purchase::getPurchaseDateAndTime);
 	            break;
-	        /*case "factoryName":
+	        case "factoryName":
 	            comparator = Comparator.comparing(p -> p.getFactory().getName());
-	            break;*/
+	            break;
 	        default:
 	            throw new IllegalArgumentException("Unknown attribute: " + attribute);
 	    }
@@ -319,7 +346,7 @@ public class PurchaseDAO {
 	        }
 	        
 	        return purchases.values().stream()
-	            //.filter(p -> factoryName == null || p.getFactory().getName().toLowerCase().contains(factoryName.toLowerCase()))
+	            .filter(p -> factoryName == null || p.getFactory().getName().toLowerCase().contains(factoryName.toLowerCase()))
 	            .filter(p -> priceFrom == null || p.getPrice() >= priceFrom)
 	            .filter(p -> priceTo == null || p.getPrice() <= priceTo)
 	            .filter(p -> dateFromParsed.isEmpty() || p.getPurchaseDateAndTime().compareTo(dateFromParsed.get(0)) >= 0)
@@ -329,15 +356,27 @@ public class PurchaseDAO {
 	 
 	 public Purchase cancelPurchase (Long id) {
 		 ChocolateDAO chocolateDAO = new ChocolateDAO(contextPath);
+		 
+		 PurchaseItemDAO purchaseItemDAO = new PurchaseItemDAO(contextPath);
+		 Collection<PurchaseItem> items = purchaseItemDAO.findAll();
+		 
+		 for(PurchaseItem item : items) {
+			if(item.getPurchaseId().equals(id)) {
+				chocolateDAO.incrementOnStock(item.getChocolate().getId(), item.getQuantity());
+			}
+		 }
+		 
 		 Purchase purchase = findById(id);
 		 if (purchase != null) {
-	            purchase.setStatus(PurchaseStatus.Cancelled);
-
-	            //writeToFile();
-	        } else {
-	            // Handle case where purchase is not found
-	            throw new NotFoundException("Purchase not found. ");
-	        }
+            purchase.setStatus(PurchaseStatus.Cancelled);
+            purchase.setCancellationDate(new Date());
+            writeToFile();
+	     } else {
+            throw new NotFoundException("Purchase not found.");
+	     }
+		 
+		 User user = purchase.getUser();
+		 user.setPoints((int) (user.getPoints() - purchase.getPrice()/1000*133*4));
 		 return purchase;
 	 }
 
@@ -350,5 +389,24 @@ public class PurchaseDAO {
 	            throw new NotFoundException("Purchase not found. ");
 	        }
 	 }
+	 
+	 public int getCancelledPurchasesCountInLastMonth(Long userId) {
+		int cancelledNum = 0;
+
+	    Date now = new Date();
+	    
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(now);
+	    cal.add(Calendar.MONTH, -1);
+	    
+	    Date oneMonthAgo = cal.getTime();
+	    
+		for(Purchase purchase : purchases.values()) {
+			if(purchase.getUser().getId() == userId && purchase.getStatus() == PurchaseStatus.Cancelled && !purchase.getCancellationDate().before(oneMonthAgo)) {
+				cancelledNum++;
+			}
+		}
+		return cancelledNum;
+	}
 	
 }

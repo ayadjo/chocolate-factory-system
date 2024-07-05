@@ -8,6 +8,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -119,6 +120,29 @@ public class FactoryService {
         
         return FactoryDTO.convertToDTO(factory);
     }
+	
+	@GET
+	@Path("/combined")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Factory> getCombinedResults(@QueryParam("name") String name,
+	                                        @QueryParam("chocolateName") String chocolateName,
+	                                        @QueryParam("location") String location,
+	                                        @QueryParam("grade") Integer grade,
+	                                        @QueryParam("chocolateType") String chocolateType,
+	                                        @QueryParam("chocolateKind") String chocolateKind,
+	                                        @QueryParam("isOpen") Boolean isOpen,
+	                                        @QueryParam("sortOrder") String sortOrder) {
+		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
+		return dao.getCombinedResults(name, chocolateName, location, grade, chocolateType, chocolateKind, isOpen, sortOrder);
+	}
+	
+	@PUT
+	@Path("grade/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Factory updateFactoryAverageRating(@PathParam ("id") Long id){
+		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
+		return dao.updateFactoryAverageRating(id);
+	}
 	
 
 }

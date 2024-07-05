@@ -20,6 +20,7 @@ public class User {
 	private CustomerType type; //customer
 	private Factory factory; //manager
 	private boolean isBlocked;
+	private boolean isSuspicious;
 	
 	
 	public User() {
@@ -30,7 +31,7 @@ public class User {
 
 	public User(Long id, String username, String password, String firstName, String lastName,
 			Gender gender, Date birthday, Role role, int points,
-			CustomerType type, Factory factory, boolean isBlocked) {
+			CustomerType type, Factory factory, boolean isBlocked, boolean isSuspicious) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -45,13 +46,14 @@ public class User {
 		this.factory = factory;
 		this.isBlocked = isBlocked;
 		this.purchases =  new ArrayList<>();
+		this.isSuspicious = isSuspicious;
 	}
 	
 	public String toStringForFile() {
         return id + ";" + username + ";" + password + ";" + firstName + ";" +  lastName + ";" + gender + ";" + birthday + ";" +
         		role + ";"+ points + ";" + 
         		(type != null ? type.getId() : -1) + ";" +
-               (factory != null ? factory.getId() : -1) + ";" + isBlocked;
+               (factory != null ? factory.getId() : -1) + ";" + isBlocked + ";" + isSuspicious;
     }
 	
 	public User(Long id) {
@@ -191,6 +193,15 @@ public class User {
 	public void setBlocked(boolean isBlocked) {
 		this.isBlocked = isBlocked;
 	}
-	
+
+
+	public boolean isSuspicious() {
+		return isSuspicious;
+	}
+
+
+	public void setSuspicious(boolean isSuspicious) {
+		this.isSuspicious = isSuspicious;
+	}
 	
 }

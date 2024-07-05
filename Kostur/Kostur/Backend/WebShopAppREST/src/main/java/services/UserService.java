@@ -19,6 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import beans.Chocolate;
 import beans.Factory;
@@ -51,10 +52,10 @@ public class UserService {
 		}
 	}
 	
-	 @POST
-	 @Path("/createCustomer")
-	 @Produces(MediaType.APPLICATION_JSON)
-	 @Consumes(MediaType.APPLICATION_JSON)
+	@POST
+	@Path("/createCustomer")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	public RegisterUserDTO createUser(RegisterUserDTO userDTO) throws ParseException {
         LOGGER.info("Creating user with username: " + userDTO.getUsername());
 
@@ -81,9 +82,11 @@ public class UserService {
 	public RegisterUserDTO loginUser(LoginDTO dto, @Context HttpServletRequest request) {
 		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
 		User user = userDAO.login(dto);
+		
 		if (user == null) {
-			return null;
-		}
+	        return null;
+	    }
+		
 		request.getSession().setAttribute("user", user);
 		return RegisterUserDTO.convertToDTO(user);
 	}
@@ -303,5 +306,22 @@ public class UserService {
 
 	       return RegisterUserDTO.convertToDTO(user);
    }
+	
+	@PATCH
+	@Path("/points/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public User decrementPoints(@PathParam("id") Long id,  @QueryParam("price") double price) {
+		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
+		return dao.decrementPoints(id, price);
+
+	}
+	
+	@PATCH
+	@Path("/block/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public User blockUser(@PathParam("id") Long id) {
+		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
+		return dao.blockUser(id);
+	}
 	
 }

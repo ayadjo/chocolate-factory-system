@@ -169,5 +169,4 @@ public class RegisterUserDTO {
 		this.role = role;
 	}
 	
-	
 }

@@ -87,10 +87,10 @@
           <p class="comment-grade">grade <i class="fas fa-star"></i>: {{ comment.grade }}</p>
           <p class="comment-text">{{ comment.text }}</p>
           <div class="status-buttons" v-if="isFactoryManager && comment.status == 'Proccessing'">
-            <button class="approve-button">
+            <button class="approve-button"  @click="approveComment(comment)">
               <i class="fas fa-check"></i> Approve
             </button>
-            <button class="reject-button">
+            <button class="reject-button" @click="rejectComment(comment)">
               <i class="fas fa-times"></i> Reject
             </button>
           </div>
@@ -360,6 +360,7 @@ function decrementQuantity(chocolateId) {
   }
 }
 
+
 // function addToBasket(chocolate, quantity) {
 //   const userId = localStorage.getItem('loggedUserId'); 
 //   if (!userId) {
@@ -401,6 +402,44 @@ function decrementQuantity(chocolateId) {
 //     alert('Failed to add chocolate to the basket. Please try again.');
 //   }
 // }
+
+function approveComment(comment) {
+  axios.patch(`http://localhost:8080/WebShopAppREST/rest/comments/approve/${comment.id}`)
+    .then(response => {
+      alert("Comment approved successfully:", response.data);
+
+          axios.put(`http://localhost:8080/WebShopAppREST/rest/factories/grade/${comment.factory.id}`)
+            .then(response => {
+              console.log("Factory grade updated");
+              loadFactory(route.params.id);
+              window.location.reload();
+            })
+            .catch(error => {
+              console.error("Error updating grade", error.message);
+              alert("An error occurred while updating grade. Please try again later.");
+            });
+
+            
+    })
+    .catch(error => {
+      console.error("Error approving comment:", error.message);
+      alert("An error occurred while approving the comment. Please try again later.");
+    });
+}
+
+function rejectComment(comment) {
+  axios.patch(`http://localhost:8080/WebShopAppREST/rest/comments/reject/${comment.id}`)
+    .then(response => {
+      console.log("Comment rejected successfully:", response.data);
+      loadFactory(route.params.id);
+    })
+    .catch(error => {
+      console.error("Error rejecting comment:", error.message);
+      alert("An error occurred while rejecting the comment. Please try again later.");
+    });
+}
+
+
 
 async function addToBasket(chocolate, quantity) {
   const userId = localStorage.getItem('loggedUserId'); 
@@ -688,11 +727,12 @@ function navigateToPurchases(id) {
 
 .comment-text{
   font-size: 0.9vw;
-  margin-left: 100px;
+  margin-left: 110px;
   margin-top: -52px;
   height: 70px;
   border-radius: 10px;
   border: 1px solid #ccc;
+  padding: 5px;
 }
 
 .author{

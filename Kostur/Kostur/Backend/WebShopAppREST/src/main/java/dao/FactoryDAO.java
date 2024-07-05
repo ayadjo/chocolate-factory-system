@@ -14,7 +14,10 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.QueryParam;
+
 import beans.Chocolate;
+import beans.Comment;
 import beans.Factory;
 import beans.Location;
 import dto.ChocolateDTO;
@@ -22,6 +25,7 @@ import dto.FactoryDTO;
 import enums.ChocolateKind;
 import enums.ChocolateStatus;
 import enums.ChocolateType;
+import enums.CommentStatus;
 
 public class FactoryDAO {
 	private HashMap<Long, Factory> factories = new HashMap<Long, Factory>();
@@ -218,5 +222,95 @@ public class FactoryDAO {
         		.anyMatch(c -> c.getKind().name().equals(chocolateKind));
     }
 
-	
+    public List<Factory> getCombinedResults(String name,
+                                            String chocolateName,
+                                            String location,
+                                            Integer grade,
+                                            String chocolateType,
+                                            String chocolateKind,
+                                            Boolean isOpen,
+                                            String sortOrder) {
+        
+        Collection<Factory> results = findAll();
+
+ 
+        if (chocolateType != null && !chocolateType.isEmpty()) {
+            results = results.stream()
+                    .filter(factory -> hasChocolateType(factory.getId(), chocolateType))
+                    .collect(Collectors.toList());
+        }
+        if (chocolateKind != null && !chocolateKind.isEmpty()) {
+            results = results.stream()
+                    .filter(factory -> hasChocolateKind(factory.getId(), chocolateKind))
+                    .collect(Collectors.toList());
+        }
+        if (isOpen != null) {
+            results = results.stream()
+                    .filter(factory -> factory.isOpen() == isOpen)
+                    .collect(Collectors.toList());
+        }
+
+
+        if (name != null && !name.isEmpty()) {
+            results = results.stream()
+                    .filter(factory -> factory.getName().toLowerCase().contains(name.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        if (chocolateName != null && !chocolateName.isEmpty()) {
+            results = results.stream()
+                    .filter(factory -> hasChocolateWithName(factory.getId(), chocolateName.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        if (location != null && !location.isEmpty()) {
+            results = results.stream()
+                    .filter(factory -> factory.getLocation().getAddress().toLowerCase().contains(location.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        if (grade != null) {
+            results = results.stream()
+                    .filter(factory -> factory.getGrade() >= grade)
+                    .collect(Collectors.toList());
+        }
+
+  
+        if (sortOrder != null && !sortOrder.isEmpty()) {
+            Comparator<Factory> comparator = Comparator.comparing(Factory::getName)
+                    .thenComparing(f -> f.getLocation().getAddress())
+                    .thenComparing(Factory::getGrade);
+            
+            if ("desc".equalsIgnoreCase(sortOrder)) {
+                comparator = comparator.reversed();
+            }
+
+            results = results.stream()
+                    .sorted(comparator)
+                    .collect(Collectors.toList());
+        }
+
+        return new ArrayList<>(results);
+    }
+
+    public Factory updateFactoryAverageRating(Long factoryId) {
+        double totalGrade = 0;
+        int count = 0;
+        
+        CommentDAO commentDAO = new CommentDAO(contextPath);
+
+        for (Comment comment : commentDAO.findApprovedByFactoryId(factoryId)) {       
+                totalGrade += comment.getGrade();
+                count++;        
+        }
+
+        Factory factory = findById(factoryId);
+        if (count > 0) {
+            double newAverageGrade = totalGrade / count;
+            factory.setGrade(newAverageGrade);
+            writeToFile();
+        } else {
+            factory.setGrade(0);
+            writeToFile();
+        }
+        
+        return factory;
+    }
 }

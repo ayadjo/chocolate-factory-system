@@ -22,6 +22,8 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.NotFoundException;
+
 import beans.Basket;
 import beans.Chocolate;
 import beans.CustomerType;
@@ -86,6 +88,7 @@ public class UserDAO {
 
 	    user.setType(regularType);
 	    user.setBlocked(false);
+	    user.setSuspicious(false);
 	    user.setFactory(null);
 	    users.put(maxId, user); 
 	    writeToFile();
@@ -181,7 +184,7 @@ public class UserDAO {
 			File file = new File(contextPath + "/users.txt");
 			System.out.println(file.getCanonicalPath());
 			in = new BufferedReader(new FileReader(file));
-			String line, id = "", username = "", password = "", firstName = "", lastName = "", gender = "", birthday = "", role = "", points = "", typeId = "", factoryId = "", isBlocked = "";
+			String line, id = "", username = "", password = "", firstName = "", lastName = "", gender = "", birthday = "", role = "", points = "", typeId = "", factoryId = "", isBlocked = "", isSuspicious = "";
 			StringTokenizer st;
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -204,6 +207,7 @@ public class UserDAO {
 					typeId = st.nextToken().trim();
 					factoryId = st.nextToken().trim();
 					isBlocked = st.nextToken().trim();
+					isSuspicious = st.nextToken().trim();
 				}
 				
 				CustomerType type = types.get(Long.parseLong(typeId));
@@ -220,7 +224,7 @@ public class UserDAO {
                 Date parsedBirthday = inputDateFormat.parse(birthday);
 
 				
-				users.put(Long.parseLong(id), new User(Long.parseLong(id), username, password, firstName, lastName, Gender.valueOf(gender), parsedBirthday, Role.valueOf(role), Integer.parseInt(points), type, factory, Boolean.parseBoolean(isBlocked)));
+				users.put(Long.parseLong(id), new User(Long.parseLong(id), username, password, firstName, lastName, Gender.valueOf(gender), parsedBirthday, Role.valueOf(role), Integer.parseInt(points), type, factory, Boolean.parseBoolean(isBlocked), Boolean.parseBoolean(isSuspicious)));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -295,6 +299,10 @@ public class UserDAO {
 	
 	public Collection<User> findAllUsers(Long excludeId) {
 	    Collection<User> allUsers = findAll();
+	    
+	    for (User user : allUsers) {
+	    	updateSuspiciousField(user.getId());
+	    }
 	    
 	    return allUsers.stream()
 	                   .filter(user -> !user.getId().equals(excludeId))
@@ -423,6 +431,49 @@ public class UserDAO {
 	    users.put(maxId, user); 
 	    writeToFile();
 	    return user;
+	}
+	
+	public ArrayList<User> getAllSuspiciousUsers() {
+		ArrayList<User> suspiciousUsers = new ArrayList<User>();
+		PurchaseDAO purchaseDAO = new PurchaseDAO(contextPath);
+		for(User user : users.values()) {
+			if(purchaseDAO.getCancelledPurchasesCountInLastMonth(user.getId()) >= 5) {
+				suspiciousUsers.add(user);
+			}
+		}
+		return suspiciousUsers;
+	}
+	
+	public User decrementPoints(Long id, double price) {
+		User user = findById(id);
+		
+		int points = (int) (price / 1000 * 133 * 4);
+		user.setPoints(user.getPoints() - points);
+		
+		return user;
+	}
+	
+	public void updateSuspiciousField(Long userId) { 
+	    ArrayList<User> suspiciousUsers = getAllSuspiciousUsers(); 
+	    
+	    User user = findById(userId);
+	    if (user != null) {
+	    	if (suspiciousUsers.contains(user)) {
+	    		user.setSuspicious(true);
+	    	}
+	    } else {
+	        throw new NotFoundException("User not found.");
+	    }
+	}
+
+	public User blockUser(Long id) {
+		User user = findById(id);
+		if (user != null) {
+			user.setBlocked(true);
+		} else {
+			throw new NotFoundException("User not found.");
+		}
+		return user;
 	}
 
 }
