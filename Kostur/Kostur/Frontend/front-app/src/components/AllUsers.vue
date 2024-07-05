@@ -184,7 +184,7 @@
     firstName: searchQuery.value.firstName,
     lastName: searchQuery.value.lastName,
     username: searchQuery.value.username,
-    excludeId: localStorage.getItem('loggedUserId')
+    excludeId: localStorage.getItem('loggedUserId'), 
   };
 
 
