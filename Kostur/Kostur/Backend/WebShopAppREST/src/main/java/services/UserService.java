@@ -2,6 +2,7 @@ package services;
 
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -200,7 +201,8 @@ public class UserService {
 			@QueryParam("excludeId") Long excludeId,
 	        @QueryParam("firstName") @DefaultValue("") String firstName,
 	        @QueryParam("lastName") @DefaultValue("") String lastName,
-	        @QueryParam("username") @DefaultValue("") String username) {
+	        @QueryParam("username") @DefaultValue("") String username,
+			List<User> allUsers) {
 		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
 	    return userDAO.search(firstName, lastName, username, excludeId);
 	}
@@ -323,5 +325,8 @@ public class UserService {
 		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
 		return dao.blockUser(id);
 	}
+	
+
+
 	
 }

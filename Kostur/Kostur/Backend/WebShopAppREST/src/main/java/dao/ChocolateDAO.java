@@ -211,6 +211,9 @@ public class ChocolateDAO {
 			return null;
 		}
 		foundChocolate.setOnStock(quantity);
+		if(foundChocolate.getOnStock() > 0) {
+			foundChocolate.setStatus(ChocolateStatus.onStock);
+		}
 		
 		writeToFile();
 

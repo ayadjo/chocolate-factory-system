@@ -448,6 +448,11 @@ async function addToBasket(chocolate, quantity) {
     return;
   }
 
+  if (!chocolate.factory.isOpen) {
+    alert("Purchase is currently not possible, as the factory is closed.");
+    return;
+  }
+
   try {
     const canOrderResponse = await axios.get(`http://localhost:8080/WebShopAppREST/rest/baskets/canOrder/${userId}/${chocolate.factory.id}`);
     const canOrder = canOrderResponse.data;
