@@ -326,7 +326,12 @@ public class UserService {
 		return dao.blockUser(id);
 	}
 	
+	@PATCH
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public User delete(@PathParam("id") Long id) {
+		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
+		return dao.deleteUser(id);
+	}
 
-
-	
 }

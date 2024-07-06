@@ -21,6 +21,7 @@ public class User {
 	private Factory factory; //manager
 	private boolean isBlocked;
 	private boolean isSuspicious;
+	private boolean isDeleted;
 	
 	
 	public User() {
@@ -31,7 +32,7 @@ public class User {
 
 	public User(Long id, String username, String password, String firstName, String lastName,
 			Gender gender, Date birthday, Role role, int points,
-			CustomerType type, Factory factory, boolean isBlocked, boolean isSuspicious) {
+			CustomerType type, Factory factory, boolean isBlocked, boolean isSuspicious, boolean isDeleted) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -47,13 +48,14 @@ public class User {
 		this.isBlocked = isBlocked;
 		this.purchases =  new ArrayList<>();
 		this.isSuspicious = isSuspicious;
+		this.isDeleted = isDeleted;
 	}
 	
 	public String toStringForFile() {
         return id + ";" + username + ";" + password + ";" + firstName + ";" +  lastName + ";" + gender + ";" + birthday + ";" +
         		role + ";"+ points + ";" + 
         		(type != null ? type.getId() : -1) + ";" +
-               (factory != null ? factory.getId() : -1) + ";" + isBlocked + ";" + isSuspicious;
+               (factory != null ? factory.getId() : -1) + ";" + isBlocked + ";" + isSuspicious + ";" + isDeleted;
     }
 	
 	public User(Long id) {
@@ -202,6 +204,16 @@ public class User {
 
 	public void setSuspicious(boolean isSuspicious) {
 		this.isSuspicious = isSuspicious;
+	}
+
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 	
 }

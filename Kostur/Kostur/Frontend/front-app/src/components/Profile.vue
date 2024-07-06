@@ -10,6 +10,7 @@
                 <li><button class="edit-profile-button" v-if="userRole == 'Admin'" @click="navigateToAllUsers"> <i class="fas fa-user"></i>Users</button></li>
                 <li><button class="factory-profile-button" v-if="userRole == 'Manager' " @click="navigateToFactory"> <i class="fas fa-industry search-icon"></i>Factory</button></li>
                 <li><button class="purchases-button" v-if="userRole == 'Customer' " @click="navigateToPurchases(userId)"> <i class="fas fa-shopping-cart search-icon"></i>Purchases</button></li>
+                <li><button v-if="userRole != 'Admin'" @click="deleteUser(userId)" class="edit-profile-button"><i class="fas fa-trash-alt"></i>Delete</button></li>
             </ul>
           </div>
         <div class="profile-pic">
@@ -61,6 +62,7 @@
   <script setup>
   import { ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
+  import axios from 'axios';
   
   const user = ref(null);
   const userId = localStorage.getItem('loggedUserId');
@@ -125,6 +127,22 @@ const navigateToFactory = () => {
 const navigateToPurchases = (userId) => {  
   router.push({ name: 'purchases', params: { id: userId }})
 }
+
+function deleteUser(id) {
+  axios.patch(`http://localhost:8080/WebShopAppREST/rest/users/${id}`)
+    .then(response => {   
+      handleLogout();
+      alert("User successfully deleted!");
+    })
+    .catch (error => console.log(error));
+}
+
+const handleLogout = () => {
+    localStorage.removeItem('loggedUserId');
+    localStorage.removeItem('userRole');
+    router.push('/');
+  };
+
 </script>
   
 <style scoped>

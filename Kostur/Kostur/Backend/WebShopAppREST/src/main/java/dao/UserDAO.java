@@ -101,7 +101,7 @@ public class UserDAO {
 
 	public User login(LoginDTO dto) {
 		for (User user : users.values()) {
-			if (user.getUsername().equals(dto.getUsername()) && user.getPassword().equals(dto.getPassword()) && user.isBlocked() == false) {
+			if (user.getUsername().equals(dto.getUsername()) && user.getPassword().equals(dto.getPassword()) && user.isBlocked() == false && user.isDeleted() == false) {
 				return user;
 			}
 		}
@@ -184,7 +184,7 @@ public class UserDAO {
 			File file = new File(contextPath + "/users.txt");
 			System.out.println(file.getCanonicalPath());
 			in = new BufferedReader(new FileReader(file));
-			String line, id = "", username = "", password = "", firstName = "", lastName = "", gender = "", birthday = "", role = "", points = "", typeId = "", factoryId = "", isBlocked = "", isSuspicious = "";
+			String line, id = "", username = "", password = "", firstName = "", lastName = "", gender = "", birthday = "", role = "", points = "", typeId = "", factoryId = "", isBlocked = "", isSuspicious = "", isDeleted = "";
 			StringTokenizer st;
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -208,6 +208,7 @@ public class UserDAO {
 					factoryId = st.nextToken().trim();
 					isBlocked = st.nextToken().trim();
 					isSuspicious = st.nextToken().trim();
+					isDeleted = st.nextToken().trim();
 				}
 				
 				CustomerType type = types.get(Long.parseLong(typeId));
@@ -224,7 +225,7 @@ public class UserDAO {
                 Date parsedBirthday = inputDateFormat.parse(birthday);
 
 				
-				users.put(Long.parseLong(id), new User(Long.parseLong(id), username, password, firstName, lastName, Gender.valueOf(gender), parsedBirthday, Role.valueOf(role), Integer.parseInt(points), type, factory, Boolean.parseBoolean(isBlocked), Boolean.parseBoolean(isSuspicious)));
+				users.put(Long.parseLong(id), new User(Long.parseLong(id), username, password, firstName, lastName, Gender.valueOf(gender), parsedBirthday, Role.valueOf(role), Integer.parseInt(points), type, factory, Boolean.parseBoolean(isBlocked), Boolean.parseBoolean(isSuspicious), Boolean.parseBoolean(isDeleted)));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -449,6 +450,7 @@ public class UserDAO {
 		
 		int points = (int) (price / 1000 * 133 * 4);
 		user.setPoints(user.getPoints() - points);
+		writeToFile();
 		
 		return user;
 	}
@@ -476,4 +478,10 @@ public class UserDAO {
 		return user;
 	}
 
+	public User deleteUser(Long id) {
+    	User user = findById(id);
+    	user.setDeleted(true);
+    	writeToFile();
+    	return user;
+	}
 }
