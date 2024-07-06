@@ -387,7 +387,6 @@ const sortPurchases = async (attribute, order) => {
     const response = await axios.get(`http://localhost:8080/WebShopAppREST/rest/purchases/sortBy/${attribute}/${order}`);
     if (response && response.data) {
       purchases.value = response.data;
-
       purchases.value.forEach(purchase => {
         const date = purchase.purchaseDateAndTime;
         if (date) {
@@ -426,7 +425,6 @@ const search = async () => {
     const response = await axios.get('http://localhost:8080/WebShopAppREST/rest/purchases/search', { params });
     if (response && response.data) {
       purchases.value = response.data;
-
       purchases.value.forEach(purchase => {
         const date = purchase.purchaseDateAndTime;
         if (date) {

@@ -82,7 +82,8 @@
         <div class="comment-card">
           <div class="author">
             <img v-if="comment.status == 'Approved'" class="verified-icon" src="../assets/verified.png"></img>
-            <img v-if="comment.status != 'Approved'" class="verified-icon" src="../assets/question.png"></img>
+            <img v-if="comment.status == 'Proccessing'" class="verified-icon" src="../assets/question.png"></img>
+            <img v-if="comment.status == 'Rejected'" class="verified-icon" src="../assets/reject_comment.png"></img>
             <p>{{ comment.user.firstName }} {{ comment.user.lastName}}</p>
           </div>
           <p class="comment-grade">grade <i class="fas fa-star"></i>: {{ comment.grade }}</p>
@@ -345,6 +346,10 @@ function closeModal() {
 function updateQuantity() { 
   const id = editedChocolate.value.id;
   const onStock = editedChocolate.value.onStock;
+  if(onStock < 0){
+    alert("Chocolate quantity must be > 0!")
+    return;
+  }
 
   axios.patch(`http://localhost:8080/WebShopAppREST/rest/chocolates/quantity/${id}/${onStock}`)
     .then(() => {
@@ -444,6 +449,7 @@ function rejectComment(comment) {
     .then(response => {
       console.log("Comment rejected successfully:", response.data);
       loadFactory(route.params.id);
+      window.location.reload();
     })
     .catch(error => {
       console.error("Error rejecting comment:", error.message);

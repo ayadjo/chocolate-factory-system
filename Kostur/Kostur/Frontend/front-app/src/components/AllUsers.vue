@@ -97,6 +97,7 @@
             <b class="user-username">{{ user.username }}</b>
             <p class="user-name">{{ user.firstName }} {{ user.lastName }}</p>
             <p class="user-role">{{ user.role }}</p>
+            <p v-if="user.blocked" class="blocked"><b>Blocked</b></p>
             <p class="user-points" v-if="user.role == 'Customer'">points: {{ user.points }}</p>
             <button class="block-button" @click="blockUser(user.id)" v-if="user.role != 'Admin' && !user.blocked">Block</button>
           </div>
@@ -458,6 +459,11 @@ const resetFilters = () => {
     padding: 8px;
     cursor: pointer;
     transition: background-color 0.3s;
+    position: absolute;
+    bottom: 16px;
+  }
+
+  .blocked{
     position: absolute;
     bottom: 16px;
   }

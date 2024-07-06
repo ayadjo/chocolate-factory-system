@@ -293,6 +293,7 @@ public class UserDAO {
 		
 		int newPoints = (int) (price / 1000 * 133);
 		user.setPoints(user.getPoints() + newPoints);
+		writeToFile();
 		
 		return user;
 	}
@@ -449,6 +450,8 @@ public class UserDAO {
 		
 		int points = (int) (price / 1000 * 133 * 4);
 		user.setPoints(user.getPoints() - points);
+		
+		writeToFile();
 		
 		return user;
 	}

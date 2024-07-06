@@ -215,7 +215,7 @@ function deleteFilters() {
   selectedKind.value = '';
   isOpen.value = null;
 
-  loadFactories();
+  combinedSearchFilterSort();
 }
 
 function combinedSearchFilterSort() {
@@ -259,7 +259,8 @@ const handleSortChange = async (event) => {
   } else {
     sortOrder.value = 'asc';
     sortAttribute.value = '';
-    loadFactories();
+    //loadFactories();
+    combinedSearchFilterSort();
   }
 }
 
