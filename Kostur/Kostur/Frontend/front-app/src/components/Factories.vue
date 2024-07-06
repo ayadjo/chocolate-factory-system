@@ -130,7 +130,7 @@ const chocolateTypes = ref([]);
 const chocolateKinds = ref([]); 
 const selectedType = ref(''); 
 const selectedKind = ref(''); 
-const isOpen = ref(true);
+const isOpen = ref(null);
 const sortOrder = ref('asc');
 const sortAttribute = ref('');
 
@@ -213,7 +213,7 @@ function applyFilters() {
 function deleteFilters() {
   selectedType.value = '';
   selectedKind.value = '';
-  isOpen.value = true;
+  isOpen.value = null;
 
   loadFactories();
 }
