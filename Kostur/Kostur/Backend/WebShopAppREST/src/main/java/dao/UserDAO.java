@@ -244,7 +244,7 @@ public class UserDAO {
         List<User> availableManagers = new ArrayList<>();
 
         for (User user : users.values()) {
-            if (user.getRole() == Role.Manager && user.getFactory() == null) {
+            if (user.getRole() == Role.Manager && user.getFactory().getId() == -1) {
                 availableManagers.add(user);
             }
         }
@@ -294,6 +294,7 @@ public class UserDAO {
 		
 		int newPoints = (int) (price / 1000 * 133);
 		user.setPoints(user.getPoints() + newPoints);
+		writeToFile();
 		
 		return user;
 	}
@@ -450,6 +451,8 @@ public class UserDAO {
 		
 		int points = (int) (price / 1000 * 133 * 4);
 		user.setPoints(user.getPoints() - points);
+		writeToFile();
+		
 		writeToFile();
 		
 		return user;

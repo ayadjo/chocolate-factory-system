@@ -8,7 +8,7 @@
             <ul v-if="showDropdown" class="dropdown-menu">
               <li><button class="edit-profile-button" v-if="userFactory == factoryId && isManager" @click="navigateToEmployees"><i class="fas fa-user"></i>Employees</button></li>
               <li><button v-if="userFactory == factoryId && isManager" @click="navigateToPurchases(factory.id)" class="edit-profile-button"><i class="fas fa-shopping-cart search-icon"></i>Purchases</button></li>
-              <li><button v-if="userFactory == factoryId && isManager" @click="deleteFactory(factory.id)" class="edit-profile-button"><i class="fas fa-trash-alt"></i>Delete</button></li>
+              <li><button v-if="isAdmin" @click="deleteFactory(factory.id)" class="edit-profile-button"><i class="fas fa-trash-alt"></i>Delete</button></li>
             </ul>
           </div>
           <h2>{{ factory.name }}</h2>
@@ -82,7 +82,8 @@
         <div class="comment-card">
           <div class="author">
             <img v-if="comment.status == 'Approved'" class="verified-icon" src="../assets/verified.png"></img>
-            <img v-if="comment.status != 'Approved'" class="verified-icon" src="../assets/question.png"></img>
+            <img v-if="comment.status == 'Proccessing'" class="verified-icon" src="../assets/question.png"></img>
+            <img v-if="comment.status == 'Rejected'" class="verified-icon" src="../assets/reject_comment.png"></img>
             <p>{{ comment.user.firstName }} {{ comment.user.lastName}}</p>
           </div>
           <p class="comment-grade">grade <i class="fas fa-star"></i>: {{ comment.grade }}</p>
@@ -255,6 +256,10 @@ const isCustomer = computed(() => {
   return userRole.value === 'Customer';
 });
 
+const isAdmin = computed(() => {
+  return userRole.value === 'Admin';
+});
+
 onMounted(() => {
   loadFactory(route.params.id);
   fetchUser();
@@ -345,6 +350,10 @@ function closeModal() {
 function updateQuantity() { 
   const id = editedChocolate.value.id;
   const onStock = editedChocolate.value.onStock;
+  if(onStock < 0){
+    alert("Chocolate quantity must be > 0!")
+    return;
+  }
 
   axios.patch(`http://localhost:8080/WebShopAppREST/rest/chocolates/quantity/${id}/${onStock}`)
     .then(() => {
@@ -444,6 +453,7 @@ function rejectComment(comment) {
     .then(response => {
       console.log("Comment rejected successfully:", response.data);
       loadFactory(route.params.id);
+      window.location.reload();
     })
     .catch(error => {
       console.error("Error rejecting comment:", error.message);

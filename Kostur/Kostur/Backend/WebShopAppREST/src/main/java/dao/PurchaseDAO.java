@@ -383,8 +383,6 @@ public class PurchaseDAO {
             throw new NotFoundException("Purchase not found.");
 	     }
 		 
-		 User user = purchase.getUser();
-		 user.setPoints((int) (user.getPoints() - purchase.getPrice()/1000*133*4));
 		 return purchase;
 	 }
 
