@@ -41,7 +41,7 @@
         
       </div>
       <div clas="filter-button">
-        <button @click="applyFilters" class="apply-button">Apply</button>
+        <button @click="combinedSearchFilterSort" class="apply-button">Apply</button>
         <button @click="deleteFilters" class="delete-button">Delete</button>
       </div>
       
@@ -65,7 +65,7 @@
         <input type="number" v-model="searchQuery.grade" placeholder="Search by Average Grade" min="1" max="5">
         <i class="fas fa-star search-icon"></i>
       </div>
-      <button @click="search" class="search-button"><i class="bi bi-search"></i>Search</button>
+      <button @click="combinedSearchFilterSort" class="search-button"><i class="bi bi-search"></i>Search</button>
     </div>
 
 
@@ -88,7 +88,7 @@
       </div>
       <!--<button @click="sortAscending" class="ascending-button">Sort Ascending</button>
       <button @click="sortDescending" class="descending-button">Sort Descending</button>-->
-      <button @click="combinedSearchFilterSort" class="combined-button">Search, Filter & Sort</button>
+      <!--<button @click="combinedSearchFilterSort" class="combined-button">Search, Filter & Sort</button>-->
     </div>
 
     <div class="card-container">
@@ -132,7 +132,7 @@ const selectedType = ref('');
 const selectedKind = ref(''); 
 const isOpen = ref(true);
 const sortOrder = ref('asc');
-
+const sortAttribute = ref('');
 
 
 onMounted(() => {
@@ -227,16 +227,18 @@ function combinedSearchFilterSort() {
     chocolateType: selectedType.value,
     chocolateKind: selectedKind.value,
     isOpen: isOpen.value,
-    sortOrder: sortOrder.value
+    sortOrder: sortOrder.value,
+    attribute: sortAttribute.value
   };
-
+  console.log('Params to be sent:', params);
+  console.log('Sort attribute:', sortAttribute, 'Sort order:', sortOrder);
   axios.get('http://localhost:8080/WebShopAppREST/rest/factories/combined', { params })
     .then(response => {
       factories.value = response.data;
     });
 }
 
-const handleSortChange = async (event) => {
+/*const handleSortChange = async (event) => {
   const sortBy = event.target.value;
   if (sortBy !== 'none') {
     const [attribute, order] = sortBy.split('_');
@@ -244,7 +246,23 @@ const handleSortChange = async (event) => {
   } else {
     loadFactories();
   }
-};
+};*/
+
+const handleSortChange = async (event) => {
+  const sortBy = event.target.value;
+  if (sortBy !== 'none') {
+    const [attribute, order] = sortBy.split('_');
+    sortOrder.value = order || 'asc';
+    sortAttribute.value = attribute;
+    console.log('Sort attribute:', sortAttribute.value, 'Sort order:', sortOrder.value);
+    combinedSearchFilterSort();
+  } else {
+    sortOrder.value = 'asc';
+    sortAttribute.value = '';
+    loadFactories();
+  }
+}
+
 
 const sortFactories = async (attribute, order) => {
   try {

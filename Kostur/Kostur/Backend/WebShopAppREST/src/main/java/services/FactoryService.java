@@ -1,6 +1,7 @@
 package services;
 
 import java.util.Collection;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
@@ -32,6 +33,7 @@ import enums.ChocolateType;
 
 @Path("/factories")
 public class FactoryService {
+	private static final Logger logger = Logger.getLogger(FactoryService.class.getName());
 	
 	@Context
 	ServletContext ctx;
@@ -134,9 +136,17 @@ public class FactoryService {
 	                                        @QueryParam("chocolateType") String chocolateType,
 	                                        @QueryParam("chocolateKind") String chocolateKind,
 	                                        @QueryParam("isOpen") Boolean isOpen,
-	                                        @QueryParam("sortOrder") String sortOrder) {
+	                                        @QueryParam("sortOrder") String sortOrder,
+	                                        @QueryParam("attribute") String attribute) {
+		
+		logger.info("Received parameters - Name: " + name + ", Chocolate Name: " + chocolateName + 
+                ", Location: " + location + ", Grade: " + grade + ", Chocolate Type: " + chocolateType + 
+                ", Chocolate Kind: " + chocolateKind + ", Is Open: " + isOpen + ", Sort Order: " + sortOrder + 
+                ", Attribute: " + attribute);
+		
 		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
-		return dao.getCombinedResults(name, chocolateName, location, grade, chocolateType, chocolateKind, isOpen, sortOrder);
+		
+		return dao.getCombinedResults(name, chocolateName, location, grade, chocolateType, chocolateKind, isOpen, sortOrder, attribute);
 	}
 	
 	@PUT
@@ -155,11 +165,11 @@ public class FactoryService {
 		return dao.deleteFactory(id);
 	}
 	
-	@GET
+	/*@GET
 	@Path("/sortBy/{attribute}/{order}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<Factory> sortByAttribute(@PathParam("attribute") String attribute, @PathParam("order") String order) {
 		FactoryDAO dao = (FactoryDAO) ctx.getAttribute("factoryDAO");
 	    return dao.sortByAttribute(attribute, order);
-	}
+	}*/
 }

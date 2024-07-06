@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +31,7 @@ import enums.ChocolateType;
 import enums.CommentStatus;
 
 public class FactoryDAO {
+	private static final Logger logger = Logger.getLogger(FactoryDAO.class.getName());
 	private HashMap<Long, Factory> factories = new HashMap<Long, Factory>();
 	private String contextPath;
 	
@@ -235,7 +237,8 @@ public class FactoryDAO {
                                             String chocolateType,
                                             String chocolateKind,
                                             Boolean isOpen,
-                                            String sortOrder) {
+                                            String sortOrder,
+                                            String sortAttribute) {
         
         Collection<Factory> results = findAll();
 
@@ -279,20 +282,10 @@ public class FactoryDAO {
         }
 
   
-        if (sortOrder != null && !sortOrder.isEmpty()) {
-            Comparator<Factory> comparator = Comparator.comparing(Factory::getName)
-                    .thenComparing(f -> f.getLocation().getAddress())
-                    .thenComparing(Factory::getGrade);
-            
-            if ("desc".equalsIgnoreCase(sortOrder)) {
-                comparator = comparator.reversed();
-            }
-
-            results = results.stream()
-                    .sorted(comparator)
-                    .collect(Collectors.toList());
+        if (sortOrder != null && !sortOrder.isEmpty() && sortAttribute != null && !sortAttribute.isEmpty()) {
+            results = sortByAttribute(results, sortAttribute, sortOrder);
         }
-
+        
         return new ArrayList<>(results);
     }
 
@@ -328,28 +321,31 @@ public class FactoryDAO {
     }
     
 
-    public Collection<Factory> sortByAttribute(String attribute, String order) {
-	    Stream<Factory> stream = factories.values().stream();
-	    Comparator<Factory> comparator;
+    public Collection<Factory> sortByAttribute(Collection<Factory> factories, String attribute, String order) {
+        Stream<Factory> stream = factories.stream();
+        Comparator<Factory> comparator;
 
-	    switch (attribute) {
-	        case "factoryName":
-	            comparator = Comparator.comparing(Factory::getName);
-	            break;
-	        case "grade":
-	            comparator = Comparator.comparing(Factory::getGrade);
-	            break;
-	        case "location":
-	            comparator = Comparator.comparing(f -> f.getLocation().getAddress());
-	            break;
-	        default:
-	            throw new IllegalArgumentException("Unknown attribute: " + attribute);
-	    }
+        switch (attribute) {
+            case "factoryName":
+                comparator = Comparator.comparing(Factory::getName);
+                break;
+            case "grade":
+                comparator = Comparator.comparing(Factory::getGrade);
+                break;
+            case "location":
+                comparator = Comparator.comparing(f -> f.getLocation().getAddress());
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown attribute: " + attribute);
+        }
 
-	    if ("desc".equals(order)) {
-	        comparator = comparator.reversed();
-	    }
+        if ("desc".equals(order)) {
+            comparator = comparator.reversed();
+        }
+        
+        Collection<Factory> sortedFactories = stream.sorted(comparator).collect(Collectors.toList());
+        logger.info("Sorted results: " + sortedFactories);
 
-	    return stream.sorted(comparator).collect(Collectors.toList());
-	}
+        return sortedFactories;
+    }
 }
