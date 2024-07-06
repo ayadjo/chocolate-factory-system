@@ -243,7 +243,7 @@ public class UserDAO {
         List<User> availableManagers = new ArrayList<>();
 
         for (User user : users.values()) {
-            if (user.getRole() == Role.Manager && user.getFactory() == null) {
+            if (user.getRole() == Role.Manager && user.getFactory().getId() == -1) {
                 availableManagers.add(user);
             }
         }
