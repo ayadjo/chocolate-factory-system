@@ -3,7 +3,7 @@
 
 ### Application images
 ![sign-up](./Kostur/Kostur/assets/sign_up.png)
-![sign-in](./Kostur/Kostur/assets/sign-in.png)
+![sign-in](./Kostur/Kostur/assets/sign_in.png)
 ![home-page](./Kostur/Kostur/assets/home-page.png)
 ![create-factory1](./Kostur/Kostur/assets/create_factory1.png)
 ![create-factory2](./Kostur/Kostur/assets/create_factory2.png)
